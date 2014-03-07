@@ -39,22 +39,21 @@ vector<Mat> clasifHists;
 vector<Mat>::iterator itHist;
 
 /* Compara el histograma de los jugadores y los clasifica por equipos */
-void comparePlayer(Mat partido, Mat umbral, Rect rect) {
+void comparePlayer(Mat partido, Rect rect) {
 
-	////*********************************************************
+	/*
 	Mat jugador;
 	partido(rect).copyTo(jugador,umbral(rect));
 	imshow("Jugador",jugador);
 	waitKey();
-	//***********************************************************
-
+	*/
 
 	int channels [] = {0,1,2};
 	int nBins = 256;
 	float range [] = {0,256};
 	const float *ranges = {range};
 	Mat hist;
-	calcHist(&partido(rect),1,channels,umbral(rect),hist,1,&nBins,&ranges);
+	calcHist(&partido(rect),1,channels,Mat(),hist,1,&nBins,&ranges);
 	normalize(hist,hist,1,0,NORM_MINMAX,-1,Mat());
 	if(clasifHists.empty()) {
 		clasifHists.push_back(hist);
@@ -153,7 +152,7 @@ void trackObject(Mat filtro, Mat &partido) {
 			if( (minRect[index].width>MIN_WIDTH && minRect[index].width<MAX_WIDTH) &&
 				(minRect[index].height>MIN_HEIGH && minRect[index].height<MAX_HEIGH) ) {
 
-				comparePlayer(partido,filtro,minRect[index]);
+				comparePlayer(partido,/*filtro,*/minRect[index]);
 
 				bool found = false;
 				vector<Rect> s;
