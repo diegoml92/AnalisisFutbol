@@ -28,8 +28,6 @@ const string windowNameTrackbars = "Barras de desplazamiento";
 
 // Ruta del fichero donde se encuentra el video a analizar
 const string filename = "C:/Proyecto/Barca_Madrid.mp4";
-// Ruta de la plantilla
-const string nombrePlant = "E:/Plantilla4.jpg";
 
 // Vectores para la clasificación por equipos
 vector<vector<Rect>> clasif;
@@ -39,21 +37,14 @@ vector<Mat> clasifHists;
 vector<Mat>::iterator itHist;
 
 /* Compara el histograma de los jugadores y los clasifica por equipos */
-void comparePlayer(Mat partido, Rect rect) {
-
-	/*
-	Mat jugador;
-	partido(rect).copyTo(jugador,umbral(rect));
-	imshow("Jugador",jugador);
-	waitKey();
-	*/
+void comparePlayer(Mat partido, Mat umbral, Rect rect) {
 
 	int channels [] = {0,1,2};
 	int nBins = 256;
 	float range [] = {0,256};
 	const float *ranges = {range};
 	Mat hist;
-	calcHist(&partido(rect),1,channels,Mat(),hist,1,&nBins,&ranges);
+	calcHist(&partido(rect),1,channels,umbral(rect),hist,1,&nBins,&ranges);
 	normalize(hist,hist,1,0,NORM_MINMAX,-1,Mat());
 	if(clasifHists.empty()) {
 		clasifHists.push_back(hist);
@@ -152,7 +143,7 @@ void trackObject(Mat filtro, Mat &partido) {
 			if( (minRect[index].width>MIN_WIDTH && minRect[index].width<MAX_WIDTH) &&
 				(minRect[index].height>MIN_HEIGH && minRect[index].height<MAX_HEIGH) ) {
 
-				comparePlayer(partido,/*filtro,*/minRect[index]);
+				comparePlayer(partido,filtro,minRect[index]);
 
 				bool found = false;
 				vector<Rect> s;
@@ -167,7 +158,7 @@ void trackObject(Mat filtro, Mat &partido) {
 
 			}		////**********************************
 			else {
-				drawContours(partido,contours,index,Scalar(0,0,255));
+				//drawContours(partido,contours,index,Scalar(0,0,255));
 			}		//********************************
 		}
 
@@ -202,18 +193,11 @@ int main(int argc, char* argv[]) {
 
 	Mat partido;	// Irá almacenando cada fotograma del vídeo de entrada
 	Mat umbral;		// Mostrará el umbral actualizado según los valores del filtro
-	Mat plantilla;	// Se trata de la plantilla de una persona, que compararemos con los elementos del umbral 
-					// para comprobar si podría tratarse de algún jugador
-	Mat comp;		// Resultado de la comparación entre el umbral y la plantilla
 
 	Mat bordes;
 
 
 	vector<Vec4i> lineas;		// Almacena las líneas del campo
-
-
-	// Se carga la plantilla
-	plantilla = imread(nombrePlant, CV_LOAD_IMAGE_ANYDEPTH);
 
 	// Variable booleana que nos permitirá decidir si utilizar trackbars o no. Cuando el filtro del césped sea
 	// lo suficientemente bueno podemos desactivarlo
@@ -261,38 +245,17 @@ int main(int argc, char* argv[]) {
 			line( umbral, Point(l[0], l[1]), Point(l[2], l[3]), 0, 3, CV_AA);
 		}
 */
-		Mat erodeElement = getStructuringElement(MORPH_RECT, Size(3,3));
-		Mat dilateElement = getStructuringElement( MORPH_RECT,Size(5,5));
-		Mat dil = umbral;
-		Mat erd;
-		erode(umbral,erd,erodeElement);
-		erode(umbral,erd,erodeElement);
-		dilate(dil,dil,dilateElement);
-		trackObject(dil,partido);
-
-		/*// Aplicamos la comparación a la plantilla
-		matchTemplate(umbral, plantilla, comp, CV_TM_SQDIFF_NORMED);
-
-		Mat temp;
-		threshold(comp,temp,0.8,255,THRESH_BINARY_INV);
-		temp.convertTo(temp,CV_8UC1);
-
-		imshow("Jugadores localizados",temp);
-
-		if(tracking) {
-			trackObject(temp, partido);
-		}*/
-
-		
+		Mat morf,morfElement = getStructuringElement(MORPH_RECT, Size(3,3));
+		dilate(umbral,morf,morfElement);
+		morphologyEx(morf,morf,MORPH_CLOSE,morfElement);
+		trackObject(morf,partido);		
 
 		// Mostramos la imagen original
 		imshow(windowNameOriginal, partido);
 		// Mostramos también el threshold
-		imshow(windowNameThreshold, umbral);
-		// Mostramos la comparación con la plantilla
-		//imshow("Comparación con plantilla", comp);
+		imshow(windowNameThreshold, morf);
 
 		// No aparecerá la imagen si no utlizamos este waitKey
-		while(waitKey(0)!=13);
+		while(waitKey()!=13);
 	}
 }
