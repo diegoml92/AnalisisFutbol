@@ -20,6 +20,9 @@ const int MAX_RGB = 255;
 int MIN_WIDTH = 10, MIN_HEIGH = 25;
 int MAX_WIDTH = 45, MAX_HEIGH = 80;
 
+// Tamaño máximo para el balón
+const int MAX_BALL_SIZE = 10;
+
 // Nombres de las ventanas que serán abieras más adelante
 const string windowNameThreshold = "Imagen filtrada";
 const string windowNameOriginal = "Imagen original";
@@ -144,6 +147,9 @@ void trackObject(Mat filtro, Mat &partido) {
 		clasif.clear();
 		clasifHists.clear();
 
+		rectangle(filtro, Point(0,0), Point(MAX_BALL_SIZE,MAX_BALL_SIZE), Scalar(0), 0);
+		rectangle(filtro, Point(0,0), Point(7,7), Scalar(0), 0);
+
 		for(int index = 0; index >= 0; index = hierarchy[index][0]) {
 
 			vector<Rect> minRect( contours.size() );
@@ -164,6 +170,9 @@ void trackObject(Mat filtro, Mat &partido) {
 					it++;
 				}
 				rectangle(partido,minRect[index],mean(partido(*s.begin())),2,8);
+			} else if(	minRect[index].width < MAX_BALL_SIZE &&
+						minRect[index].height < MAX_BALL_SIZE) {
+				rectangle(partido,minRect[index],Scalar(0,0,255),-1);
 			}
 		}
 
