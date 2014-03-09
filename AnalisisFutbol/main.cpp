@@ -1,7 +1,6 @@
 // Se incluyen las librerías necesarias para el proyecto
 #include <opencv2\highgui\highgui.hpp>
 #include <opencv2\imgproc\imgproc.hpp>
-#include <iostream>
 
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
 using namespace cv;
@@ -164,22 +163,11 @@ void trackObject(Mat filtro, Mat &partido) {
 					found = std::find(s.begin(),s.end(),minRect[index]) != s.end();
 					it++;
 				}
-
 				rectangle(partido,minRect[index],mean(partido(*s.begin())),2,8);
-
-			}		////**********************************
-			else {
-				//drawContours(partido,contours,index,Scalar(0,0,255));
-			}		//********************************
+			}
 		}
 
 		sortVectors();
-
-		std::cout<<clasif.size()<<std::endl;
-		for(int i=0;i<clasif.size();i++) {
-			std::cout<<"Grupo #"<<i+1<<" --> "<<clasif[i].size()<<" miembros."<<std::endl;
-		}
-
 
 		for(int i=0;i<clasif.size();i++) {
 			for(int j=0;j<clasif[i].size();j++) {
@@ -227,9 +215,8 @@ int main(int argc, char* argv[]) {
 	// Si la calibración está activa creamos las trackbars
 	if(calib) {
 		crearTrackbars();
+		crearTrackbars2();
 	}
-
-	crearTrackbars2();
 
 	// Bucle infinito en el que vamos pasando los frames del video (habría que determinar
 	// que cuando finalice el video se salga del bucle para que no haya errores)
