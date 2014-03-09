@@ -30,11 +30,13 @@ const string windowNameTrackbars = "Barras de desplazamiento";
 const string filename = "C:/Proyecto/Barca_Madrid.mp4";
 
 // Vectores para la clasificación por equipos
+const float BHATTACHARYYA_THRES = 0.45;
+
 vector<vector<Rect>> clasif;
 vector<vector<Rect>>::iterator it;
 
-vector<Mat> clasifHists;
-vector<Mat>::iterator itHist;
+vector<vector<Mat>> clasifHists;
+vector<vector<Mat>>::iterator itHist;
 
 /* Compara el histograma de los jugadores y los clasifica por equipos */
 void comparePlayer(Mat partido, Mat umbral, Rect rect) {
@@ -43,27 +45,36 @@ void comparePlayer(Mat partido, Mat umbral, Rect rect) {
 	int nBins = 256;
 	float range [] = {0,256};
 	const float *ranges = {range};
-	Mat hist;
-	calcHist(&partido(rect),1,channels,umbral(rect),hist,1,&nBins,&ranges);
-	normalize(hist,hist,1,0,NORM_MINMAX,-1,Mat());
+	Mat hist_B, hist_G, hist_R;
+	vector<Mat> planes, hist_v;
+	split(partido(rect),planes);
+	calcHist(&planes[0],1,channels,umbral(rect),hist_B,1,&nBins,&ranges);
+	calcHist(&planes[1],1,channels,umbral(rect),hist_G,1,&nBins,&ranges);
+	calcHist(&planes[2],1,channels,umbral(rect),hist_R,1,&nBins,&ranges);
+	hist_v.push_back(hist_B);
+	hist_v.push_back(hist_G);
+	hist_v.push_back(hist_R);
 	if(clasifHists.empty()) {
-		clasifHists.push_back(hist);
+		clasifHists.push_back(hist_v);
 		clasif.push_back(vector<Rect>());
 		clasif.back().push_back(rect);
 	} else {
 		bool found = false;
 		itHist = clasifHists.begin();
 		int k = 0;
+		vector<Mat> temp;
 		while(itHist!=clasifHists.end() && !found) {
-			found = compareHist(*itHist,hist,CV_COMP_BHATTACHARYYA) < 0.45;
+			temp = *itHist;
+			found = compareHist(temp[0],hist_B,CV_COMP_BHATTACHARYYA) +
+					compareHist(temp[1],hist_G,CV_COMP_BHATTACHARYYA) +
+					compareHist(temp[2],hist_R,CV_COMP_BHATTACHARYYA) < BHATTACHARYYA_THRES*3;
 			itHist++;
 			k++;
 		}
 		if(found) {
-			it = clasif.begin();
 			clasif[k-1].push_back(rect);
 		} else {
-			clasifHists.push_back(hist);
+			clasifHists.push_back(hist_v);
 			clasif.push_back(vector<Rect>());
 			clasif.back().push_back(rect);
 		}
@@ -74,7 +85,7 @@ void sortVectors() {
 	bool swapped = false;
 	if(clasif.size()>1) {
 		vector<Rect> aux;
-		Mat auxHist;
+		vector<Mat> auxHist;
 		for(int i=0;i<clasif.size()-1;i++) {
 			for(int j=0;j<clasif.size()-i-1;j++) {
 				if(clasif[j].size() < clasif[j+1].size()) {
