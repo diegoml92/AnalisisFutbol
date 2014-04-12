@@ -12,6 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="VideoManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config_file.h" />
+    <ClInclude Include="VideoManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{844D7C75-B838-4DE4-9F09-4947E694A1C7}</ProjectGuid>

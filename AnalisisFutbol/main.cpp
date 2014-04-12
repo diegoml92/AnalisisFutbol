@@ -1,11 +1,10 @@
-// Se incluyen las librerías necesarias para el proyecto
-#include <opencv2\highgui\highgui.hpp>
-#include <opencv2\imgproc\imgproc.hpp>
+#include "config_file.h"
+#include "VideoManager.h"
 
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
 using namespace cv;
 
-// Valores límite que marcarán el rango para el posterior filtrado
+// Valores que marca en rango de filtro del césped
 int MIN_B = 5;
 int MAX_B = 90;
 int MIN_G = 75;
@@ -13,26 +12,10 @@ int MAX_G = 135;
 int MIN_R = 35;
 int MAX_R = 110;
 
-// Contante que indica el valor máximo que se puede dar a una trackbar
-const int MAX_RGB = 255;
-
-// Valores para el tamaño de los jugadores
+// Valores para el rango de tamaño de los jugadores
 int MIN_WIDTH = 10, MIN_HEIGH = 25;
 int MAX_WIDTH = 45, MAX_HEIGH = 80;
 
-// Tamaño máximo para el balón
-const int MAX_BALL_SIZE = 10;
-
-// Nombres de las ventanas que serán abieras más adelante
-const string windowNameThreshold = "Imagen filtrada";
-const string windowNameOriginal = "Imagen original";
-const string windowNameTrackbars = "Barras de desplazamiento";
-
-// Ruta del fichero donde se encuentra el video a analizar
-const string filename = "C:/Proyecto/Barca_Madrid.mp4";
-
-// Vectores para la clasificación por equipos
-const float BHATTACHARYYA_THRES = 0.45;
 
 vector<vector<Rect>> clasif;
 vector<vector<Rect>>::iterator it;
@@ -104,7 +87,6 @@ void sortVectors() {
 	}
 }
 
-
 /* Función auxiliar llamada cada vez que varía el valor de una barra de desplazamiento */
 void on_trackbar(int, void*) {}	// No hace nada
 
@@ -112,15 +94,15 @@ void on_trackbar(int, void*) {}	// No hace nada
 void crearTrackbars() {
 	
 	// Creamos la ventana en la que estarán las barras de desplazamiento
-	namedWindow(windowNameTrackbars, 0);
+	namedWindow(GUI_W, 0);
 
 	// Crea la barra
-	createTrackbar("MIN_B", windowNameTrackbars, &MIN_B, MAX_RGB, on_trackbar);
-	createTrackbar("MAX_B", windowNameTrackbars, &MAX_B, MAX_RGB, on_trackbar);
-	createTrackbar("MIN_G", windowNameTrackbars, &MIN_G, MAX_RGB, on_trackbar);
-	createTrackbar("MAX_G", windowNameTrackbars, &MAX_G, MAX_RGB, on_trackbar);
-	createTrackbar("MIN_R", windowNameTrackbars, &MIN_R, MAX_RGB, on_trackbar);
-	createTrackbar("MAX_R", windowNameTrackbars, &MAX_R, MAX_RGB, on_trackbar);
+	createTrackbar("MIN_B", GUI_W, &MIN_B, MAX_RGB, on_trackbar);
+	createTrackbar("MAX_B", GUI_W, &MAX_B, MAX_RGB, on_trackbar);
+	createTrackbar("MIN_G", GUI_W, &MIN_G, MAX_RGB, on_trackbar);
+	createTrackbar("MAX_G", GUI_W, &MAX_G, MAX_RGB, on_trackbar);
+	createTrackbar("MIN_R", GUI_W, &MIN_R, MAX_RGB, on_trackbar);
+	createTrackbar("MAX_R", GUI_W, &MAX_R, MAX_RGB, on_trackbar);
 
 }
 
@@ -196,8 +178,7 @@ void trackObject(Mat filtro, Mat &partido) {
 int main(int argc, char* argv[]) {
 
 	// Cargamos el vídeo que vamos a utilizar
-	VideoCapture video;
-	video.open(filename);
+	VideoManager::init();
 
 	Mat partido;	// Irá almacenando cada fotograma del vídeo de entrada
 	Mat umbral;		// Mostrará el umbral actualizado según los valores del filtro
@@ -207,33 +188,17 @@ int main(int argc, char* argv[]) {
 
 	vector<Vec4i> lineas;		// Almacena las líneas del campo
 
-	// Variable booleana que nos permitirá decidir si utilizar trackbars o no. Cuando el filtro del césped sea
-	// lo suficientemente bueno podemos desactivarlo
-	bool calib = false;
-	// Se indica si queremos hacer el seguimiento de los jugadores. Hasta que no tengamos preparado el filtro del
-	// campo no nos interesa activar esta opción
-	bool tracking = false;
-
-	// Vamos a saltar los primeros minutos de video, ya que contienen información que no nos interesa
-	// (himnos y protocolos antes de comenzar el partido) para ello, lo que hacemos es utilizar una propiedad
-	// de la captura que nos permite averiguar el número total de frames de un vídeo, y posteriormente calculamos:
-	// Ms / Mt * CV_CAP_PROP_FRAME_COUNT, y ese será el número de frames a saltar. Para saltarlos vamos a
-	// utilizar la función set, cambiando la propiedad adecuada (0.0505)
-	video.set(CV_CAP_PROP_POS_FRAMES, 0.001 * video.get(CV_CAP_PROP_FRAME_COUNT));
-
 	// Si la calibración está activa creamos las trackbars
-	if(calib) {
+	if(CALIB) {
 		crearTrackbars();
 		crearTrackbars2();
 	}
 
 	// Bucle infinito en el que vamos pasando los frames del video (habría que determinar
 	// que cuando finalice el video se salga del bucle para que no haya errores)
-	while(1) {
-
-		// Con la función read, se coge el frame actual de video, se guarda en la matriz
-		// partido y se pasa al siguiente frame
-		video.read(partido);
+	// Con la función read, se coge el frame actual de video, se guarda en la matriz
+	// partido y se pasa al siguiente frame
+	while(VideoManager::nextFrame(&partido)) {
 
 		// Obtenemos de partido el umbral según los rangos definidos por B,G,R MIN y MAX
 		inRange(partido, Scalar(MIN_B, MIN_G, MIN_R), Scalar(MAX_B, MAX_G, MAX_R), umbral);
@@ -258,9 +223,9 @@ int main(int argc, char* argv[]) {
 		trackObject(morf,partido);		
 
 		// Mostramos la imagen original
-		imshow(windowNameOriginal, partido);
+		imshow(VIDEO_W, partido);
 		// Mostramos también el threshold
-		imshow(windowNameThreshold, morf);
+		imshow(THRESHOLD_W, morf);
 
 		// No aparecerá la imagen si no utlizamos este waitKey
 		while(waitKey()!=13);
