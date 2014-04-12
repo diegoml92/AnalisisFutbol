@@ -1,6 +1,6 @@
 #include "VideoManager.h"
 
-cv::VideoCapture VideoManager::video;
+VideoCapture VideoManager::video;
 
 bool VideoManager::init() {
 	bool result = video.open(VIDEO_PATH);
@@ -17,7 +17,7 @@ bool VideoManager::init() {
 	return result;
 }
 
-bool VideoManager::nextFrame(cv::Mat* partido) {
+bool VideoManager::nextFrame(Mat* partido) {
 	return video.read(*partido);
 }
 

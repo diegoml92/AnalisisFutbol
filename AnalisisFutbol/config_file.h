@@ -2,6 +2,9 @@
 #include <opencv2\highgui\highgui.hpp>
 #include <opencv2\imgproc\imgproc.hpp>
 
+// Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
+using namespace cv;
+
 #define CALIB false
 #define TRACKING false
 

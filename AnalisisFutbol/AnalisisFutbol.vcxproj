@@ -12,10 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerClassifier.cpp" />
     <ClCompile Include="VideoManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config_file.h" />
+    <ClInclude Include="PlayerClassifier.h" />
     <ClInclude Include="VideoManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
