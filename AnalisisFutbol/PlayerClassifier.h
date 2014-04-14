@@ -1,13 +1,17 @@
 #include "config_file.h"
-
+/* CLASE ENCARGADA DE LA CLASIFICACIÓN DE LOS JUGADORES EN DIFERENTES EQUIPOS */
 class PlayerClassifier {
 
 private:
 
+	// Almacena los elementos en sus respectivos grupos
 	static vector<vector<Rect>> clasif;
+	// Iterator para recorrer el vector clasif
 	static vector<vector<Rect>>::iterator it;
 
+	// Alamacena el histograma que representa a cada equipo
 	static vector<vector<Mat>> clasifHists;
+	// Iterator para recorrer el vector clasifHist
 	static vector<vector<Mat>>::iterator itHist;
 
 public:

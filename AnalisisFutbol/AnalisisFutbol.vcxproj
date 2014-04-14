@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerClassifier.cpp" />
     <ClCompile Include="TrackingObj.cpp" />
@@ -18,9 +19,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config_file.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="PlayerClassifier.h" />
     <ClInclude Include="TrackingObj.h" />
     <ClInclude Include="VideoManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{844D7C75-B838-4DE4-9F09-4947E694A1C7}</ProjectGuid>

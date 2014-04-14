@@ -1,16 +1,5 @@
 #include "TrackingObj.h"
-
-// Valores que marca en rango de filtro del césped
-extern int MIN_B;
-extern int MAX_B;
-extern int MIN_G;
-extern int MAX_G;
-extern int MIN_R;
-extern int MAX_R;
-
-// Valores para el rango de tamaño de los jugadores
-extern int MIN_WIDTH, MIN_HEIGH;
-extern int MAX_WIDTH, MAX_HEIGH;
+#include "gui.h"
 
 void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 	Mat temp;
@@ -33,8 +22,8 @@ void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 			for( int i = 0; i < contours.size(); i++ ) {
 				minRect[i] = boundingRect( Mat(contours[i]) );
 			}
-			if( (minRect[index].width>MIN_WIDTH && minRect[index].width<MAX_WIDTH) &&
-				(minRect[index].height>MIN_HEIGH && minRect[index].height<MAX_HEIGH) ) {
+			if( (minRect[index].width>gui::MIN_WIDTH && minRect[index].width<gui::MAX_WIDTH) &&
+				(minRect[index].height>gui::MIN_HEIGH && minRect[index].height<gui::MAX_HEIGH) ) {
 
 				PlayerClassifier::comparePlayer(partido,filtro,minRect[index]);
 
