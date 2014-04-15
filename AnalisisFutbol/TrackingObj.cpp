@@ -1,5 +1,5 @@
 #include "TrackingObj.h"
-#include "gui.h"
+#include "GUI.h"
 
 void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 	Mat temp;
@@ -22,8 +22,8 @@ void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 			for( int i = 0; i < contours.size(); i++ ) {
 				minRect[i] = boundingRect( Mat(contours[i]) );
 			}
-			if( (minRect[index].width>gui::MIN_WIDTH && minRect[index].width<gui::MAX_WIDTH) &&
-				(minRect[index].height>gui::MIN_HEIGH && minRect[index].height<gui::MAX_HEIGH) ) {
+			if( (minRect[index].width>GUI::MIN_WIDTH && minRect[index].width<GUI::MAX_WIDTH) &&
+				(minRect[index].height>GUI::MIN_HEIGH && minRect[index].height<GUI::MAX_HEIGH) ) {
 
 				PlayerClassifier::comparePlayer(partido,filtro,minRect[index]);
 

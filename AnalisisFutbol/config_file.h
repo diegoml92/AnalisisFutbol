@@ -14,11 +14,20 @@ using namespace cv;
 
 #define THRESHOLD_W "Imagen filtrada"
 #define VIDEO_W "Imagen original"
-#define GUI_W "Barras de desplazamiento"
+#define GUI_W "Panel de control"
 
 #define VIDEO_PATH "C:/Proyecto/Barca_Madrid.mp4"
 
 #define BHATTACHARYYA_THRES 0.45
+
+#define BUTTON_WIDTH 60
+#define BUTTON_HEIGHT 25
+#define BUTTON_SIZE 60,25
+#define BUTTON_LEFT_MARGIN 75
+#define BUTTON_TOP_MARGIN 210
+#define BUTTON_SHIFT 170
+
+#define C_NBUTTONS 3
 
 
 
