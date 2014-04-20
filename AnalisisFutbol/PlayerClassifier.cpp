@@ -1,43 +1,19 @@
 #include "PlayerClassifier.h"
 #include "GUI.h"
 
+vector<Rect> PlayerClassifier::players;
+
 vector<vector<Rect>> PlayerClassifier::clasif;
 vector<vector<Rect>>::iterator PlayerClassifier::it;
 
 vector<vector<Mat>> PlayerClassifier::clasifHists;
 vector<vector<Mat>>::iterator PlayerClassifier::itHist;
 
-/*	LIMPIA LOS VECTORES */
-void PlayerClassifier::clearVectors() {
-	clasif.clear();
-	clasifHists.clear();
-}
-
-/*	
-*	ORDENA LOS VECTORES:
-*	Este orden se lleva a cabo en función del número de elementos contenidos,
-*	de esta manera, lo 2 primeros serán ambos equipos y el resto serán otros
-*	elementos (porteros, árbitro...)
-*/
-void PlayerClassifier::sortVectors() {
-	bool swapped = false;
-	if(clasif.size()>1) {
-		vector<Rect> aux;
-		vector<Mat> auxHist;
-		for(int i=0;i<clasif.size()-1;i++) {
-			for(int j=0;j<clasif.size()-i-1;j++) {
-				if(clasif[j].size() < clasif[j+1].size()) {
-					aux = clasif[j];
-					clasif[j] = clasif[j+1];
-					clasif[j+1] = aux;
-
-					auxHist = clasifHists[j];
-					clasifHists[j] = clasifHists[j+1];
-					clasifHists[j+1] = auxHist;
-				}
-			}
-		}
-	}
+/* AÑADE UN JUGADOR */
+void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Rect player) {
+	players.push_back(player);
+	comparePlayer(partido,filtro,player);	// Hacemos la comparación
+	findAndDraw(player, partido);			// Dibujamos al jugador
 }
 
 /*	
@@ -86,21 +62,6 @@ void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, Rect rect) {
 	}
 }
 
-/* DIBUJA LOS JUGADORES EN EL VÍDEO */
-void PlayerClassifier::drawTeams(Mat partido) {
-	for(int i=0;i<clasif.size();i++) {
-		for(int j=0;j<clasif[i].size();j++) {
-			if(i==0) {
-				putText(partido,"Equipo1",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
-			} else if(i==1) {
-				putText(partido,"Equipo2",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
-			} else {
-				putText(partido,"Otros",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
-			}
-		}
-	}
-}
-
 /* ENCUENTRA EL EQUIPO EN EL QUE ESTÁ UN JUGADOR */
 void PlayerClassifier::findAndDraw(Rect rect, Mat partido) {
 	vector<Rect> s;
@@ -122,4 +83,58 @@ void PlayerClassifier::findAndDraw(Rect rect, Mat partido) {
 		}
 	}
 	
+}
+
+/*	LIMPIA LOS VECTORES */
+void PlayerClassifier::clearVectors() {
+	clasif.clear();
+	clasifHists.clear();
+}
+
+/*	
+*	ORDENA LOS VECTORES:
+*	Este orden se lleva a cabo en función del número de elementos contenidos,
+*	de esta manera, lo 2 primeros serán ambos equipos y el resto serán otros
+*	elementos (porteros, árbitro...)
+*/
+void PlayerClassifier::sortVectors() {
+	bool swapped = false;
+	if(clasif.size()>1) {
+		vector<Rect> aux;
+		vector<Mat> auxHist;
+		for(int i=0;i<clasif.size()-1;i++) {
+			for(int j=0;j<clasif.size()-i-1;j++) {
+				if(clasif[j].size() < clasif[j+1].size()) {
+					aux = clasif[j];
+					clasif[j] = clasif[j+1];
+					clasif[j+1] = aux;
+
+					auxHist = clasifHists[j];
+					clasifHists[j] = clasifHists[j+1];
+					clasifHists[j+1] = auxHist;
+				}
+			}
+		}
+	}
+}
+
+/* DETERMINA SI CUMPLE EL TAMAÑO PROPIO DE UN JUGADOR */
+bool PlayerClassifier::isPlayerSize(Rect player) {
+	return player.height>GUI::MIN_HEIGH && player.height<GUI::MAX_HEIGH
+			&& player.width>GUI::MIN_WIDTH && player.width<GUI::MAX_WIDTH;
+}
+
+/* DIBUJA LOS JUGADORES EN EL VÍDEO */
+void PlayerClassifier::drawTeams(Mat partido) {
+	for(int i=0;i<clasif.size();i++) {
+		for(int j=0;j<clasif[i].size();j++) {
+			if(i==0) {
+				putText(partido,"Equipo1",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
+			} else if(i==1) {
+				putText(partido,"Equipo2",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
+			} else {
+				putText(partido,"Otros",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
+			}
+		}
+	}
 }

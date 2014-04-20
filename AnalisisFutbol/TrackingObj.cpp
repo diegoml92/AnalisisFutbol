@@ -9,43 +9,31 @@ void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
-	if(hierarchy.size() > 0) {		// Si se encuentra algún contorno
-		int numObjects = hierarchy.size();
+	if(hierarchy.size() > 0) {											// Si se encuentra algún contorno
+		PlayerClassifier::clearVectors();								// Limpiamos los vectores de clasificación
 
-		PlayerClassifier::clearVectors();	// Limpiamos los vectores de clasificación
-
-		for(int index = 0; index >= 0; index = hierarchy[index][0]) {
-
-			vector<Rect> minRect( contours.size() );		// Almacenará los boundingBox de cada contorno
-			for( int i = 0; i < contours.size(); i++ ) {
-				minRect[i] = boundingRect( Mat(contours[i]) );
-			}
-			// Si cumple las restricciones de tamaño
-			if( (minRect[index].width>GUI::MIN_WIDTH && minRect[index].width<GUI::MAX_WIDTH) &&
-				(minRect[index].height>GUI::MIN_HEIGH && minRect[index].height<GUI::MAX_HEIGH) ) {
-
-				PlayerClassifier::comparePlayer(partido,filtro,minRect[index]); // Hacemos la comparación
-				PlayerClassifier::findAndDraw(minRect[index], partido);			// Dibujamos al jugador
-
-			} else if(minRect[index].width <= GUI::MAX_BALL_SIZE &&		// Cumple las condiciones para ser el balón
-						minRect[index].width >= GUI::MIN_BALL_SIZE &&
-						minRect[index].height <= GUI::MAX_BALL_SIZE &&
-						minRect[index].height >= GUI::MIN_BALL_SIZE) {
+		for( int i = 0; i < contours.size(); i++ ) {					// Recorremos los contornos
+			Rect player = boundingRect(Mat(contours[i]));				// Creamos el boundingBox
+			if(PlayerClassifier::isPlayerSize(player)) {				// Si cumple la restricciones de tamaño...
+				PlayerClassifier::addPlayer(partido, filtro, player);	// ...añade al jugador y lo clasifica
+			} else if(player.width <= GUI::MAX_BALL_SIZE &&				// Si cumple las condiciones para ser el balón...
+						player.width >= GUI::MIN_BALL_SIZE &&
+						player.height <= GUI::MAX_BALL_SIZE &&
+						player.height >= GUI::MIN_BALL_SIZE) {
 				switch (GUI::ballBox()) {
 					case 1 : {
-						rectangle(partido,minRect[index],Scalar(255,255,255),1);
+						rectangle(partido,player,Scalar(255,255,255),1);
 						break;
 					}
 					case 2 : {
-						circle(partido,Point(minRect[index].x + minRect[index].width/2,
-								minRect[index].y + minRect[index].height/2), 4, Scalar(255,255,255),-1);
+						circle(partido,Point(player.x + player.width/2,
+								player.y + player.height/2), 4, Scalar(255,255,255),-1);
 						break;
-						}
+					}
 				}
 				
 			}
 		}
-
 		PlayerClassifier::sortVectors();		// Ordenamos los vectores de clasificación
 		PlayerClassifier::drawTeams(partido);	// Dibujamos la etiqueta de cada elemento
 	}
