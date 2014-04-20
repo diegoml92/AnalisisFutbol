@@ -1,5 +1,6 @@
 #include "GUI.h"
 #include "TrackingObj.h"
+#include "BallDetector.h"
 #include "PlayerClassifier.h"
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
@@ -13,28 +14,17 @@ void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 		PlayerClassifier::clearVectors();								// Limpiamos los vectores de clasificación
 
 		for( int i = 0; i < contours.size(); i++ ) {					// Recorremos los contornos
-			Rect player = boundingRect(Mat(contours[i]));				// Creamos el boundingBox
-			if(PlayerClassifier::isPlayerSize(player)) {				// Si cumple la restricciones de tamaño...
-				PlayerClassifier::addPlayer(partido, filtro, player);	// ...añade al jugador y lo clasifica
-			} else if(player.width <= GUI::MAX_BALL_SIZE &&				// Si cumple las condiciones para ser el balón...
-						player.width >= GUI::MIN_BALL_SIZE &&
-						player.height <= GUI::MAX_BALL_SIZE &&
-						player.height >= GUI::MIN_BALL_SIZE) {
-				switch (GUI::ballBox()) {
-					case 1 : {
-						rectangle(partido,player,Scalar(255,255,255),1);
-						break;
-					}
-					case 2 : {
-						circle(partido,Point(player.x + player.width/2,
-								player.y + player.height/2), 4, Scalar(255,255,255),-1);
-						break;
-					}
-				}
-				
+			Rect elem = boundingRect(Mat(contours[i]));					// Creamos el boundingBox
+			if(PlayerClassifier::isPlayerSize(elem)) {					// Si cumple las restricciones de tamaño...
+				PlayerClassifier::addPlayer(partido, filtro, elem);		// ...añade el jugador y lo clasifica
+			} else if(BallDetector::isBallSize) {						// Si tiene tamaño y forma de balón...
+				BallDetector::addBall(elem);							// ...se añade
 			}
 		}
-		PlayerClassifier::sortVectors();		// Ordenamos los vectores de clasificación
-		PlayerClassifier::drawTeams(partido);	// Dibujamos la etiqueta de cada elemento
+
+		PlayerClassifier::sortVectors();								// Ordenamos los vectores de clasificación
+		PlayerClassifier::drawTeams(partido);							// Dibujamos la etiqueta de cada elemento
+		BallDetector::selectBall();										// Elige el balón entre los candidatos
+		BallDetector::drawBall(partido);								// Dibujamos el balón
 	}
 }
