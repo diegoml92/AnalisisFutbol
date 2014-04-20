@@ -1,18 +1,15 @@
 #include "config_file.h"
+
 /* CLASE ENCARGADA DE LA CLASIFICACIÓN DE LOS JUGADORES EN DIFERENTES EQUIPOS */
 class PlayerClassifier {
 
 private:
 
-	// Almacena los elementos en sus respectivos grupos
-	static vector<vector<Rect>> clasif;
-	// Iterator para recorrer el vector clasif
-	static vector<vector<Rect>>::iterator it;
+	static vector<vector<Rect>> clasif;				// Almacena los elementos en sus respectivos grupos
+	static vector<vector<Rect>>::iterator it;		// Iterator para recorrer el vector clasif
 
-	// Alamacena el histograma que representa a cada equipo
-	static vector<vector<Mat>> clasifHists;
-	// Iterator para recorrer el vector clasifHist
-	static vector<vector<Mat>>::iterator itHist;
+	static vector<vector<Mat>> clasifHists;			// Alamacena el histograma que representa a cada equipo
+	static vector<vector<Mat>>::iterator itHist;	// Iterator para recorrer el vector clasifHist
 
 public:
 
@@ -33,14 +30,10 @@ public:
 	*/
 	static void comparePlayer(Mat partido, Mat umbral, Rect rect);
 
-	/*
-	*	DIBUJA LOS JUGADORES EN EL VÍDEO
-	*/
+	/* DIBUJA LOS JUGADORES EN EL VÍDEO */
 	static void drawTeams(Mat partido);
 
-	/*
-	*	ENCUENTRA EL EQUIPO EN EL QUE ESTÁ UN JUGADOR
-	*/
+	/* ENCUENTRA EL EQUIPO EN EL QUE ESTÁ UN JUGADOR */
 	static void findAndDraw(Rect rect, Mat partido);
 
 };

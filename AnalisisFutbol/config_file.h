@@ -5,18 +5,19 @@
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
 using namespace cv;
 
-#define CALIB false
 #define TRACKING false
 
 #define MAX_RGB 255
 
-#define MAX_BALL_SIZE 10
-
 #define THRESHOLD_W "Imagen filtrada"
 #define VIDEO_W "Imagen original"
 #define GUI_W "Panel de control"
+#define FIELD_FILTER_W "Filtro del campo"
+#define PLAYER_SIZE_W "Player size"
+#define BALL_SIZE_W "Ball size"
 
-#define VIDEO_PATH "C:/Proyecto/Barca_Madrid.mp4"
+//#define VIDEO_PATH "C:/Proyecto/Barca_Madrid.mp4"
+#define VIDEO_PATH "C:/Proyecto/Sequences/Film Role-0 ID-1 T-2 m00s00-000-m00s00-185.avi"
 
 #define BHATTACHARYYA_THRES 0.45
 
@@ -26,8 +27,17 @@ using namespace cv;
 #define BUTTON_LEFT_MARGIN 75
 #define BUTTON_TOP_MARGIN 210
 #define BUTTON_SHIFT 170
+#define N_BUTTONS 3
 
-#define C_NBUTTONS 3
+#define R_BUTTON_RADIUS 5
+#define R_BUTTON_ACTIVE_RADIUS 4
+#define R_BUTTON_LEFT_MARGIN 75
+#define R_BUTTON_TOP_MARGIN 40
+#define R_BUTTON_GROUP_SHIFT 250
+#define R_BUTTON_VERT_SHIFT 20
+#define R_BUTTON_VERT_GROUP_SHIFT 80
+#define N_RBUTTON_GROUPS 3
+#define N_RBUTTONS 3
 
 
 

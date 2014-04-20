@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerClassifier.cpp" />
@@ -19,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config_file.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="PlayerClassifier.h" />
     <ClInclude Include="TrackingObj.h" />
@@ -53,6 +55,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\Dropbox\Universidad\VisualStudio2010\OPENCV_RELEASE.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

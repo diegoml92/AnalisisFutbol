@@ -1,4 +1,5 @@
 #include "PlayerClassifier.h"
+#include "GUI.h"
 
 vector<vector<Rect>> PlayerClassifier::clasif;
 vector<vector<Rect>>::iterator PlayerClassifier::it;
@@ -6,7 +7,18 @@ vector<vector<Rect>>::iterator PlayerClassifier::it;
 vector<vector<Mat>> PlayerClassifier::clasifHists;
 vector<vector<Mat>>::iterator PlayerClassifier::itHist;
 
+/*	LIMPIA LOS VECTORES */
+void PlayerClassifier::clearVectors() {
+	clasif.clear();
+	clasifHists.clear();
+}
 
+/*	
+*	ORDENA LOS VECTORES:
+*	Este orden se lleva a cabo en función del número de elementos contenidos,
+*	de esta manera, lo 2 primeros serán ambos equipos y el resto serán otros
+*	elementos (porteros, árbitro...)
+*/
 void PlayerClassifier::sortVectors() {
 	bool swapped = false;
 	if(clasif.size()>1) {
@@ -28,13 +40,10 @@ void PlayerClassifier::sortVectors() {
 	}
 }
 
-
-void PlayerClassifier::clearVectors() {
-	clasif.clear();
-	clasifHists.clear();
-}
-
-
+/*	
+*	CLASIFICA LOS ELEMENTOS DETECTADOS:
+*	Compara el histograma de los jugadores y los clasifica por equipos
+*/
 void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, Rect rect) {
 
 	int channels [] = {0,1,2};
@@ -77,6 +86,7 @@ void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, Rect rect) {
 	}
 }
 
+/* DIBUJA LOS JUGADORES EN EL VÍDEO */
 void PlayerClassifier::drawTeams(Mat partido) {
 	for(int i=0;i<clasif.size();i++) {
 		for(int j=0;j<clasif[i].size();j++) {
@@ -91,6 +101,7 @@ void PlayerClassifier::drawTeams(Mat partido) {
 	}
 }
 
+/* ENCUENTRA EL EQUIPO EN EL QUE ESTÁ UN JUGADOR */
 void PlayerClassifier::findAndDraw(Rect rect, Mat partido) {
 	vector<Rect> s;
 	it = clasif.begin();
@@ -100,5 +111,15 @@ void PlayerClassifier::findAndDraw(Rect rect, Mat partido) {
 		found = std::find(s.begin(),s.end(),rect) != s.end();
 		it++;
 	}
-	rectangle(partido,rect,mean(partido(*s.begin())),2,8);
+	switch(GUI::playerBox()) {
+		case 1 : {
+			rectangle(partido,rect,mean(partido(*s.begin())),2,8);
+			break;
+		}
+		case 2 : {
+			rectangle(partido,rect,Scalar(0,0,0),2,8);
+			break;
+		}
+	}
+	
 }

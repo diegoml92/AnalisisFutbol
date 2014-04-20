@@ -5,21 +5,15 @@ class VideoManager {
 
 private:
 
-	// Almacenará la captura de vídeo
-	static VideoCapture video;
+	static VideoCapture video;	// Almacenará la captura de vídeo
 
 public:
 
-	/*	
-	*	INICILIZA LA CAPTURA DE VÍDEO:
-	*	Devuelve true si ha iniciado correctamente
-	*/
+	/* INICILIZA LA CAPTURA DE VÍDEO */
 	static bool init();
 
-	/*	
-	*	OBTIENE EL SIGUIENTE FRAME DE VÍDEO:
-	*	Se le pasa el Mat en el que se guardará este frame
-	*/
+	/* OBTIENE EL SIGUIENTE FRAME DE VÍDEO */
 	static bool nextFrame(Mat* partido);
+
 };
 
