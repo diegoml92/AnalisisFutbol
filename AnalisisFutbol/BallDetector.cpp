@@ -56,7 +56,7 @@ void BallDetector::drawBall(Mat partido) {
 		}
 		case 2 : {
 			circle(partido,Point(foundBall.x + foundBall.width/2,
-					foundBall.y + foundBall.height/2), 10, Scalar(255,255,255),-1);
+					foundBall.y + foundBall.height/2), foundBall.height/2, Scalar(255,255,255),-1);
 			break;
 		}
 	}
