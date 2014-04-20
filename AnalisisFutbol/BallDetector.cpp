@@ -4,6 +4,11 @@
 vector<Rect> BallDetector::balls;						// Elementos que pueden ser el balón
 Rect BallDetector::foundBall;							// Balón encontrado
 
+/* LIMPIA EL VECTOR DE BALONES */
+void BallDetector::clear() {
+	balls.clear();
+}
+
 /* AÑADE UNA POSIBILIDAD A LA LISTA DE BALONES */
 void BallDetector::addBall(Rect ball) {
 	balls.push_back(ball);
@@ -25,10 +30,21 @@ bool BallDetector::isSquare(Rect ball) {
 }
 
 /* DETERMINA CUÁL ES EL BALÓN */
-void BallDetector::selectBall() {
-	if(balls.size() > 0) {
-		foundBall = balls[0];
+void BallDetector::selectBall(Mat partido, Mat filtro) {
+	int max = 0;
+	int k = 0;
+	for(int i=0; i<balls.size(); i++) {
+		Scalar mean = cv::mean( partido(balls[i]), filtro(balls[i]) );
+		int n = mean[0] + mean[1] + mean[2];
+		if(n > max) {
+			k = i;
+			max = n;
+		}
 	}
+	if(max > 400)
+		foundBall = balls[k];
+	else
+		foundBall = Rect();
 }
 
 /* DIBUJA EL BALÓN */

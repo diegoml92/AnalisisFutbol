@@ -1,6 +1,7 @@
 // Se incluyen las librerías necesarias para el proyecto
 #include <opencv2\highgui\highgui.hpp>
 #include <opencv2\imgproc\imgproc.hpp>
+#include <iostream>
 
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
 using namespace cv;

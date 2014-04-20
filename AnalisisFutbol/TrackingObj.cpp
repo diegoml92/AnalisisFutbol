@@ -12,19 +12,20 @@ void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
 	if(hierarchy.size() > 0) {											// Si se encuentra algún contorno
 		PlayerClassifier::clearVectors();								// Limpiamos los vectores de clasificación
+		BallDetector::clear();											// Limpiamos el vector de balones
 
 		for( int i = 0; i < contours.size(); i++ ) {					// Recorremos los contornos
 			Rect elem = boundingRect(Mat(contours[i]));					// Creamos el boundingBox
 			if(PlayerClassifier::isPlayerSize(elem)) {					// Si cumple las restricciones de tamaño...
 				PlayerClassifier::addPlayer(partido, filtro, elem);		// ...añade el jugador y lo clasifica
-			} else if(BallDetector::isBallSize) {						// Si tiene tamaño y forma de balón...
+			} else if(BallDetector::isBallSize(elem)) {					// Si tiene tamaño y forma de balón...
 				BallDetector::addBall(elem);							// ...se añade
 			}
 		}
 
 		PlayerClassifier::sortVectors();								// Ordenamos los vectores de clasificación
 		PlayerClassifier::drawTeams(partido);							// Dibujamos la etiqueta de cada elemento
-		BallDetector::selectBall();										// Elige el balón entre los candidatos
+		BallDetector::selectBall(partido, filtro);						// Elige el balón entre los candidatos
 		BallDetector::drawBall(partido);								// Dibujamos el balón
 	}
 }

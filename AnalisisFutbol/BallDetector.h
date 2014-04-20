@@ -12,6 +12,9 @@ private:
 
 public:
 
+	/* LIMPIA EL VECTOR DE BALONES */
+	static void clear();
+
 	/* AÑADE UNA POSIBILIDAD A LA LISTA DE BALONES */
 	static void addBall(Rect ball);
 
@@ -19,7 +22,7 @@ public:
 	static bool isBallSize(Rect ball);
 
 	/* DETERMINA CUÁL ES EL BALÓN */
-	static void selectBall();
+	static void selectBall(Mat partido, Mat filtro);
 
 	/* DIBUJA EL BALÓN */
 	static void drawBall(Mat partido);
