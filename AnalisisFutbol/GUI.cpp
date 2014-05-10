@@ -26,11 +26,11 @@ Mat button_on_hover = imread("C:/Proyecto/img/button_on_hover.png");
 
 
 // Valores que marca en rango de filtro del césped
-int GUI::MIN_B = 5;
-int GUI::MAX_B = 90;
-int GUI::MIN_G = 75;
+int GUI::MIN_B = 25;
+int GUI::MAX_B = 85;
+int GUI::MIN_G = 55;
 int GUI::MAX_G = 135;
-int GUI::MIN_R = 35;
+int GUI::MIN_R = 40;
 int GUI::MAX_R = 110;
 
 // Valores para el rango de tamaño de los jugadores
