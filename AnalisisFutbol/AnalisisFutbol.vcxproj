@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="FieldFilter.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerClassifier.cpp" />
@@ -21,6 +22,7 @@
   <ItemGroup>
     <ClInclude Include="config_file.h" />
     <ClInclude Include="EventManager.h" />
+    <ClInclude Include="FieldFilter.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="PlayerClassifier.h" />
     <ClInclude Include="TrackingObj.h" />

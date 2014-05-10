@@ -3,6 +3,7 @@
 #include "TrackingObj.h"
 #include "GUI.h"
 #include "EventManager.h"
+#include "FieldFilter.h"
 
 /* FUNCIÓN DE ENTRADA AL PROGRAMA */
 int main(int argc, char* argv[]) {
@@ -25,32 +26,13 @@ int main(int argc, char* argv[]) {
 	while(VideoManager::nextFrame(&partido)) {
 
 		// Obtenemos de partido el umbral según los rangos definidos por B,G,R MIN y MAX
-		inRange(partido, Scalar(GUI::MIN_B, GUI::MIN_G, GUI::MIN_R), Scalar(GUI::MAX_B, GUI::MAX_G, GUI::MAX_R), umbral);
+		umbral = FieldFilter::discardField(partido);
 
 		// Queremos invertir el umbral para que los jugadores aparezcan en blanco
 		threshold(umbral, umbral, 0.5, 255, THRESH_BINARY_INV);
 
-		/*
-		vector<Vec4i> lineas;
-		// Localiza los bordes en una imagen
-		Canny(umbral, bordes, 1000, 1300, 3);
-		// Localiza líneas en imágenes binarias
-		HoughLinesP(bordes, lineas, 1, CV_PI/180, 50, 20, 50);
-
-		for( size_t i = 0; i < lineas.size(); i++ ) {
-			Vec4i l = lineas[i];
-			line( umbral, Point(l[0], l[1]), Point(l[2], l[3]), 0, 3, CV_AA);
-		}
-		*/
-
-		//rectangle(partido,Rect(Point(0,0),Size(GUI::MIN_BALL_SIZE,GUI::MIN_BALL_SIZE)),Scalar(71,71,71));
-		//rectangle(partido,Rect(Point(0,0),Size(GUI::MAX_BALL_SIZE,GUI::MAX_BALL_SIZE)),Scalar(71,71,71));
-
-		//rectangle(partido,Rect(Point(0,0),Size(GUI::MIN_WIDTH,GUI::MIN_HEIGH)),Scalar(71,71,71));
-		//rectangle(partido,Rect(Point(0,0),Size(GUI::MAX_WIDTH,GUI::MAX_HEIGH)),Scalar(71,71,71));
-
 		// Realizamos algunas operaciones morfológicas para mejorar el filtro
-		Mat morf,morfElement = getStructuringElement(MORPH_RECT, Size(3,3));
+		Mat morf,morfElement = getStructuringElement(MORPH_RECT, Size(5,5));
 		dilate(umbral,morf,morfElement);
 		morphologyEx(morf,morf,MORPH_CLOSE,morfElement);
 
@@ -78,6 +60,7 @@ int main(int argc, char* argv[]) {
 
 		pyrDown(partido, partido, Size(partido.cols/2, partido.rows/2));
 		imshow(VIDEO_W, partido);					// Mostramos la imagen original
+		//pyrDown(umbral, umbral, Size(umbral.cols/2, umbral.rows/2));
 		//imshow(THRESHOLD_W, umbral);				// Mostramos también el threshold
 
 		//while(waitKey()!=13);
