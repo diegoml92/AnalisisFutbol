@@ -27,9 +27,9 @@ int main(int argc, char* argv[]) {
 
 		// Obtenemos de partido el umbral según los rangos definidos por B,G,R MIN y MAX
 		umbral = FieldFilter::discardField(partido);
-
+		
 		// Queremos invertir el umbral para que los jugadores aparezcan en blanco
-		threshold(umbral, umbral, 0.5, 255, THRESH_BINARY_INV);
+		//threshold(umbral, umbral, 0.5, 255, THRESH_BINARY_INV);
 
 		// Realizamos algunas operaciones morfológicas para mejorar el filtro
 		Mat morf,morfElement = getStructuringElement(MORPH_RECT, Size(5,5));
@@ -65,5 +65,6 @@ int main(int argc, char* argv[]) {
 
 		//while(waitKey()!=13);
 		waitKey(1);									// No aparecerá la imagen si no utlizamos este waitKey
+		
 	}
 }
