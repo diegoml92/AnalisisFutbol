@@ -17,6 +17,7 @@ Mat FieldFilter::discardField(Mat partido) {
 	Mat morfElement = getStructuringElement(MORPH_RECT, Size(9,9));
 	morphologyEx(umbral,umbral,MORPH_CLOSE,morfElement);
 
+	//pyrDown(umbral,umbral,Size(umbral.cols/2,umbral.rows/2));
 	//imshow("Adaptive threshold", umbral);
 	//imshow("AdaptiveThresh0", umbral0);
 	//imshow("AdaptiveThresh1", umbral1);
