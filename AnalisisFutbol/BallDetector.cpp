@@ -41,7 +41,7 @@ void BallDetector::selectBall(Mat partido, Mat filtro) {
 			max = n;
 		}
 	}
-	if(max > 400)
+	if(max > 300)
 		foundBall = balls[k];
 	else
 		foundBall = Rect();

@@ -1,5 +1,4 @@
 #include "FieldFilter.h"
-#include "GUI.h"
 
 /* FILTRAMOS EL CAMPO PARA ENCONTRAR A LOS JUGADORES */
 Mat FieldFilter::discardField(Mat partido) {
