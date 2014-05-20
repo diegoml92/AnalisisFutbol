@@ -5,7 +5,7 @@ class VideoManager {
 
 private:
 
-	static VideoCapture video;	// Almacenará la captura de vídeo
+	static VideoCapture[] video;	// Almacenará la captura de vídeo
 
 public:
 
@@ -13,7 +13,7 @@ public:
 	static bool init();
 
 	/* OBTIENE EL SIGUIENTE FRAME DE VÍDEO */
-	static bool nextFrame(Mat* partido);
+	static bool nextFrame(Mat[] partido);
 
 };
 
