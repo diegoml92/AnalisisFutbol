@@ -10,8 +10,8 @@ int main(int argc, char* argv[]) {
 
 	VideoManager::init();					// Cargamos el vídeo que vamos a utilizar
 
-	Mat[] partido;							// Irá almacenando cada fotograma del vídeo de entrada
-	Mat[] umbral;							// Almacenará el umbral actualizado según los valores del filtro
+	Mat partido[N_VIDEOS];					// Irá almacenando cada fotograma del vídeo de entrada
+	Mat umbral[N_VIDEOS];					// Almacenará el umbral actualizado según los valores del filtro
 
 	namedWindow(GUI_W);						// Creamos la ventana para la interfaz
 	GUI::initGUI();							// Inicializamos la interfaz gráfica
