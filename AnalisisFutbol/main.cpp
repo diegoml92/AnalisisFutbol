@@ -51,13 +51,18 @@ int main(int argc, char* argv[]) {
                 destroyWindow(PLAYER_SIZE_W);
             }
             
-            pyrDown(partido[i], partido[i], Size(partido[i].cols/2, partido[i].rows/2));
-            imshow(VIDEO_W, partido[i]);					// Mostramos la imagen original
+            //pyrDown(partido[i], partido[i], Size(partido[i].cols/2, partido[i].rows/2));
+            //imshow(VIDEO_W, partido[i]);					// Mostramos la imagen original
             //pyrDown(umbral, umbral, Size(umbral.cols/2, umbral.rows/2));
             //imshow(THRESHOLD_W, umbral);				// Mostramos también el threshold
 
             //while(waitKey()!=13);
-            waitKey(1);									// No aparecerá la imagen si no utlizamos este waitKey
+            //waitKey(1);									// No aparecerá la imagen si no utlizamos este waitKey
         }
+        
+        Mat join = VideoManager::joinSequences(partido);
+        pyrDown(join, join, Size(join.cols/5, join.rows/5) );
+        imshow(VIDEO_W, join);
+        waitKey(1);
 	}
 }

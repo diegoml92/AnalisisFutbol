@@ -14,6 +14,9 @@ public:
 
 	/* OBTIENE EL SIGUIENTE FRAME DE VÕDEO */
 	static bool nextFrame(Mat partido[]);
+    
+    /* UNE LAS SECUENCIAS DE VÍDEO EN UNA SOLA IMAGEN */
+    static Mat joinSequences(Mat partido[]);
 
 };
 

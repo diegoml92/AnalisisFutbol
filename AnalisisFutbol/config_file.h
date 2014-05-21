@@ -7,6 +7,8 @@
 using namespace cv;
 
 #define N_VIDEOS 6
+#define VIDEO_WIDTH 1920
+#define VIDEO_HEIGHT 1080
 
 #define TRACKING false
 
@@ -19,7 +21,6 @@ using namespace cv;
 #define PLAYER_SIZE_W "Player size"
 #define BALL_SIZE_W "Ball size"
 
-//#define VIDEO_PATH "C:/Proyecto/Barca_Madrid.mp4"
 #define VIDEO_PATH_0 "C:/Proyecto/Sequences/Film Role-0 ID-0 T-2 m00s00-000-m00s00-185.avi"
 #define VIDEO_PATH_1 "C:/Proyecto/Sequences/Film Role-0 ID-1 T-2 m00s00-000-m00s00-185.avi"
 #define VIDEO_PATH_2 "C:/Proyecto/Sequences/Film Role-0 ID-2 T-2 m00s00-000-m00s00-185.avi"
