@@ -4,8 +4,13 @@ VideoCapture VideoManager::video [N_VIDEOS];
 
 /* INICILIZA LA CAPTURA DE VÍDEO */
 bool VideoManager::init() {
-	return video[0].open(VIDEO_PATH_0) && video[1].open(VIDEO_PATH_1) && video[2].open(VIDEO_PATH_2) &&
+	bool open = video[0].open(VIDEO_PATH_0) && video[1].open(VIDEO_PATH_1) && video[2].open(VIDEO_PATH_2) &&
             video[3].open(VIDEO_PATH_3) && video[4].open(VIDEO_PATH_4) && video[5].open(VIDEO_PATH_5);
+    for(int i=0;i<N_VIDEOS;i++) {
+        video[i].set(CV_CAP_PROP_FRAME_WIDTH, VIDEO_WIDTH);
+        video[i].set(CV_CAP_PROP_FRAME_HEIGHT, VIDEO_HEIGHT);
+    }
+    return open;
 }
 
 /* OBTIENE EL SIGUIENTE FRAME DE VÍDEO */

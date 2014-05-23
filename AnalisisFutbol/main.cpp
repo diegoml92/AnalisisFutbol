@@ -27,24 +27,24 @@ int main(int argc, char* argv[]) {
         for(int i=0; i<N_VIDEOS; i++) {
 
             // Filtramos el campo en el partido
-            umbral[i] = FieldFilter::discardField(partido[i]);
+            umbral[i] = FieldFilter::discardField(partido[i].clone());
 
             TrackingObj::trackObject(umbral[i],partido[i]);	// Hacemos el tracking de los elementos del campo
 
-            GUI::showGUI();								// Mostramos la interfaz
-            if(GUI::isActiveBallSize()) {				// Creamos las trackbars si corresponde
+            GUI::showGUI();                     // Mostramos la interfaz
+            if(GUI::isActiveBallSize()) {       // Creamos las trackbars si corresponde
                 namedWindow(BALL_SIZE_W);
                 GUI::ballSizeTrackbars();
             } else {
                 destroyWindow(BALL_SIZE_W);
             }
-            if(GUI::isActiveFieldThres()) {				// Creamos las trackbars si corresponde
+            if(GUI::isActiveFieldThres()) {     // Creamos las trackbars si corresponde
                 namedWindow(FIELD_FILTER_W);
                 GUI::fieldThresTrackbars();
             } else {
                 destroyWindow(FIELD_FILTER_W);
             }
-            if(GUI::isActivePlayerSize()) {				// Creamos las trackbars si corresponde
+            if(GUI::isActivePlayerSize()) {     // Creamos las trackbars si corresponde
                 namedWindow(PLAYER_SIZE_W);
                 GUI::playerSizeTrackbars();
             } else {
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
             //imshow(THRESHOLD_W, umbral);				// Mostramos también el threshold
 
             //while(waitKey()!=13);
-            //waitKey(1);									// No aparecerá la imagen si no utlizamos este waitKey
+            //waitKey(1);								// No aparecerá la imagen si no utlizamos este waitKey
         }
         
         Mat join = VideoManager::joinSequences(partido);
