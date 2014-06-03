@@ -61,7 +61,9 @@ int main(int argc, char* argv[]) {
         }
         
         Mat join = VideoManager::joinSequences(partido);
-        pyrDown(join, join, Size(join.cols/5, join.rows/5) );
+		pyrDown(join, join, Size(join.cols/2, join.rows/2));
+		pyrDown(join, join, Size(join.cols/2, join.rows/2));
+		pyrDown(join, join, Size(join.cols/2, join.rows/2));
         imshow(VIDEO_W, join);
         waitKey(1);
 	}
