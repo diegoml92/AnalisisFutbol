@@ -17,6 +17,7 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerClassifier.cpp" />
+    <ClCompile Include="StatsAnalyzer.cpp" />
     <ClCompile Include="TrackingObj.cpp" />
     <ClCompile Include="VideoManager.cpp" />
   </ItemGroup>
@@ -27,6 +28,7 @@
     <ClInclude Include="FieldFilter.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="PlayerClassifier.h" />
+    <ClInclude Include="StatsAnalyzer.h" />
     <ClInclude Include="TrackingObj.h" />
     <ClInclude Include="VideoManager.h" />
   </ItemGroup>

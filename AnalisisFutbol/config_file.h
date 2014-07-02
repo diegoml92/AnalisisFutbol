@@ -6,6 +6,11 @@
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
 using namespace cv;
 
+#define VIDEO_WIDTH 1920
+#define VIDEO_HEIGHT 1080
+
+#define ANALYZER_VIDEO_SIZE_RELATION 4
+
 #define TRACKING false
 
 #define MAX_RGB 255
