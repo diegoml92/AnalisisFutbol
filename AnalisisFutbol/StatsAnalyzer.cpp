@@ -1,10 +1,27 @@
 #include "StatsAnalyzer.h"
 
 Mat StatsAnalyzer::ballArea = Mat::zeros(VIDEO_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION, VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
+float StatsAnalyzer::ballDistance = 0;
+Point3i StatsAnalyzer::lastPoint(-1,-1,-1);
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 void StatsAnalyzer::addBallPosition(int x, int y) {
 	ballArea.at<int>(y/ANALYZER_VIDEO_SIZE_RELATION,x/ANALYZER_VIDEO_SIZE_RELATION)++;
+}
+
+/* INCREMENTA LA DISTANCIA RECORRIDA */
+void StatsAnalyzer::addBallDistance(int x, int y, int z) {
+	ballDistance += distance(Point3i(x,y,z));
+}
+
+/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
+float StatsAnalyzer::distance(Point3i p) {
+	float dist = 0;
+	if(lastPoint.x >= 0) {
+		dist = norm(p-lastPoint);
+	}
+	lastPoint = p;
+	return dist;
 }
 
 /* DEVUELVE LAS ESTADÍSTICAS DEL BALÓN */
@@ -50,7 +67,7 @@ Mat StatsAnalyzer::normalizeBallAreaStats() {
 	for(int i=0;i<ballArea.cols;i++) {
 		for(int j=0;j<ballArea.rows;j++) {
 			int val = ballArea.at<int>(j,i);
-			result.at<float>(j,i) = (val - min) / (max - min); // Siempre 0?
+			result.at<float>(j,i) = (val - min) / (max - min);
 		}
 	}
 	return result;
