@@ -21,12 +21,12 @@ using namespace cv;
 #define PLAYER_SIZE_W "Player size"
 #define BALL_SIZE_W "Ball size"
 
-#define VIDEO_PATH_0 "C:/Proyecto/Sequences/Film Role-0 ID-0 T-2 m00s00-000-m00s00-185.avi"
-#define VIDEO_PATH_1 "C:/Proyecto/Sequences/Film Role-0 ID-1 T-2 m00s00-000-m00s00-185.avi"
-#define VIDEO_PATH_2 "C:/Proyecto/Sequences/Film Role-0 ID-2 T-2 m00s00-000-m00s00-185.avi"
-#define VIDEO_PATH_3 "C:/Proyecto/Sequences/Film Role-0 ID-3 T-2 m00s00-000-m00s00-185.avi"
-#define VIDEO_PATH_4 "C:/Proyecto/Sequences/Film Role-0 ID-4 T-2 m00s00-000-m00s00-185.avi"
-#define VIDEO_PATH_5 "C:/Proyecto/Sequences/Film Role-0 ID-5 T-2 m00s00-000-m00s00-185.avi"
+#define VIDEO_PATH_0 "C:/Proyecto/Sequences/Seq0.avi"
+#define VIDEO_PATH_1 "C:/Proyecto/Sequences/Seq1.avi"
+#define VIDEO_PATH_2 "C:/Proyecto/Sequences/Seq2.avi"
+#define VIDEO_PATH_3 "C:/Proyecto/Sequences/Seq3.avi"
+#define VIDEO_PATH_4 "C:/Proyecto/Sequences/Seq4.avi"
+#define VIDEO_PATH_5 "C:/Proyecto/Sequences/Seq5.avi"
 
 #define BHATTACHARYYA_THRES 0.45
 
