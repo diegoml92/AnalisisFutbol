@@ -6,6 +6,6 @@ class FieldFilter {
 public:
 
 	/* FILTRAMOS EL CAMPO PARA ENCONTRAR A LOS JUGADORES */
-	static Mat discardField(Mat partido);
+	static Mat discardField(Mat partido, Mat bg);
 };
 

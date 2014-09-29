@@ -13,6 +13,13 @@ int main(int argc, char* argv[]) {
 	Mat partido[N_VIDEOS];					// Irá almacenando cada fotograma del vídeo de entrada
 	Mat umbral[N_VIDEOS];					// Almacenará el umbral actualizado según los valores del filtro
 
+	Mat bg[N_VIDEOS];						// Almacenará los backgrounds obtenidos de cada secuencia
+	for(int i=0; i<N_VIDEOS; i++) {
+		std::stringstream path;
+		path << "C:/Proyecto/Sequences/Seq" << i << "_bg.jpg";
+		bg[i] = imread(path.str());
+	}
+
 	namedWindow(GUI_W);						// Creamos la ventana para la interfaz
 	GUI::initGUI();							// Inicializamos la interfaz gráfica
 	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
@@ -27,7 +34,7 @@ int main(int argc, char* argv[]) {
         for(int i=0; i<N_VIDEOS; i++) {
 
             // Filtramos el campo en el partido
-            umbral[i] = FieldFilter::discardField(partido[i].clone());
+            umbral[i] = FieldFilter::discardField(partido[i].clone(), bg[i]);
 
             TrackingObj::trackObject(umbral[i],partido[i]);	// Hacemos el tracking de los elementos del campo
 
@@ -58,13 +65,17 @@ int main(int argc, char* argv[]) {
 
             //while(waitKey()!=13);
             //waitKey(1);								// No aparecerá la imagen si no utlizamos este waitKey
+
         }
-        
+
         Mat join = VideoManager::joinSequences(partido);
+
+		//pyrDown(join, join, Size(join.cols/2, join.rows/2));
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
-		pyrDown(join, join, Size(join.cols/2, join.rows/2));
+
         imshow(VIDEO_W, join);
         waitKey(1);
+
 	}
 }
