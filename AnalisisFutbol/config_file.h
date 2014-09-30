@@ -35,6 +35,8 @@ using namespace cv;
 #define BG_PATH_4 "C:/Proyecto/Sequences/Seq4_bg.jpg"
 #define BG_PATH_5 "C:/Proyecto/Sequences/Seq5_bg.jpg"
 
+#define FIELD2D_PATH "C:/Proyecto/soccer_field.jpg"
+
 #define BHATTACHARYYA_THRES 0.45
 
 #define BUTTON_WIDTH 60

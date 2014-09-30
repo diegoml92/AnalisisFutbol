@@ -6,6 +6,6 @@ class TrackingObj {
 public:
 
 	/* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
-	static void trackObject(Mat filtro, Mat &partido);
+	static void trackObject(Mat filtro, Mat &partido, int nVideo, Mat paint);
 
 };

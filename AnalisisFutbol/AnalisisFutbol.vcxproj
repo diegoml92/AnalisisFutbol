@@ -14,6 +14,7 @@
     <ClCompile Include="BallDetector.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="FieldFilter.cpp" />
+    <ClCompile Include="From3DTo2D.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerClassifier.cpp" />
@@ -25,6 +26,7 @@
     <ClInclude Include="config_file.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="FieldFilter.h" />
+    <ClInclude Include="From3DTo2D.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="PlayerClassifier.h" />
     <ClInclude Include="TrackingObj.h" />

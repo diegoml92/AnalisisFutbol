@@ -4,6 +4,7 @@
 #include "GUI.h"
 #include "EventManager.h"
 #include "FieldFilter.h"
+#include "From3DTo2D.h"
 
 /* FUNCIÓN DE ENTRADA AL PROGRAMA */
 int main(int argc, char* argv[]) {
@@ -24,19 +25,30 @@ int main(int argc, char* argv[]) {
 	GUI::initGUI();							// Inicializamos la interfaz gráfica
 	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
 
+	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
+
 	/*	
 	*	Bucle en el que vamos pasando los frames del video con la función nextFrame,
     *   que coge el frame actual del video y lo guarda en la matriz partido. Cuando nextFrame
 	*	devuelva false, el vídeo abrá acabado.
 	*/
 	while(VideoManager::nextFrame(partido)) {
+
+		Mat paint;
+		From3DTo2D::field2D.copyTo(paint);
         
         for(int i=0; i<N_VIDEOS; i++) {
+
+			long a = getTickCount();
 
             // Filtramos el campo en el partido
             umbral[i] = FieldFilter::discardField(partido[i].clone(), bg[i]);
 
-            TrackingObj::trackObject(umbral[i],partido[i]);	// Hacemos el tracking de los elementos del campo
+			long b = getTickCount();
+
+            TrackingObj::trackObject(umbral[i],partido[i], i, paint);	// Hacemos el tracking de los elementos del campo
+
+			long c = getTickCount();
 
             GUI::showGUI();                     // Mostramos la interfaz
             if(GUI::isActiveBallSize()) {       // Creamos las trackbars si corresponde
@@ -57,6 +69,8 @@ int main(int argc, char* argv[]) {
             } else {
                 destroyWindow(PLAYER_SIZE_W);
             }
+
+			long d = getTickCount();
             
             //pyrDown(partido[i], partido[i], Size(partido[i].cols/2, partido[i].rows/2));
             //imshow(VIDEO_W, partido[i]);					// Mostramos la imagen original
@@ -66,13 +80,34 @@ int main(int argc, char* argv[]) {
             //while(waitKey()!=13);
             //waitKey(1);								// No aparecerá la imagen si no utlizamos este waitKey
 
+			double b_a, c_b, d_c;
+			b_a = (b-a) / getTickFrequency();
+			c_b = (c-b) / getTickFrequency();
+			d_c = (d-c) / getTickFrequency();
+
+			std::cout << "Threshold " << i << ": " << b_a << std::endl;
+			std::cout << "Detection " << i << ": " << c_b << std::endl;
+			std::cout << "GUI       " << i << ": " << d_c << std::endl;
+
         }
+        
+		long a = getTickCount();
 
         Mat join = VideoManager::joinSequences(partido);
+
+		long b = getTickCount();
 
 		//pyrDown(join, join, Size(join.cols/2, join.rows/2));
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
+
+		long c = getTickCount();
+
+		double b_a, c_b;
+		b_a = (b-a) / getTickFrequency();
+		c_b = (c-b) / getTickFrequency();
+		std::cout << "Join " << ": " << b_a << std::endl;
+		std::cout << "Pyr  " << ": " << c_b << std::endl;
 
         imshow(VIDEO_W, join);
         waitKey(1);

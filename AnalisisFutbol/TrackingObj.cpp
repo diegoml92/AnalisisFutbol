@@ -2,9 +2,10 @@
 #include "TrackingObj.h"
 #include "BallDetector.h"
 #include "PlayerClassifier.h"
+#include "From3DTo2D.h"
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
-void TrackingObj::trackObject(Mat filtro, Mat &partido) {
+void TrackingObj::trackObject(Mat filtro, Mat &partido, int nVideo, Mat paint) {
 	Mat temp;		// Matriz auxiliar en la que buscaremos los contornos
 	filtro.copyTo(temp);
 	vector<vector<Point>> contours;
@@ -18,6 +19,7 @@ void TrackingObj::trackObject(Mat filtro, Mat &partido) {
 			Rect elem = boundingRect(Mat(contours[i]));					// Creamos el boundingBox
 			if(PlayerClassifier::isPlayerSize(elem)) {					// Si cumple las restricciones de tamaño...
 				PlayerClassifier::addPlayer(partido, filtro, elem);		// ...añade el jugador y lo clasifica
+				From3DTo2D::paint2DPositions(elem, nVideo, paint);		// Representamos las posiciones en el plano 2D
 			} else if(BallDetector::isBallSize(elem)) {					// Si tiene tamaño y forma de balón...
 				BallDetector::addBall(elem);							// ...se añade
 			}
