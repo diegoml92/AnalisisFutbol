@@ -51,12 +51,12 @@ void BallDetector::selectBall(Mat partido, Mat filtro) {
 void BallDetector::drawBall(Mat partido) {
 	switch (GUI::ballBox()) {
 		case 1 : {
-			rectangle(partido,foundBall,Scalar(255,255,255),1);
+			rectangle(partido,foundBall,Scalar(COLOR_WHITE),1);
 			break;
 		}
 		case 2 : {
 			circle(partido,Point(foundBall.x + foundBall.width/2,
-					foundBall.y + foundBall.height/2), foundBall.height/2, Scalar(255,255,255),-1);
+					foundBall.y + foundBall.height/2), foundBall.height/2, Scalar(COLOR_WHITE),-1);
 			break;
 		}
 	}

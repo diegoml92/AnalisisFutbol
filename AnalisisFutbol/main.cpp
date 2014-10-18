@@ -8,22 +8,50 @@
 /* FUNCIÓN DE ENTRADA AL PROGRAMA */
 int main(int argc, char* argv[]) {
 
-	VideoManager::init();					// Cargamos el vídeo que vamos a utilizar
+	/*VideoManager::init();					// Cargamos el vídeo que vamos a utilizar
 
 	Mat partido;							// Irá almacenando cada fotograma del vídeo de entrada
 	Mat umbral;								// Almacenará el umbral actualizado según los valores del filtro
 	Mat bordes;								// Mostrará los contornos encontrados
-
+	*/
 	namedWindow(GUI_W);						// Creamos la ventana para la interfaz
+	namedWindow(SGUI_W);					// Creamos la ventana para la interfaz
+
 	GUI::initGUI();							// Inicializamos la interfaz gráfica
+	GUI::initStatsGUI();
 	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
+
+	while(1) {
+
+	GUI::showGUI();
+	GUI::showStatsGUI();
+
+	if (!GUI::isActiveIndividualMode())
+	{
+		if (GUI::isActiveComparativeMode())
+		{
+			GUI::showStatsWindow(0,1);
+		} else {
+			GUI::showStatsWindow(0,0);
+		}
+	} else {
+		if (GUI::isActiveComparativeMode())	
+		{
+			GUI::showStatsWindow(1,1);
+		} else {
+			GUI::showStatsWindow(1,0);
+		}
+	}
+
+	waitKey(1);
+	}
 
 	/*	
 	*	Bucle infinito en el que vamos pasando los frames del video con la función nextFrame,
 	*	que coge el frame actual del video y lo guarda en la matriz partido. Cuando nextFrame
 	*	devuelva false, el vídeo abrá acabado.
 	*/
-	while(VideoManager::nextFrame(&partido)) {
+	/*while(VideoManager::nextFrame(&partido)) {
 
 		// Obtenemos de partido el umbral según los rangos definidos por B,G,R MIN y MAX
 		umbral = FieldFilter::discardField(partido);
@@ -66,5 +94,5 @@ int main(int argc, char* argv[]) {
 		//while(waitKey()!=13);
 		waitKey(1);									// No aparecerá la imagen si no utlizamos este waitKey
 		
-	}
+	}*/
 }

@@ -32,7 +32,7 @@ Mat StatsAnalyzer::getBallStats() {
 		for(int j=0;j<normalized.rows;j++) {
 			float val = normalized.at<float>(j,i);
 			if(val < 0.1) {
-				stats.at<Vec3b>(j,i) = Vec3b(255,255,255);
+				stats.at<Vec3b>(j,i) = Vec3b(COLOR_WHITE);
 			} else if(val < 0.2) {
 				stats.at<Vec3b>(j,i) = Vec3b(255,255,0);
 			} else if(val < 0.3) {
