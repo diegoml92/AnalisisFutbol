@@ -27,4 +27,13 @@ public:
 
 	/* CALCULA LAS ESTADÍSTICAS */
 	void calculateStats();
+
+	/* DEVUELVE LA MATRIZ DE POSICIONES ACUMULADAS */
+	Mat getArea();
+
+	/* DEVUELVE LAS ESTADÍSITCAS DEL ÁREA RECORRIDA */
+	Mat getAreaStats();
+
+	/* DEVUELVE LA DISTANCIA RECORRIDA */
+	float getDistance();
 };

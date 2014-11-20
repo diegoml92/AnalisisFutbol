@@ -25,3 +25,18 @@ void Ball::addHeight(float h) {
 void Ball::calculateStats() {
 	Ball::area_stats = StatsAnalyzer::getAreaStats(Ball::area);
 }
+
+/* DEVUELVE LA MATRIZ DE POSICIONES ACUMULADAS */
+Mat Ball::getArea() {
+	return Ball::area;
+}
+
+/* DEVUELVE LAS ESTADÍSITCAS DEL ÁREA RECORRIDA */
+Mat Ball::getAreaStats() {
+	return Ball::area_stats;
+}
+
+/* DEVUELVE LA DISTANCIA RECORRIDA */
+float Ball::getDistance() {
+	return Ball::distance;
+}

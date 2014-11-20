@@ -1,9 +1,5 @@
 #include "StatsAnalyzer.h"
 
-//Mat StatsAnalyzer::ballArea = Mat::zeros(VIDEO_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION, VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
-//float StatsAnalyzer::ballDistance = 0;
-//Point3i StatsAnalyzer::lastPoint(-1,-1,-1);
-
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 void StatsAnalyzer::addPosition(Mat m, int x, int y) {
 	m.at<int>(y/ANALYZER_VIDEO_SIZE_RELATION,x/ANALYZER_VIDEO_SIZE_RELATION)++;
@@ -37,7 +33,7 @@ void StatsAnalyzer::addHeight(float h, float height[]) {
 	}
 }
 
-/* DEVUELVE LAS ESTADÍSTICAS DEL BALÓN */
+/* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
 Mat StatsAnalyzer::getAreaStats(Mat m) {
 	Mat normalized = normalizeAreaStats(m);
 	Mat stats(normalized.rows, normalized.cols, CV_8UC3);

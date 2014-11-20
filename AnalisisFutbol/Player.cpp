@@ -24,3 +24,18 @@ void Player::addDistance(Point2i actualPoint) {
 void Player::calculateStats() {
 	Player::area_stats = StatsAnalyzer::getAreaStats(Player::area);
 }
+
+/* DEVUELVE LA MATRIZ DE POSICIONES ACUMULADAS */
+Mat Player::getArea() {
+	return Player::area;
+}
+
+/* DEVUELVE LAS ESTADÍSITCAS DEL ÁREA RECORRIDA */
+Mat Player::getAreaStats() {
+	return Player::area_stats;
+}
+
+/* DEVUELVE LA DISTANCIA RECORRIDA */
+float Player::getDistance() {
+	return Player::distance;
+}

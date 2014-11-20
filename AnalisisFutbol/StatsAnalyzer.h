@@ -27,7 +27,7 @@ public:
 	/* AÑADE EL VALOR DE LA ALTURA */
 	static void addHeight(float h, float height[]);
 
-	/* DEVUELVE LAS ESTADÍSTICAS DEL BALÓN */
+	/* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
 	static Mat getAreaStats(Mat m);
 
 };
