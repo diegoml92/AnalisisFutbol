@@ -1,32 +1,45 @@
 #include "StatsAnalyzer.h"
 
-Mat StatsAnalyzer::ballArea = Mat::zeros(VIDEO_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION, VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
-float StatsAnalyzer::ballDistance = 0;
-Point3i StatsAnalyzer::lastPoint(-1,-1,-1);
+//Mat StatsAnalyzer::ballArea = Mat::zeros(VIDEO_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION, VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
+//float StatsAnalyzer::ballDistance = 0;
+//Point3i StatsAnalyzer::lastPoint(-1,-1,-1);
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
-void StatsAnalyzer::addBallPosition(int x, int y) {
-	ballArea.at<int>(y/ANALYZER_VIDEO_SIZE_RELATION,x/ANALYZER_VIDEO_SIZE_RELATION)++;
+void StatsAnalyzer::addPosition(Mat m, int x, int y) {
+	m.at<int>(y/ANALYZER_VIDEO_SIZE_RELATION,x/ANALYZER_VIDEO_SIZE_RELATION)++;
 }
 
 /* INCREMENTA LA DISTANCIA RECORRIDA */
-void StatsAnalyzer::addBallDistance(int x, int y, int z) {
-	ballDistance += distance(Point3i(x,y,z));
+void StatsAnalyzer::addDistance(float dist, Point3i actualPoint, Point3i lastPoint) {
+	dist += distance(actualPoint, lastPoint);
+}
+void StatsAnalyzer::addDistance(float dist, Point2i actualPoint, Point2i lastPoint) {
+	addDistance(dist,Point3i(actualPoint.x, actualPoint.y, 0),Point3i(lastPoint.x, lastPoint.y, 0));
 }
 
 /* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
-float StatsAnalyzer::distance(Point3i p) {
+float StatsAnalyzer::distance(Point3i actualPoint, Point3i lastPoint) {
 	float dist = 0;
 	if(lastPoint.x >= 0) {
-		dist = norm(p-lastPoint);
+		dist = norm(actualPoint-lastPoint);
 	}
-	lastPoint = p;
+	lastPoint = actualPoint;
 	return dist;
 }
 
+/* AÑADE EL VALOR DE LA ALTURA */
+void StatsAnalyzer::addHeight(float h, float height[]) {
+	int hh = h;
+	if(hh < MAX_BALL_HEIGHT) {
+		height[hh]++;
+	} else {
+		height[MAX_BALL_HEIGHT-1]++;
+	}
+}
+
 /* DEVUELVE LAS ESTADÍSTICAS DEL BALÓN */
-Mat StatsAnalyzer::getBallStats() {
-	Mat normalized = normalizeBallAreaStats();
+Mat StatsAnalyzer::getAreaStats(Mat m) {
+	Mat normalized = normalizeAreaStats(m);
 	Mat stats(normalized.rows, normalized.cols, CV_8UC3);
 	for(int i=0;i<normalized.cols;i++) {
 		for(int j=0;j<normalized.rows;j++) {
@@ -58,15 +71,15 @@ Mat StatsAnalyzer::getBallStats() {
 }
 
 /* NORMALIZA LOS VALORES DE LA MATRIZ ENTRE 0 Y 1 */
-Mat StatsAnalyzer::normalizeBallAreaStats() {
-	Mat result(ballArea.rows, ballArea.cols, CV_32SC1);
+Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
+	Mat result(m.rows, m.cols, CV_32SC1);
 	double min, max;
 	Point pMin, pMax;
-	minMaxLoc(ballArea, &min, &max, &pMin, &pMax);
+	minMaxLoc(m, &min, &max, &pMin, &pMax);
 
-	for(int i=0;i<ballArea.cols;i++) {
-		for(int j=0;j<ballArea.rows;j++) {
-			int val = ballArea.at<int>(j,i);
+	for(int i=0;i<m.cols;i++) {
+		for(int j=0;j<m.rows;j++) {
+			int val = m.at<int>(j,i);
 			result.at<float>(j,i) = (val - min) / (max - min);
 		}
 	}

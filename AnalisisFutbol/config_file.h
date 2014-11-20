@@ -9,11 +9,12 @@ using namespace cv;
 #define VIDEO_WIDTH 1920
 #define VIDEO_HEIGHT 1080
 
-#define ANALYZER_VIDEO_SIZE_RELATION 4
+#define ANALYZER_VIDEO_SIZE_RELATION 8
 
 #define TRACKING false
 
 #define MAX_RGB 255
+#define MAX_BALL_HEIGHT 15
 
 #define THRESHOLD_W "Imagen filtrada"
 #define VIDEO_W "Imagen original"

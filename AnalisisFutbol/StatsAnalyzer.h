@@ -4,31 +4,31 @@ class StatsAnalyzer
 {
 private:
 
-	/* ALMACENA TODAS LAS POSICIONES DE LA PELOTA */
-	static Mat ballArea;
-
-	/* ALMACENA LA DISTANCIA RECORRIDA POR LA PELOTA */
-	static float ballDistance;
-
-	/* GUARDA EL ÚLTIMO PUNTO ENCONTRADO */
-	static Point3i lastPoint;
+	// ESTADÍSTICAS
+	static Mat ballAreaStats;
+	static vector<vector<Mat>> playerAreaStats;
+	static Mat teamAreaStats;
 
 	/* NORMALIZA LOS VALORES DE LA MATRIZ ENTRE 0 Y 1 */
-	static Mat normalizeBallAreaStats();
+	static Mat normalizeAreaStats(Mat m);
 
 	/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
-	static float distance(Point3i p);
+	static float distance(Point3i actualPoint, Point3i lastPoint);
 
 public:
 
 	/* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
-	static void addBallPosition(int x, int y);
+	static void addPosition(Mat m, int x, int y);
 
 	/* INCREMENTA LA DISTANCIA RECORRIDA */
-	static void addBallDistance(int x, int y, int z);
+	static void addDistance(float distance, Point2i actualPoint, Point2i lastPoint);
+	static void addDistance(float distance, Point3i actualPoint, Point3i lastPoint);
+
+	/* AÑADE EL VALOR DE LA ALTURA */
+	static void addHeight(float h, float height[]);
 
 	/* DEVUELVE LAS ESTADÍSTICAS DEL BALÓN */
-	static Mat getBallStats();
+	static Mat getAreaStats(Mat m);
 
 };
 
