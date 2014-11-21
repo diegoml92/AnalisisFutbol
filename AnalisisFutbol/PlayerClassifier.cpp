@@ -78,7 +78,7 @@ void PlayerClassifier::findAndDraw(Rect rect, Mat partido) {
 			break;
 		}
 		case 2 : {
-			rectangle(partido,rect,Scalar(0,0,0),2,8);
+			rectangle(partido,rect,Scalar(COLOR_BLACK),2,8);
 			break;
 		}
 	}
@@ -129,11 +129,11 @@ void PlayerClassifier::drawTeams(Mat partido) {
 	for(int i=0;i<clasif.size();i++) {
 		for(int j=0;j<clasif[i].size();j++) {
 			if(i==0) {
-				putText(partido,"Equipo1",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
+				putText(partido,"Equipo1",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(COLOR_WHITE));
 			} else if(i==1) {
-				putText(partido,"Equipo2",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
+				putText(partido,"Equipo2",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(COLOR_WHITE));
 			} else {
-				putText(partido,"Otros",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(255,255,255));
+				putText(partido,"Otros",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(COLOR_WHITE));
 			}
 		}
 	}

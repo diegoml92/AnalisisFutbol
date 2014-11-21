@@ -10,13 +10,18 @@ using namespace cv;
 #define VIDEO_WIDTH 1920
 #define VIDEO_HEIGHT 1080
 
+#define ANALYZER_VIDEO_SIZE_RELATION 8
+
 #define TRACKING false
 
 #define MAX_RGB 255
+#define MAX_BALL_HEIGHT 15
 
 #define THRESHOLD_W "Imagen filtrada"
 #define VIDEO_W "Imagen original"
 #define GUI_W "Panel de control"
+#define SGUI_W "Panel de Estadísticas"
+#define STATS_W "Estadísticas"
 #define FIELD_FILTER_W "Filtro del campo"
 #define PLAYER_SIZE_W "Player size"
 #define BALL_SIZE_W "Ball size"
@@ -56,6 +61,14 @@ using namespace cv;
 #define R_BUTTON_VERT_GROUP_SHIFT 80
 #define N_RBUTTON_GROUPS 3
 #define N_RBUTTONS 3
+#define N_RBUTTON_SGROUPS 2
+
+#define N_PLAYERS 11
+
+#define GUI_COLOR 250,175,0
+#define GUI_AUX_COLOR 235,220,155
+#define COLOR_WHITE 255,255,255
+#define COLOR_BLACK 0,0,0
 
 
 

@@ -11,24 +11,32 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Ball.cpp" />
     <ClCompile Include="BallDetector.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="FieldFilter.cpp" />
     <ClCompile Include="From3DTo2D.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerClassifier.cpp" />
+    <ClCompile Include="StatsAnalyzer.cpp" />
+    <ClCompile Include="Team.cpp" />
     <ClCompile Include="TrackingObj.cpp" />
     <ClCompile Include="VideoManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ball.h" />
     <ClInclude Include="BallDetector.h" />
     <ClInclude Include="config_file.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="FieldFilter.h" />
     <ClInclude Include="From3DTo2D.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerClassifier.h" />
+    <ClInclude Include="StatsAnalyzer.h" />
+    <ClInclude Include="Team.h" />
     <ClInclude Include="TrackingObj.h" />
     <ClInclude Include="VideoManager.h" />
   </ItemGroup>
