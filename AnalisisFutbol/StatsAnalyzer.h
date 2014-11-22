@@ -30,5 +30,8 @@ public:
 	/* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
 	static Mat getAreaStats(Mat m);
 
+	/* CALCULA TODAS LAS ESTADÍSTICAS */
+	static void calculateAllStats();
+
 };
 

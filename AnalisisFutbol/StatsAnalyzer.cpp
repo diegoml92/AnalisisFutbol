@@ -81,3 +81,12 @@ Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
 	}
 	return result;
 }
+
+/* CALCULA TODAS LAS ESTADÍSTICAS */
+void StatsAnalyzer::calculateAllStats() {
+	/*for (vector<Team>::iterator it = g_teams.begin(); it != g_teams.end(); it++) {
+		Team t = *it;
+		t.calculateStats();
+	}
+	g_ball.calculateStats();*/
+}

@@ -5,6 +5,7 @@
 #include "EventManager.h"
 #include "FieldFilter.h"
 #include "From3DTo2D.h"
+#include "StatsAnalyzer.h"
 
 /* FUNCIÓN DE ENTRADA AL PROGRAMA */
 int main(int argc, char* argv[]) {
@@ -84,4 +85,31 @@ int main(int argc, char* argv[]) {
         waitKey(1);
 
 	}
+
+	StatsAnalyzer::calculateAllStats();
+
+	namedWindow(SGUI_W); // Creamos la ventana para la interfaz
+	GUI::initStatsGUI();
+
+	while(1) {
+		GUI::showStatsGUI();
+		if (!GUI::isActiveIndividualMode())
+		{
+			if (GUI::isActiveComparativeMode())
+			{
+				GUI::showStatsWindow(0,1);
+			} else {
+				GUI::showStatsWindow(0,0);
+			}
+		} else {
+			if (GUI::isActiveComparativeMode())
+			{
+				GUI::showStatsWindow(1,1);
+			} else {
+				GUI::showStatsWindow(1,0);
+			}
+		}
+		waitKey(1);
+	}
+
 }
