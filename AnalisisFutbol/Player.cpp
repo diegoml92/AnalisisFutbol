@@ -6,7 +6,15 @@ vector<int> Player::id;
 /* CONSTRUCTOR */
 Player::Player(int team_id) {
 	Player::team_id = team_id;
+	Player::distance = 0;
 	Player::player_id = Player::id.at(team_id)++;
+	Player::lastPoint = Point2i(-1,-1);
+}
+
+/* CONSTRUCTOR AUXILIAR */
+Player::Player() {
+	Player::team_id = -1;
+	Player::player_id = -1;
 	Player::lastPoint = Point2i(-1,-1);
 }
 

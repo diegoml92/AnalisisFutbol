@@ -25,6 +25,9 @@ public:
 	/* CONSTRUCTOR */
 	Player(int team_id);
 
+	/* CONSTRUCTOR AUXILIAR */
+	Player();
+
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 	void addPosition(int x, int y);
 

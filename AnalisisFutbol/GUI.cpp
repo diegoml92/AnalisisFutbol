@@ -1,4 +1,5 @@
 #include "GUI.h"
+#include "GlobalStats.h"
 
 Mat GUI::interfaz;
 Mat GUI::statsInterface;
@@ -367,14 +368,16 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 			stats = Mat(Size(250,300), CV_8UC3);
 			stats.setTo(Scalar(GUI_COLOR));
 			line(stats,Point(0,25),Point(250,25),Scalar(GUI_AUX_COLOR),2);
-			std::stringstream ss;
-			ss << "Equipo " << team+1;
+			std::stringstream ssname;
+			ssname << "Equipo " << team+1;
+			std::stringstream ssdistance;
+			ssdistance << GlobalStats::teams[team].getDistance() << " m";
 			putText(stats,"Distancia:",Point(10,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"Posesión:",Point(10,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"Pases:",Point(10,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-			putText(stats,ss.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-			putText(stats,"xxxx m",Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+			putText(stats,ssname.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+			putText(stats,ssdistance.str(),Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"xx %",Point(100,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"xx",Point(100,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 		} else {					// 0,1
@@ -383,14 +386,16 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 			line(stats,Point(0,25),Point(250*2,25),Scalar(GUI_AUX_COLOR),2);
 			line(stats,Point(250,0),Point(250,300),Scalar(GUI_AUX_COLOR),1);
 			for(int i=0; i<2; i++) {
-				std::stringstream ss;
-				ss << "Equipo " << i+1;
+				std::stringstream ssname;
+				ssname << "Equipo " << i+1;
+				std::stringstream ssdistance;
+				ssdistance << GlobalStats::teams[i].getDistance() << " m";
 				putText(stats,"Distancia:",Point(10+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"Posesión:",Point(10+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"Pases:",Point(10+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-				putText(stats,ss.str(),Point(100+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,"xxxx m",Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssname.str(),Point(100+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssdistance.str(),Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"xx %",Point(100+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"xx",Point(100+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			}
@@ -407,21 +412,23 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 
 			std::stringstream ssteam;
 			ssteam << "Equipo " << team+1;
-			std::stringstream ss;
+			std::stringstream ssplayer;
 			if(player==0) {
-				ss << "Portero ";
+				ssplayer << "Portero ";
 			} else {
-				ss << "Jugador " << player;
+				ssplayer << "Jugador " << player;
 			}
+			std::stringstream ssdistance;
+			ssdistance << GlobalStats::teams[team].getPlayers()[player].getDistance() << " m";
 
 			putText(stats,"Nombre:",Point(10,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"Equipo:",Point(10,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"Distancia:",Point(10,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"Pases:",Point(10,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-			putText(stats,ss.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+			putText(stats,ssplayer.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,ssteam.str(),Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-			putText(stats,"xxxx m",Point(100,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+			putText(stats,ssdistance.str(),Point(100,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"xx",Point(100,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 			Mat aux = stats(Rect(5,160,240,136));
@@ -437,21 +444,23 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 
 				std::stringstream ssteam;
 				ssteam << "Equipo " << i+1;
-				std::stringstream ss;
+				std::stringstream ssplayer;
 				if(player==0) {
-					ss << "Portero ";
+					ssplayer << "Portero ";
 				} else {
-					ss << "Jugador " << player;
+					ssplayer << "Jugador " << player;
 				}
+				std::stringstream ssdistance;
+				ssdistance << GlobalStats::teams[i].getPlayers()[player].getDistance() << " m";
 
 				putText(stats,"Nombre:",Point(10+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"Equipo:",Point(10+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"Distancia:",Point(10+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"Pases:",Point(10+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-				putText(stats,ss.str(),Point(100+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssplayer.str(),Point(100+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,ssteam.str(),Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,"xxxx m",Point(100+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssdistance.str(),Point(100+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"xx",Point(100+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 				Mat aux = stats(Rect(5+250*i,160,240,136));

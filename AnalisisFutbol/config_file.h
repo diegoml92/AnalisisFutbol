@@ -10,6 +10,9 @@ using namespace cv;
 #define VIDEO_WIDTH 1920
 #define VIDEO_HEIGHT 1080
 
+#define N_PLAYERS 11
+#define N_TEAMS 2
+
 #define ANALYZER_VIDEO_SIZE_RELATION 8
 
 #define TRACKING false
@@ -62,8 +65,6 @@ using namespace cv;
 #define N_RBUTTON_GROUPS 3
 #define N_RBUTTONS 3
 #define N_RBUTTON_SGROUPS 2
-
-#define N_PLAYERS 11
 
 #define GUI_COLOR 250,175,0
 #define GUI_AUX_COLOR 235,220,155

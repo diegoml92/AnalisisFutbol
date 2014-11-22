@@ -16,6 +16,7 @@
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="FieldFilter.cpp" />
     <ClCompile Include="From3DTo2D.cpp" />
+    <ClCompile Include="GlobalStats.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="FieldFilter.h" />
     <ClInclude Include="From3DTo2D.h" />
+    <ClInclude Include="GlobalStats.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerClassifier.h" />

@@ -6,18 +6,27 @@ int Team::id = 0;
 /* CONSTRUCTOR */
 Team::Team(void) {
 	Team::team_id = id++;
+	Team::distance = 0;
 	Player::id.push_back(0);
+	for(int i=0; i<N_PLAYERS; i++) {
+		Team::players[i] = Player(Team::team_id);
+	}
 }
 
 /* CALCULA LAS ESTADÍSTICAS */
 void Team::calculateStats() {
-	for (vector<Player>::iterator it = Team::players.begin() ; it != Team::players.end(); ++it) {
-		Player p = *it;
+	for (int i=0; i<N_PLAYERS; i++) {
+		Player p = Team::players[i];
 		p.calculateStats();
 		Team::area += p.getArea();
 		Team::distance += p.getDistance();
 	}
 	Team::area_stats = StatsAnalyzer::getAreaStats(area);
+}
+
+/* DEVUELVE LA LISTA DE JUGADORES */
+Player* Team::getPlayers() {
+	return Team::players;
 }
 
 /* DEVUELVE LA MATRIZ DE POSICIONES ACUMULADAS */

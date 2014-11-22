@@ -16,7 +16,7 @@ private:
 	Mat area;
 
 	// JUGADORES
-	vector<Player> players;
+	Player players[N_PLAYERS];
 
 public:
 	/* CONSTRUCTOR */
@@ -24,6 +24,9 @@ public:
 
 	/* CALCULA LAS ESTADÍSTICAS */
 	void calculateStats();
+
+	/* DEVUELVE LA LISTA DE JUGADORES */
+	Player* getPlayers();
 
 	/* DEVUELVE LA MATRIZ DE POSICIONES ACUMULADAS */
 	Mat getArea();
