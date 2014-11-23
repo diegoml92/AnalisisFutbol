@@ -3,6 +3,12 @@
 
 /* CONSTRUCTOR */
 Ball::Ball(void) {
+	Ball::distance = 0;
+	for(int i=0; i<MAX_BALL_HEIGHT; i++) {
+		Ball::height[i] = 0;
+	}
+	Ball::area = Mat::zeros((VIDEO_HEIGHT+8)/ANALYZER_VIDEO_SIZE_RELATION,
+		                    VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
 	Ball::lastPoint = Point3i(-1,-1,-1);
 }
 

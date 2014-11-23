@@ -1,4 +1,7 @@
 #include "StatsAnalyzer.h"
+#include "GlobalStats.h"
+
+Mat soccer_field = imread("C:/Proyecto/soccer_field_small.jpg");
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 void StatsAnalyzer::addPosition(Mat m, int x, int y) {
@@ -36,12 +39,13 @@ void StatsAnalyzer::addHeight(float h, float height[]) {
 /* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
 Mat StatsAnalyzer::getAreaStats(Mat m) {
 	Mat normalized = normalizeAreaStats(m);
-	Mat stats(normalized.rows, normalized.cols, CV_8UC3);
+	Mat stats;
+	soccer_field.copyTo(stats);
 	for(int i=0;i<normalized.cols;i++) {
 		for(int j=0;j<normalized.rows;j++) {
 			float val = normalized.at<float>(j,i);
 			if(val < 0.1) {
-				stats.at<Vec3b>(j,i) = Vec3b(COLOR_WHITE);
+				// No hacemos nada
 			} else if(val < 0.2) {
 				stats.at<Vec3b>(j,i) = Vec3b(255,255,0);
 			} else if(val < 0.3) {
@@ -68,25 +72,27 @@ Mat StatsAnalyzer::getAreaStats(Mat m) {
 
 /* NORMALIZA LOS VALORES DE LA MATRIZ ENTRE 0 Y 1 */
 Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
-	Mat result(m.rows, m.cols, CV_32SC1);
+	Mat result (m.rows, m.cols, CV_32SC1);
 	double min, max;
 	Point pMin, pMax;
 	minMaxLoc(m, &min, &max, &pMin, &pMax);
 
-	for(int i=0;i<m.cols;i++) {
-		for(int j=0;j<m.rows;j++) {
-			int val = m.at<int>(j,i);
-			result.at<float>(j,i) = (val - min) / (max - min);
+	if(max>0) {
+		for(int i=0;i<m.cols;i++) {
+			for(int j=0;j<m.rows;j++) {
+				int val = m.at<int>(j,i);
+				result.at<float>(j,i) = (val - min) / (max - min);
+			}
 		}
 	}
+
 	return result;
 }
 
 /* CALCULA TODAS LAS ESTADÍSTICAS */
 void StatsAnalyzer::calculateAllStats() {
-	/*for (vector<Team>::iterator it = g_teams.begin(); it != g_teams.end(); it++) {
-		Team t = *it;
-		t.calculateStats();
+	for(int i=0; i<N_TEAMS; i++) {
+		GlobalStats::teams[i].calculateStats();
 	}
-	g_ball.calculateStats();*/
+	GlobalStats::ball.calculateStats();
 }

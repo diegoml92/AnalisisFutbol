@@ -6,8 +6,10 @@ vector<int> Player::id;
 /* CONSTRUCTOR */
 Player::Player(int team_id) {
 	Player::team_id = team_id;
-	Player::distance = 0;
 	Player::player_id = Player::id.at(team_id)++;
+	Player::distance = 0;
+	Player::area = Mat::zeros((VIDEO_HEIGHT+8)/ANALYZER_VIDEO_SIZE_RELATION,
+		                      VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
 	Player::lastPoint = Point2i(-1,-1);
 }
 

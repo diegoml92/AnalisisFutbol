@@ -18,8 +18,6 @@ vector<bool> GUI::activeCheckBoxesSts;
 
 int GUI::hover = -1;
 
-Mat soccer_field = imread("C:/Proyecto/soccer_field_small.jpg");
-
 Mat jugador = imread("C:/Proyecto/img/player.png");
 Mat balon = imread("C:/Proyecto/img/ball.png");
 Mat estela = imread("C:/Proyecto/img/ball_tail.png");
@@ -380,6 +378,10 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 			putText(stats,ssdistance.str(),Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"xx %",Point(100,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,"xx",Point(100,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+
+			Mat aux = stats(Rect(5,160,240,136));
+			GlobalStats::teams[team].getAreaStats().copyTo(aux);
+
 		} else {					// 0,1
 			stats = Mat(Size(250*2,300), CV_8UC3);
 			stats.setTo(Scalar(GUI_COLOR));
@@ -398,6 +400,9 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 				putText(stats,ssdistance.str(),Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"xx %",Point(100+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,"xx",Point(100+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+
+				Mat aux = stats(Rect(5+250*i,160,240,136));
+				GlobalStats::teams[i].getAreaStats().copyTo(aux);
 			}
 		}
 	} else {
@@ -432,7 +437,7 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 			putText(stats,"xx",Point(100,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 			Mat aux = stats(Rect(5,160,240,136));
-			soccer_field.copyTo(aux);
+			GlobalStats::teams[team].getPlayers()[player].getAreaStats().copyTo(aux);
 
 		} else {					// 1,1
 			stats = Mat(Size(250*2,300), CV_8UC3);
@@ -464,7 +469,7 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 				putText(stats,"xx",Point(100+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 				Mat aux = stats(Rect(5+250*i,160,240,136));
-				soccer_field.copyTo(aux);
+				GlobalStats::teams[i].getPlayers()[player].getAreaStats().copyTo(aux);
 			}
 		}
 	}
