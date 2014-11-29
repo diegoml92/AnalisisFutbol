@@ -23,7 +23,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	namedWindow(GUI_W);						// Creamos la ventana para la interfaz
-	namedWindow(SGUI_W);					// Creamos la ventana para la interfaz
 	GUI::initGUI();							// Inicializamos la interfaz gráfica
 	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
 
@@ -87,8 +86,12 @@ int main(int argc, char* argv[]) {
 
 	}
 
+	destroyAllWindows();
+
 	StatsAnalyzer::calculateAllStats();
 
+	namedWindow(SGUI_W);					// Creamos la ventana para la interfaz
+	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
 	GUI::initStatsGUI();
 
 	while(1) {
