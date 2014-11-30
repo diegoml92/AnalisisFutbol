@@ -17,10 +17,7 @@ public:
 	Ball(void);
 
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
-	void addPosition(int x, int y);
-
-	/* INCREMENTA LA DISTANCIA RECORRIDA */
-	void addDistance(Point3i actualPoint);
+	void addPosition(Point3i p);
 
 	/* ANADE EL VALOR DE LA ALTURA */
 	void addHeight(float h);

@@ -13,13 +13,10 @@ Ball::Ball(void) {
 }
 
 /* INCREMENTA EL VALOR EN LA POSICION INDICADA */
-void Ball::addPosition(int x, int y) {
-	StatsAnalyzer::addPosition(Ball::area, x, y);
-}
-
-/* INCREMENTA LA DISTANCIA RECORRIDA */
-void Ball::addDistance(Point3i actualPoint) {
-	StatsAnalyzer::addDistance(Ball::distance,actualPoint,Ball::lastPoint);
+void Ball::addPosition(Point3i p) {
+	StatsAnalyzer::addPosition(Ball::area, Point(p.x,p.y));
+	Ball::distance = StatsAnalyzer::addDistance(Ball::distance,p,Ball::lastPoint);
+	Ball::lastPoint = p;
 }
 
 /* ANADE EL VALOR DE LA ALTURA */

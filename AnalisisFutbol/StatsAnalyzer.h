@@ -18,11 +18,10 @@ private:
 public:
 
 	/* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
-	static void addPosition(Mat m, int x, int y);
+	static void addPosition(Mat m, Point2i p);
 
 	/* INCREMENTA LA DISTANCIA RECORRIDA */
-	static void addDistance(float distance, Point2i actualPoint, Point2i lastPoint);
-	static void addDistance(float distance, Point3i actualPoint, Point3i lastPoint);
+	static float addDistance(float distance, Point3i actualPoint, Point3i lastPoint);
 
 	/* AÑADE EL VALOR DE LA ALTURA */
 	static void addHeight(float h, float height[]);

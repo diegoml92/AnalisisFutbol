@@ -15,7 +15,7 @@ private:
 
 	// ATRIBUTOS AUXILIARES
 	Mat area;
-	Point2i lastPoint;
+	Point3i lastPoint;
 
 public:
 
@@ -29,10 +29,7 @@ public:
 	Player();
 
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
-	void addPosition(int x, int y);
-
-	/* INCREMENTA LA DISTANCIA RECORRIDA */
-	void addDistance(Point2i actualPoint);
+	void addPosition(Point3i p);
 
 	/* CALCULA LAS ESTADÍSTICAS */
 	void calculateStats();

@@ -4,25 +4,22 @@
 Mat soccer_field = imread("C:/Proyecto/soccer_field_small.jpg");
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
-void StatsAnalyzer::addPosition(Mat m, int x, int y) {
-	m.at<int>(y/ANALYZER_VIDEO_SIZE_RELATION,x/ANALYZER_VIDEO_SIZE_RELATION)++;
+void StatsAnalyzer::addPosition(Mat m, Point2i p) {
+	m.at<int>(p.y/ANALYZER_VIDEO_SIZE_RELATION,p.x/ANALYZER_VIDEO_SIZE_RELATION)++;
 }
 
 /* INCREMENTA LA DISTANCIA RECORRIDA */
-void StatsAnalyzer::addDistance(float dist, Point3i actualPoint, Point3i lastPoint) {
+float StatsAnalyzer::addDistance(float dist, Point3i actualPoint, Point3i lastPoint) {
 	dist += distance(actualPoint, lastPoint);
-}
-void StatsAnalyzer::addDistance(float dist, Point2i actualPoint, Point2i lastPoint) {
-	addDistance(dist,Point3i(actualPoint.x, actualPoint.y, 0),Point3i(lastPoint.x, lastPoint.y, 0));
+	return dist;
 }
 
 /* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
 float StatsAnalyzer::distance(Point3i actualPoint, Point3i lastPoint) {
 	float dist = 0;
 	if(lastPoint.x >= 0) {
-		dist = norm(actualPoint-lastPoint);
+		dist = norm(actualPoint-lastPoint)/10;
 	}
-	lastPoint = actualPoint;
 	return dist;
 }
 
