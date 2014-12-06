@@ -120,8 +120,8 @@ void PlayerClassifier::sortVectors() {
 
 /* DETERMINA SI CUMPLE EL TAMAÑO PROPIO DE UN JUGADOR */
 bool PlayerClassifier::isPlayerSize(Rect player) {
-	return player.height>GUI::MIN_HEIGH && player.height<GUI::MAX_HEIGH
-			&& player.width>GUI::MIN_WIDTH && player.width<GUI::MAX_WIDTH;
+	return player.height>MIN_HEIGH && player.height<MAX_HEIGH
+			&& player.width>MIN_WIDTH && player.width<MAX_WIDTH;
 }
 
 /* DIBUJA LOS JUGADORES EN EL VÍDEO */

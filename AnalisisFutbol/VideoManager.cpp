@@ -19,7 +19,7 @@ bool VideoManager::nextFrame(Mat partido[]) {
             video[3].read(partido[3]) && video[4].read(partido[4]) && video[5].read(partido[5]);
 }
 
-/* UNE LAS SECUENCIAS DE VÍDEO EN UNA SOLA IMAGEN */
+/* UNE LAS SECUENCIAS DE VÕDEO EN UNA SOLA IMAGEN */
 Mat VideoManager::joinSequences(Mat partido[]) {
     Mat dst = Mat::zeros(Size(VIDEO_WIDTH*3, VIDEO_HEIGHT*2+8), CV_8UC3);
     for(int i=0; i<N_VIDEOS; i++) {

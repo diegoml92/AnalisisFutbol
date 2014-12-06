@@ -16,10 +16,10 @@ void BallDetector::addBall(Rect ball) {
 
 /* DETERMINA SI CUMPLE EL TAMAÑO DEL BALÓN */
 bool BallDetector::isBallSize(Rect ball) {
-	return ball.width <= GUI::MAX_BALL_SIZE &&		// Si cumple las condiciones para ser el balón...
-			ball.width >= GUI::MIN_BALL_SIZE &&
-			ball.height <= GUI::MAX_BALL_SIZE &&
-			ball.height >= GUI::MIN_BALL_SIZE &&
+	return ball.width <= MAX_BALL_SIZE &&		// Si cumple las condiciones para ser el balón...
+			ball.width >= MIN_BALL_SIZE &&
+			ball.height <= MAX_BALL_SIZE &&
+			ball.height >= MIN_BALL_SIZE &&
 			isSquare(ball);
 }
 

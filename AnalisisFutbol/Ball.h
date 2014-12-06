@@ -3,7 +3,7 @@
 class Ball
 {
 private:
-	// ESTADISTICAS
+	// ESTADÍSTICAS
 	float distance;
 	float height[MAX_BALL_HEIGHT];
 	Mat area_stats;
@@ -16,10 +16,10 @@ public:
 	/* CONSTRUCTOR */
 	Ball(void);
 
-	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
+	/* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 	void addPosition(Point3i p);
 
-	/* ANADE EL VALOR DE LA ALTURA */
+	/* AÑADE EL VALOR DE LA ALTURA */
 	void addHeight(float h);
 
 	/* CALCULA LAS ESTADÍSTICAS */

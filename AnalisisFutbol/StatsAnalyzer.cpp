@@ -1,7 +1,7 @@
 #include "StatsAnalyzer.h"
 #include "GlobalStats.h"
 
-Mat soccer_field = imread("C:/Proyecto/soccer_field_small.jpg");
+Mat soccer_field = imread(FIELD2DSMALL_PATH);
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 void StatsAnalyzer::addPosition(Mat m, Point2i p) {

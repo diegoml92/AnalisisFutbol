@@ -1,8 +1,5 @@
 #include "config_file.h"
 
-#define DESP 335
-#define LONG 265
-
 /* SE ENCARGA DE LAS OPERACIONES DE PROYECCION */
 class From3DTo2D
 {
