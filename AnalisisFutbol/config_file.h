@@ -29,19 +29,9 @@ using namespace cv;
 #define PLAYER_SIZE_W "Player size"
 #define BALL_SIZE_W "Ball size"
 
-#define VIDEO_PATH_0 "C:/Proyecto/Sequences/Seq0.avi"
-#define VIDEO_PATH_1 "C:/Proyecto/Sequences/Seq1.avi"
-#define VIDEO_PATH_2 "C:/Proyecto/Sequences/Seq2.avi"
-#define VIDEO_PATH_3 "C:/Proyecto/Sequences/Seq3.avi"
-#define VIDEO_PATH_4 "C:/Proyecto/Sequences/Seq4.avi"
-#define VIDEO_PATH_5 "C:/Proyecto/Sequences/Seq5.avi"
-
-#define BG_PATH_0 "C:/Proyecto/Sequences/Seq0_bg.jpg"
-#define BG_PATH_1 "C:/Proyecto/Sequences/Seq1_bg.jpg"
-#define BG_PATH_2 "C:/Proyecto/Sequences/Seq2_bg.jpg"
-#define BG_PATH_3 "C:/Proyecto/Sequences/Seq3_bg.jpg"
-#define BG_PATH_4 "C:/Proyecto/Sequences/Seq4_bg.jpg"
-#define BG_PATH_5 "C:/Proyecto/Sequences/Seq5_bg.jpg"
+#define VIDEO_PATH "C:/Proyecto/Sequences/Seq"
+#define VIDEO_FORMAT ".avi"
+#define BG_FORMAT "_bg.jpg"
 
 #define FIELD2D_PATH "C:/Proyecto/soccer_field.jpg"
 #define FIELD2DSMALL_PATH "C:/Proyecto/soccer_field_small.jpg"

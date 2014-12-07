@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 	Mat bg[N_VIDEOS];						// Almacenará los backgrounds obtenidos de cada secuencia
 	for(int i=0; i<N_VIDEOS; i++) {
 		std::stringstream path;
-		path << "C:/Proyecto/Sequences/Seq" << i << "_bg.jpg";
+		path << VIDEO_PATH << i << BG_FORMAT;
 		bg[i] = imread(path.str());
 	}
 
