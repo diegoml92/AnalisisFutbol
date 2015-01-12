@@ -93,3 +93,8 @@ void StatsAnalyzer::calculateAllStats() {
 	}
 	GlobalStats::ball.calculateStats();
 }
+
+/* DETERMINA SI DOS PUNTOS SE CORRESPONDEN CON EL MISMO ELEMENTO */
+bool StatsAnalyzer::isSamePoint(Point p1, Point p2) {
+	return distance(Point3i(p1),Point3i(p2)) < 3;
+}

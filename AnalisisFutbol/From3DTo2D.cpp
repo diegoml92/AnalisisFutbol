@@ -71,9 +71,17 @@ void From3DTo2D::initProjectionMatrices() {
 	}
 }
 
-// Puede ser void, usando vector como I/O
 /* CONVERTIMOS COORDENADAS DEL MUNDO A POSICIONES 2D */
-vector<Point2f> From3DTo2D::get2DPosition(vector<Point2f> p, int nVideo) {
+Point2f From3DTo2D::get2DPosition(Point2f p, int nVideo) {
+	
+	vector<Point2f> pv;
+	pv.push_back(p);
+	perspectiveTransform(pv,pv,projectionMatrix[nVideo]);
+	return pv.at(0);
+}
+
+/* CONVERTIMOS COORDENADAS DEL MUNDO A POSICIONES 2D */
+vector<Point2f> From3DTo2D::get2DPositionVector(vector<Point2f> p, int nVideo) {
 	perspectiveTransform(p,p,projectionMatrix[nVideo]);
 	return p;
 }
@@ -122,5 +130,18 @@ void From3DTo2D::paint2DPositions(Rect player, int nVideo, Mat paint) {
 			break;
 	}
 	circle(paint,point_array.at(0),radius,color,thickness);
-	imshow("2D FIELD",paint);
+}
+
+/* PINTAMOS LAS POSICIONES EN EL PLANO 2D */
+void From3DTo2D::paint2DPositions2(Point player, int nVideo, Mat paint) {
+	// DEBUG!!
+	Scalar color;
+	int radius=3;
+	int thickness=1;
+	if(nVideo<=2) {
+		color = Scalar(COLOR_WHITE);
+	} else {
+		color = Scalar(COLOR_BLACK);
+	}
+	circle(paint,player,radius,color,thickness);
 }

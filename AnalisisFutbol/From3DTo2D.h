@@ -16,10 +16,16 @@ public :
 	static void initProjectionMatrices();
 
 	/* CONVERTIMOS COORDENADAS DEL MUNDO REAL A POSICIONES 2D */
-	static vector<Point2f> get2DPosition(vector<Point2f> p, int nVideo);
+	static Point2f get2DPosition(Point2f p, int nVideo);
+
+	/* CONVERTIMOS COORDENADAS DEL MUNDO REAL A POSICIONES 2D */
+	static vector<Point2f> get2DPositionVector(vector<Point2f> p, int nVideo);
 
 	/* PINTAMOS LAS POSICIONES EN EL PLANO 2D */
 	static void paint2DPositions(Rect player, int nVideo, Mat paint);
+
+	/* PINTAMOS LAS POSICIONES EN EL PLANO 2D */
+	static void paint2DPositions2(Point player, int nVideo, Mat paint);
 
 };
 

@@ -32,5 +32,8 @@ public:
 	/* CALCULA TODAS LAS ESTADÍSTICAS */
 	static void calculateAllStats();
 
+	/* DETERMINA SI DOS PUNTOS SE CORRESPONDEN CON EL MISMO ELEMENTO */
+	static bool isSamePoint(Point p1, Point p2);
+
 };
 

@@ -6,6 +6,7 @@
 #include "FieldFilter.h"
 #include "From3DTo2D.h"
 #include "StatsAnalyzer.h"
+#include "GlobalStats.h"
 
 /* FUNCIÓN DE ENTRADA AL PROGRAMA */
 int main(int argc, char* argv[]) {
@@ -45,9 +46,41 @@ int main(int argc, char* argv[]) {
 
             TrackingObj::trackObject(umbral[i],partido[i], i, paint);	// Hacemos el tracking de los elementos del campo
 
-            GUI::showGUI();                     // Mostramos la interfaz
+            GUI::showGUI();												// Mostramos la interfaz
 
         }
+
+		vector<Point> painting_vector;
+
+		for(int i=0; i<N_VIDEOS; i++) {
+			if(GlobalStats::locations[i].size()) {
+				GlobalStats::locations[i] = From3DTo2D::get2DPositionVector(GlobalStats::locations[i],i);
+			}
+		}
+
+		for(int i=0; i<N_VIDEOS; i++) {
+			for(vector<Point2f>::iterator it1=GlobalStats::locations[i].begin(); it1!=GlobalStats::locations[i].end(); ++it1) {
+				bool found = false;
+				for(int j=i+1; j<N_VIDEOS;j++) {
+					for(vector<Point2f>::iterator it2=GlobalStats::locations[j].begin(); it2!=GlobalStats::locations[j].end(); ++it2) {
+						if(StatsAnalyzer::isSamePoint(*it1, *it2)) {
+							//*it2 = xxxx::calculateFinalPos(*it1, *it2);
+							found = true;
+							break;
+						}
+					}
+				}
+				if(!found) {
+					From3DTo2D::paint2DPositions2(*it1,i,paint);
+				}
+			}
+		}
+
+		GlobalStats::clearLocations();
+
+		imshow("2D FIELD",paint);
+
+		//From3DTo2D::paint2DPositions_v(painting_vector,paint);
 
         Mat join = VideoManager::joinSequences(partido);
 
