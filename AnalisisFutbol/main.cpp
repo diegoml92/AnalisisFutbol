@@ -72,15 +72,16 @@ int main(int argc, char* argv[]) {
 				}
 				if(!found) {
 					From3DTo2D::paint2DPositions2(*it1,i,paint);
+					//asignar();
 				}
 			}
 		}
 
+		GlobalStats::addStats();
+
 		GlobalStats::clearLocations();
 
 		imshow("2D FIELD",paint);
-
-		//From3DTo2D::paint2DPositions_v(painting_vector,paint);
 
         Mat join = VideoManager::joinSequences(partido);
 

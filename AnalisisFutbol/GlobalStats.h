@@ -23,5 +23,8 @@ public:
 	/* VACÍA LOS VECTORES DE POSICIONES */
 	static void clearLocations();
 
+	/* AÑADE LAS ESTADÍSTICAS ACTUALES */
+	static void addStats();
+
 };
 
