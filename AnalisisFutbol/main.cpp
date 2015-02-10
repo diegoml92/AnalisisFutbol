@@ -15,7 +15,6 @@ int main(int argc, char* argv[]) {
 
 	Mat partido[N_VIDEOS];					// Irá almacenando cada fotograma del vídeo de entrada
 	Mat umbral[N_VIDEOS];					// Almacenará el umbral actualizado según los valores del filtro
-
 	Mat bg[N_VIDEOS];						// Almacenará los backgrounds obtenidos de cada secuencia
 	for(int i=0; i<N_VIDEOS; i++) {
 		std::stringstream path;
@@ -29,6 +28,8 @@ int main(int argc, char* argv[]) {
 
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 
+	vector<Rect> detectedPlayers;			// Jugadores detectados
+
 	/*	
 	*	Bucle en el que vamos pasando los frames del video con la función nextFrame,
     *   que coge el frame actual del video y lo guarda en la matriz partido. Cuando nextFrame
@@ -39,25 +40,25 @@ int main(int argc, char* argv[]) {
 		Mat paint;
 		From3DTo2D::field2D.copyTo(paint);
         
+		// Hacemos tracking del jugador
+		for(int i=0; i<detectedPlayers.size(); i++) {
+			TrackingObj::meanShift(detectedPlayers);
+		}
+
         for(int i=0; i<N_VIDEOS; i++) {
-
-            // Filtramos el campo en el partido
-            umbral[i] = FieldFilter::discardField(partido[i].clone(), bg[i]);
-
-            TrackingObj::trackObject(umbral[i],partido[i], i, paint);	// Hacemos el tracking de los elementos del campo
-
-            GUI::showGUI();												// Mostramos la interfaz
-
+            umbral[i] = FieldFilter::discardField(partido[i].clone(), bg[i]);	// Filtramos el campo en el partido
+            TrackingObj::objectDetection(umbral[i],partido[i], i, paint);		// Hacemos el tracking de los elementos del campo
+			GUI::showGUI();														// Mostramos la interfaz
         }
 
-		vector<Point> painting_vector;
-
+		// Obtención de posiciones 2D de jugadores detectados
 		for(int i=0; i<N_VIDEOS; i++) {
 			if(GlobalStats::locations[i].size()) {
 				GlobalStats::locations[i] = From3DTo2D::get2DPositionVector(GlobalStats::locations[i],i);
 			}
 		}
 
+		// Eliminación de duplicidades (elementos localizados en varias cámaras)
 		for(int i=0; i<N_VIDEOS; i++) {
 			for(vector<Point2f>::iterator it1=GlobalStats::locations[i].begin(); it1!=GlobalStats::locations[i].end(); ++it1) {
 				bool found = false;
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]) {
 						}
 					}
 				}
-				if(!found) {
+				if(!found && !alreadyDetected()) {
 					From3DTo2D::paint2DPositions2(*it1,i,paint);
 					//asignar();
 				}
@@ -86,6 +87,7 @@ int main(int argc, char* argv[]) {
         Mat join = VideoManager::joinSequences(partido);
 
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
+		
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
         imshow(VIDEO_W, join);
@@ -101,7 +103,7 @@ int main(int argc, char* argv[]) {
 	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
 	GUI::initStatsGUI();
 
-	while(1) {
+	while(waitKey(1)!=27) {
 		GUI::showStatsGUI();
 		if (!GUI::isActiveIndividualMode())
 		{
@@ -119,7 +121,6 @@ int main(int argc, char* argv[]) {
 				GUI::showStatsWindow(1,0);
 			}
 		}
-		waitKey(1);
 	}
 
 }

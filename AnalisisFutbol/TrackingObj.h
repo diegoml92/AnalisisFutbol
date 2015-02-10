@@ -5,7 +5,7 @@ class TrackingObj {
 
 public:
 
-	/* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
-	static void trackObject(Mat filtro, Mat &partido, int nVideo, Mat paint);
+	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
+	static void objectDetection(Mat filtro, Mat &partido, int nVideo, Mat paint);
 
 };

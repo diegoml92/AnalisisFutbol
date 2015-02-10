@@ -6,7 +6,7 @@
 #include "GlobalStats.h"
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
-void TrackingObj::trackObject(Mat filtro, Mat &partido, int nVideo, Mat paint) {
+void TrackingObj::objectDetection(Mat filtro, Mat &partido, int nVideo, Mat paint) {
 	Mat temp;		// Matriz auxiliar en la que buscaremos los contornos
 	filtro.copyTo(temp);
 	vector<vector<Point>> contours;
