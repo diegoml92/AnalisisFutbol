@@ -1,6 +1,7 @@
 #include "From3DTo2D.h"
 
-Mat From3DTo2D::projectionMatrix [N_VIDEOS] ;
+Mat From3DTo2D::projectionMatrix [N_VIDEOS];
+Mat From3DTo2D::inverseProjectionMatrix [N_VIDEOS];
 Mat From3DTo2D::field2D = imread(FIELD2D_PATH);
 
 /* INICIAMOS LAS MATRICES DE PROYECCION */
@@ -14,6 +15,7 @@ void From3DTo2D::initProjectionMatrices() {
 				Point2f model [4] = {Point2f(0, 0+LONG), Point2f(55, 0+LONG), Point2f(0, 183.2+LONG), Point2f(55, 183.2+LONG)};
 				// Calculamos la matriz de proyeccion 0
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
+				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
 
 				break;
 			}
@@ -24,6 +26,7 @@ void From3DTo2D::initProjectionMatrices() {
 				Point2f model [4] = {Point2f(0+600, 356-91.5), Point2f(91.5+600, 356+0), Point2f(0+600, 356+91.5), Point2f(600-91.5, 356+0)};
 				// Calculamos la matriz de proyeccion 1
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
+				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
 
 				break;
 			}
@@ -34,6 +37,7 @@ void From3DTo2D::initProjectionMatrices() {
 				Point2f model [4] = {Point2f(1200-55, 0+LONG), Point2f(1200, 0+LONG), Point2f(1200-55, 183.2+LONG), Point2f(1200, 183.2+LONG)};
 				// Calculamos la matriz de proyeccion 2
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
+				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
 
 				break;
 			}
@@ -44,6 +48,7 @@ void From3DTo2D::initProjectionMatrices() {
 				Point2f model [4] = {Point2f(0, 0+LONG), Point2f(55, 0+LONG), Point2f(0, 183.2+LONG), Point2f(55, 183.2+LONG)};
 				// Calculamos la matriz de proyeccion 3
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
+				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
 
 				break;
 			}
@@ -54,6 +59,7 @@ void From3DTo2D::initProjectionMatrices() {
 				Point2f model [4] = {Point2f(0+600, 356-91.5), Point2f(91.5+600, 356+0), Point2f(0+600, 356+91.5), Point2f(600-91.5, 356+0)};
 				// Calculamos la matriz de proyeccion 4
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
+				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
 
 				break;
 			}
@@ -64,6 +70,7 @@ void From3DTo2D::initProjectionMatrices() {
 				Point2f model [4] = {Point2f(1200-55, 0+LONG), Point2f(1200, 0+LONG), Point2f(1200-55, 183.2+LONG), Point2f(1200, 183.2+LONG)};
 				// Calculamos la matriz de proyeccion 5
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
+				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
 
 				break;
 			}
@@ -73,7 +80,6 @@ void From3DTo2D::initProjectionMatrices() {
 
 /* CONVERTIMOS COORDENADAS DEL MUNDO A POSICIONES 2D */
 Point2f From3DTo2D::get2DPosition(Point2f p, int nVideo) {
-	
 	vector<Point2f> pv;
 	pv.push_back(p);
 	perspectiveTransform(pv,pv,projectionMatrix[nVideo]);
@@ -84,6 +90,14 @@ Point2f From3DTo2D::get2DPosition(Point2f p, int nVideo) {
 vector<Point2f> From3DTo2D::get2DPositionVector(vector<Point2f> p, int nVideo) {
 	perspectiveTransform(p,p,projectionMatrix[nVideo]);
 	return p;
+}
+
+/* CONVERTIMOS COORDENADAS DEL MODELO AL COORDENADAS REALES */
+Point From3DTo2D::getRealPosition(Point modelPos, int nVideo) {
+	vector<Point2f> pv;
+        pv.push_back(p);
+        perspectiveTransform(pv,pv,inverseProjectionMatrix[nVideo]);
+        return pv.at(0);
 }
 
 /* PINTAMOS LAS POSICIONES EN EL PLANO 2D */

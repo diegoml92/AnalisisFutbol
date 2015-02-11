@@ -5,7 +5,9 @@ class From3DTo2D
 {
 
 private :
-	static Mat projectionMatrix[N_VIDEOS];	// Matrices de proteccion
+	static Mat projectionMatrix[N_VIDEOS];	// Matrices de proyección
+
+	static Mat inverseProjectionMatrix[N_VIDEOS]; // Matrices de proyección inversa
 
 public :
 
@@ -20,6 +22,9 @@ public :
 
 	/* CONVERTIMOS COORDENADAS DEL MUNDO REAL A POSICIONES 2D */
 	static vector<Point2f> get2DPositionVector(vector<Point2f> p, int nVideo);
+
+	/* CONVERTIMOS COORDENADAS DEL MODELO AL COORDENADAS REALES */
+	static Point getRealPosition(Point modelPos, int nVideo);
 
 	/* PINTAMOS LAS POSICIONES EN EL PLANO 2D */
 	static void paint2DPositions(Rect player, int nVideo, Mat paint);

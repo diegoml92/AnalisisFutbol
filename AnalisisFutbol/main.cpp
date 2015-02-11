@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 
-	vector<Rect> detectedPlayers;			// Jugadores detectados
+	vector<Point> detectedPlayers;			// Jugadores detectados
 
 	/*	
 	*	Bucle en el que vamos pasando los frames del video con la función nextFrame,
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
         
 		// Hacemos tracking del jugador
 		for(int i=0; i<detectedPlayers.size(); i++) {
-			TrackingObj::meanShift(detectedPlayers);
+			TrackingObj::trackPlayers(detectedPlayers.at(i));
 		}
 
         for(int i=0; i<N_VIDEOS; i++) {

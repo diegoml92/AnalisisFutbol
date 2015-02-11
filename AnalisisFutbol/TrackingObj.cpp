@@ -5,6 +5,52 @@
 #include "From3DTo2D.h"
 #include "GlobalStats.h"
 
+/* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
+void TrackingObj::tracking(Point pos) {
+	float rango[] = {0,255};
+        const float* ranges [] = {rango};
+        int channels [] = {0};
+        int histSize [] = {128};
+
+        Rect playerBox = Rect(Point(pos.x-PLAYER_WIDTH/2,pos.y-PLAYER_HEIGHT),PLAYER_WIDTH,PLAYER_HEIGHT);
+
+        Mat hsv_roi, roi = frame(playerBox);
+        cvtColor(roi,hsv_roi,COLOR_BGR2HSV);
+
+        Mat thres, diff = abs(frame-bg);
+        threshold(diff,thres,40,255,CV_THRESH_BINARY);
+        vector<Mat> planes;
+        split(thres,planes);
+        Mat filter;
+        filter = (planes[0] | planes[1] | planes[2]);
+
+        Mat mask = filter(playerBox);
+        Mat roi_hist;
+        Mat images [] = {hsv_roi};
+
+        calcHist(&hsv_roi,1,channels,mask,roi_hist,1,histSize,ranges);
+        normalize(roi_hist,roi_hist,0,255,NORM_MINMAX);
+
+	TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
+
+        //int team_id = 0;
+        //Player player(team_id);
+}
+
+
+/* TRACKING DE LOS JUGADORES */
+void TrackingObj::trackPlayers(Point detectedPlayer) {
+	bool detected;
+	Point newPos;
+	for(int i=0; i<N_VIDEOS; i++) {
+		Point realPos = From3DTo2D::getRealPosition(detectedPlayer,i);
+		if(isInRange(realPos)) {
+			tracking(realPos);
+			bool detected = true;
+		}
+	}
+}
+
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
 void TrackingObj::objectDetection(Mat filtro, Mat &partido, int nVideo, Mat paint) {
 	Mat temp;		// Matriz auxiliar en la que buscaremos los contornos
