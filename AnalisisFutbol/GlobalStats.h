@@ -13,6 +13,8 @@ public:
 	// Variables globales
 	static Team teams[N_TEAMS];
 	static Ball ball;
+	static vector<Point> detectedPlayers;
+	static vector<int> playersToDelete;
 
 	/*
 	* Vector que almacenará los elementos detectados
@@ -25,6 +27,9 @@ public:
 
 	/* AÑADE LAS ESTADÍSTICAS ACTUALES */
 	static void addStats();
+
+	/* AÑADE LAS ESTADÍSTICAS ACTUALES */
+	static bool alreadyDetected(Point p);
 
 };
 

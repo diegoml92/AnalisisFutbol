@@ -14,6 +14,9 @@ public :
 	
 	static Mat field2D;		// Representacion 2D del campo
 
+	/* DETERMINA SI EL PUNTO PERTENECE A UNA POSICIÓN VÁLIDA */
+	static bool isInRange(Point p);
+
 	/* INICIAMOS LAS MATRICES DE PROYECCION */
 	static void initProjectionMatrices();
 

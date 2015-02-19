@@ -1,6 +1,7 @@
 // Se incluyen las librerías necesarias para el proyecto
 #include <opencv2\highgui\highgui.hpp>
 #include <opencv2\imgproc\imgproc.hpp>
+#include <opencv2\video\tracking.hpp>
 #include <iostream>
 
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
@@ -17,6 +18,9 @@ using namespace cv;
 #define LONG 265
 
 #define ANALYZER_VIDEO_SIZE_RELATION 8
+
+#define SOCCER_FIELD_WIDTH 1200
+#define SOCCER_FIELD_HEIGHT 680
 
 #define MAX_BALL_HEIGHT 15
 
@@ -54,7 +58,10 @@ using namespace cv;
 #define COLOR_WHITE 255,255,255
 #define COLOR_BLACK 0,0,0
 
-#define MIN_WIDTH 30
+#define PLAYER_WIDTH 35
+#define PLAYER_HEIGHT 90
+
+#define MIN_WIDTH 20
 #define MAX_WIDTH 70
 #define MIN_HEIGH 65
 #define MAX_HEIGH 130

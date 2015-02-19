@@ -4,6 +4,11 @@ Mat From3DTo2D::projectionMatrix [N_VIDEOS];
 Mat From3DTo2D::inverseProjectionMatrix [N_VIDEOS];
 Mat From3DTo2D::field2D = imread(FIELD2D_PATH);
 
+/* DETERMINA SI EL PUNTO PERTENECE A UNA POSICIÓN VÁLIDA */
+bool From3DTo2D::isInRange(Point p) {
+	return p.x >= 0 && p.y >= 0 && p.x <= SOCCER_FIELD_WIDTH && p.y <= SOCCER_FIELD_HEIGHT;
+}
+
 /* INICIAMOS LAS MATRICES DE PROYECCION */
 void From3DTo2D::initProjectionMatrices() {
 	for(int i=0; i<N_VIDEOS; i++) {
@@ -95,7 +100,7 @@ vector<Point2f> From3DTo2D::get2DPositionVector(vector<Point2f> p, int nVideo) {
 /* CONVERTIMOS COORDENADAS DEL MODELO AL COORDENADAS REALES */
 Point From3DTo2D::getRealPosition(Point modelPos, int nVideo) {
 	vector<Point2f> pv;
-        pv.push_back(p);
+        pv.push_back(modelPos);
         perspectiveTransform(pv,pv,inverseProjectionMatrix[nVideo]);
         return pv.at(0);
 }
@@ -152,6 +157,9 @@ void From3DTo2D::paint2DPositions2(Point player, int nVideo, Mat paint) {
 	Scalar color;
 	int radius=3;
 	int thickness=1;
+	if(nVideo<=0) {
+		circle(paint,player,radius+2,Scalar(50,50,50),2);
+	}
 	if(nVideo<=2) {
 		color = Scalar(COLOR_WHITE);
 	} else {

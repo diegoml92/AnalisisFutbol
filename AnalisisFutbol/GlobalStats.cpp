@@ -1,9 +1,12 @@
 #include "GlobalStats.h"
+#include "StatsAnalyzer.h"
 
 // Iniciamos las variables
 Team GlobalStats::teams[N_TEAMS] = {Team(), Team()};
 Ball GlobalStats::ball = Ball();
 vector<Point2f> GlobalStats::locations [N_VIDEOS];
+vector<Point> GlobalStats::detectedPlayers;
+vector<int> GlobalStats::playersToDelete;
 
 /* VACÍA LOS VECTORES DE POSICIONES */
 void GlobalStats::clearLocations() {
@@ -23,4 +26,14 @@ void GlobalStats::addStats() {
 			//}
 		}
 	}
+}
+
+bool GlobalStats::alreadyDetected(Point p) {
+	vector<Point>::iterator it = detectedPlayers.begin();
+	bool found = false;
+	while(!found && it!=detectedPlayers.end()) {
+		found = StatsAnalyzer::isSamePoint(p,*it);
+		it++;
+	}
+	return found;
 }

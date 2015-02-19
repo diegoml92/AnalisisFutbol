@@ -2,11 +2,20 @@
 
 /* CLASE ENCARGADA DEL SEGUIMIENTO DE LOS ELEMENTOS DEL CAMPO */
 class TrackingObj {
+private:
+	/* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
+	static bool tracking(Mat frame, Mat bg, Point* pos);
+
+	/* COMPRUEBA SI EL PUNTO ESTÁ EN EL FOCO DE LA CÁMARA */
+	static bool isInFocus(Point p);
+
+	/* COMPRUEBA SI EL JUGADOR ESTÁN EN EL RANGO DENTRO DE LA IMAGEN */
+	static bool isInRange(Rect* r);
 
 public:
 
-        /* TRACKING DE LOS JUGADORES */
-        static void trackPlayers(vector<Rect> detectedPlayers);
+	/* TRACKING DE LOS JUGADORES */
+	static void trackPlayers(Mat frame[N_VIDEOS], Mat bg[N_VIDEOS], Point* detectedPlayers, int index);
 
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
 	static void objectDetection(Mat filtro, Mat &partido, int nVideo, Mat paint);

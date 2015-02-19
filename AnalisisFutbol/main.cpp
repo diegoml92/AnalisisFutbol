@@ -28,8 +28,6 @@ int main(int argc, char* argv[]) {
 
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 
-	vector<Point> detectedPlayers;			// Jugadores detectados
-
 	/*	
 	*	Bucle en el que vamos pasando los frames del video con la función nextFrame,
     *   que coge el frame actual del video y lo guarda en la matriz partido. Cuando nextFrame
@@ -41,8 +39,17 @@ int main(int argc, char* argv[]) {
 		From3DTo2D::field2D.copyTo(paint);
         
 		// Hacemos tracking del jugador
-		for(int i=0; i<detectedPlayers.size(); i++) {
-			TrackingObj::trackPlayers(detectedPlayers.at(i));
+		for(int i=0; i<GlobalStats::detectedPlayers.size(); i++) {
+			std::cout<<"2DPos Before: "<<GlobalStats::detectedPlayers.at(i)<<std::endl;
+			TrackingObj::trackPlayers(partido,bg,&GlobalStats::detectedPlayers.at(i),i);
+			std::cout<<"2DPos After : "<<GlobalStats::detectedPlayers.at(i)<<std::endl<<std::endl<<std::endl;
+			From3DTo2D::paint2DPositions2(GlobalStats::detectedPlayers.at(i),-1,paint);
+		}
+
+		for(int i=GlobalStats::playersToDelete.size()-1; i>=0; i--) {
+			int k = GlobalStats::playersToDelete.at(i);
+			GlobalStats::detectedPlayers.erase(GlobalStats::detectedPlayers.begin()+k-1);
+			GlobalStats::playersToDelete.pop_back();
 		}
 
         for(int i=0; i<N_VIDEOS; i++) {
@@ -71,9 +78,10 @@ int main(int argc, char* argv[]) {
 						}
 					}
 				}
-				if(!found && !alreadyDetected()) {
+				if(!found && From3DTo2D::isInRange(*it1) && !GlobalStats::alreadyDetected(*it1)) {
 					From3DTo2D::paint2DPositions2(*it1,i,paint);
 					//asignar();
+					GlobalStats::detectedPlayers.push_back(*it1);
 				}
 			}
 		}
