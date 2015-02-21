@@ -1,6 +1,5 @@
 #include "config_file.h"
 #include "Team.h"
-#include "Ball.h"
 
 /*
    CONTIENE LAS INSTANCIAS GLOBALES DE LOS JUGADORES
@@ -12,7 +11,6 @@ public:
 
 	// Variables globales
 	static Team teams[N_TEAMS];
-	static Ball ball;
 	static vector<Point> detectedPlayers;
 	static vector<int> playersToDelete;
 

@@ -91,7 +91,6 @@ void StatsAnalyzer::calculateAllStats() {
 	for(int i=0; i<N_TEAMS; i++) {
 		GlobalStats::teams[i].calculateStats();
 	}
-	GlobalStats::ball.calculateStats();
 }
 
 /* DETERMINA SI DOS PUNTOS SE CORRESPONDEN CON EL MISMO ELEMENTO */

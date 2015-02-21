@@ -3,7 +3,6 @@
 
 // Iniciamos las variables
 Team GlobalStats::teams[N_TEAMS] = {Team(), Team()};
-Ball GlobalStats::ball = Ball();
 vector<Point2f> GlobalStats::locations [N_VIDEOS];
 vector<Point> GlobalStats::detectedPlayers;
 vector<int> GlobalStats::playersToDelete;
