@@ -5,7 +5,6 @@ class StatsAnalyzer
 private:
 
 	// ESTADÍSTICAS
-	static Mat ballAreaStats;
 	static vector<vector<Mat>> playerAreaStats;
 	static Mat teamAreaStats;
 
