@@ -6,16 +6,7 @@ class EventManager {
 private:
 
 	/* TRATA LOS EVENTOS DEL RATÓN */
-	static void myMouseCallback(int ev, int x, int y, int flags, void* params);
-
-	/* TRATA LOS EVENTOS DEL RATÓN */
 	static void myMouseCallbackSts(int ev, int x, int y, int flags, void* params);
-
-	/* TRATA LOS MOVIMIENTOS DEL RATÓN SOBRE LA INTERFAZ */
-	static void onMouseMove(int x, int y);
-
-	/* TRATA LOS CLICKS DEL RATÓN */
-	static void onClick(int x, int y);
 
 	/* TRATA LOS CLICKS DEL RATÓN */
 	static void onClickSts(int x, int y);

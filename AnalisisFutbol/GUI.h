@@ -5,12 +5,7 @@ class GUI {
 
 private:
 
-	static Mat interfaz;					// Interfaz de usuario
 	static Mat statsInterface;				// Interfaz para las estadísticas
-
-	static vector<Point> rButtons;			// Radio buttons
-	static vector<int> active_rButtons;		// Sólo habrá un radio button activo por grupo,
-											// y será representado mediante su índice.
 
 	static vector<Point> rButtonsSts;		// Radio buttons para las estadísticas
 	static vector<int> active_rButtonsSts;	// Sólo habrá un radio button activo por grupo,
@@ -34,23 +29,6 @@ private:
 	static int getActivePlayer(int team);
 
 public:
-
-	/* INICIALIZA LA INTERFAZ GRÁFICA */
-	static void initGUI();
-
-	/* MUESTRA LA INTERFAZ GRÁFICA */
-	static void showGUI();
-
-	/* ACTIVA EL RADIO BUTTON CORRESPONDIENTE */
-	static void activateRadioButton(int rb, int group);
-
-	/* DETERMINA QUÉ OPCIÓN ESTÁ ACTIVA EN EL RADIO BUTTON 0 */
-	static int playerBox();
-
-	/* DETERMINA QUÉ OPCIÓN ESTÁ ACTIVA EN EL RADIO BUTTON 1 */
-	static int ballBox();
-
-
 
 	/* INICIALIZA LA INTERFAZ GRÁFICA PARA LAS ESTADÍSTICAS */
 	static void initStatsGUI();

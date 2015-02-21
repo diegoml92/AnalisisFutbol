@@ -1,11 +1,7 @@
 #include "GUI.h"
 #include "GlobalStats.h"
 
-Mat GUI::interfaz;
 Mat GUI::statsInterface;
-
-vector<Point> GUI::rButtons;
-vector<int> GUI::active_rButtons;
 
 vector<Point> GUI::rButtonsSts;
 vector<int> GUI::active_rButtonsSts;
@@ -13,92 +9,10 @@ vector<int> GUI::active_rButtonsSts;
 vector<Rect> GUI::checkBoxesSts;
 vector<bool> GUI::activeCheckBoxesSts;
 
-Mat jugador = imread("C:/Proyecto/img/player.png");
-Mat balon = imread("C:/Proyecto/img/ball.png");
-
 // MAIN GUI
 
 /* FUNCIÓN AUXILIAR ACTIVADA CUANDO SE USA UNA TRACKBAR */
 void GUI::on_trackbar(int, void*) {}
-
-/* INICIALIZA LA INTERFAZ GRÁFICA */
-void GUI::initGUI() {
-
-	interfaz = Mat(Size(500,300), CV_8UC3);			// Creamos la matriz en la que crearemos la interfaz
-	interfaz.setTo(Scalar(GUI_COLOR), Mat());		// Establecemos el color de fondo
-
-	/* SE INICIALIZAN LOS RADIO BUTTONS */
-	for(int i=0; i<N_RBUTTON_GROUPS; i++) {
-		for(int j=0; j<N_RBUTTONS; j++) {
-			if(i==0) {
-				rButtons.push_back(Point(R_BUTTON_LEFT_MARGIN, R_BUTTON_TOP_MARGIN
-											+ R_BUTTON_VERT_SHIFT * j));
-			} else if(i == 1) {
-				rButtons.push_back(Point(R_BUTTON_LEFT_MARGIN + R_BUTTON_GROUP_SHIFT,
-											R_BUTTON_TOP_MARGIN + R_BUTTON_VERT_SHIFT * j));
-			}
-			circle(interfaz, rButtons[i*N_RBUTTONS + j], R_BUTTON_RADIUS, Scalar(COLOR_WHITE), -1);
-		}
-	}
-
-	/* AÑADIMOS LOS ELEMENTOS A LA INTERFAZ */
-
-	Mat aux;	// Nos ayudará a insertar los elementos en la interfaz
-
-	/* RADIO 1 (PLAYER BOX)*/
-
-	aux = interfaz(Rect(Point(20,40), Point(60,80)));
-	jugador.copyTo(aux);			// Copiamos el icono
-
-	putText(interfaz, "None", Point(100, 45), CV_FONT_HERSHEY_PLAIN, 1, Scalar(COLOR_WHITE));
-
-	putText(interfaz, "Team Color", Point(100, 65), CV_FONT_HERSHEY_PLAIN, 1, Scalar(COLOR_WHITE));
-	circle(interfaz, Point(75, 60), 4, Scalar(COLOR_BLACK),-1);
-	active_rButtons.push_back(1);	// Indicamos que el radio button activo es el 1
-
-	putText(interfaz, "Black", Point(100, 85), CV_FONT_HERSHEY_PLAIN, 1, Scalar(COLOR_WHITE));
-
-	line(interfaz, Point(240, 40), Point(240, 85), Scalar(GUI_AUX_COLOR), 2);
-
-	/* RADIO 2 (BALL BOX) */
-
-	aux = interfaz(Rect(Point(250 + 20,40), Point(250 + 60,80)));
-	balon.copyTo(aux);				// Copiamos el icono
-
-	putText(interfaz, "None", Point(100 + 250, 45), CV_FONT_HERSHEY_PLAIN, 1, Scalar(COLOR_WHITE));
-
-	putText(interfaz, "White", Point(100 + 250, 65), CV_FONT_HERSHEY_PLAIN, 1, Scalar(COLOR_WHITE));
-	circle(interfaz, Point(75 + 250, 60), 4, Scalar(COLOR_BLACK),-1);
-	active_rButtons.push_back(1);	// Indicamos que el radio button activo es el 1
-
-	putText(interfaz, "White (Filled)", Point(100 + 250, 85), CV_FONT_HERSHEY_PLAIN, 1, Scalar(COLOR_WHITE));
-
-}
-
-/* MUESTRA LA INTERFAZ GRÁFICA */
-void GUI::showGUI() {
-	imshow(GUI_W, interfaz);
-}
-
-/* ACTIVA EL RADIO BUTTON CORRESPONDIENTE */
-void GUI::activateRadioButton(int rb, int group) {
-	int i = active_rButtons[group];
-	if(i!=rb) { // Si rb no es el radio button activo, lo activamos y desactivamos el radio button i
-		circle(interfaz, rButtons[group*N_RBUTTONS + i], R_BUTTON_RADIUS, Scalar(COLOR_WHITE), -1);
-		active_rButtons[group] = rb;
-		circle(interfaz, rButtons[group*N_RBUTTONS + rb], R_BUTTON_ACTIVE_RADIUS, Scalar(COLOR_BLACK), -1);
-	}
-}
-
-/* DETERMINA QUÉ OPCIÓN ESTÁ ACTIVA EN EL RADIO BUTTON 0 */
-int GUI::playerBox() {
-	return active_rButtons[0];
-}
-
-/* DETERMINA QUÉ OPCIÓN ESTÁ ACTIVA EN EL RADIO BUTTON 1 */
-int GUI::ballBox() {
-	return active_rButtons[1];
-}
 
 // STATS GUI
 

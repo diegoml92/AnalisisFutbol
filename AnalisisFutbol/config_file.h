@@ -26,7 +26,6 @@ using namespace cv;
 
 #define THRESHOLD_W "Imagen filtrada"
 #define VIDEO_W "Imagen original"
-#define GUI_W "Panel de control"
 #define SGUI_W "Panel de Estadísticas"
 #define STATS_W "Estadísticas"
 #define FIELD_FILTER_W "Filtro del campo"

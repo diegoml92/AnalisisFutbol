@@ -22,10 +22,6 @@ int main(int argc, char* argv[]) {
 		bg[i] = imread(path.str());
 	}
 
-	namedWindow(GUI_W);						// Creamos la ventana para la interfaz
-	GUI::initGUI();							// Inicializamos la interfaz gráfica
-	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
-
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 
 	/*	
@@ -55,7 +51,6 @@ int main(int argc, char* argv[]) {
         for(int i=0; i<N_VIDEOS; i++) {
             umbral[i] = FieldFilter::discardField(partido[i].clone(), bg[i]);	// Filtramos el campo en el partido
             TrackingObj::objectDetection(umbral[i],partido[i], i, paint);		// Hacemos el tracking de los elementos del campo
-			GUI::showGUI();														// Mostramos la interfaz
         }
 
 		// Obtención de posiciones 2D de jugadores detectados

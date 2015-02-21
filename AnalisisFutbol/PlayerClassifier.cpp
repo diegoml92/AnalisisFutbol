@@ -72,17 +72,7 @@ void PlayerClassifier::findAndDraw(Rect rect, Mat partido) {
 		found = std::find(s.begin(),s.end(),rect) != s.end();
 		it++;
 	}
-	switch(GUI::playerBox()) {
-		case 1 : {
-			rectangle(partido,rect,mean(partido(*s.begin())),2,8);
-			break;
-		}
-		case 2 : {
-			rectangle(partido,rect,Scalar(COLOR_BLACK),2,8);
-			break;
-		}
-	}
-	
+	rectangle(partido,rect,mean(partido(*s.begin())),2,8);	
 }
 
 /*	LIMPIA LOS VECTORES */
