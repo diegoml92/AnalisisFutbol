@@ -3,69 +3,7 @@
 #include "PlayerClassifier.h"
 #include "From3DTo2D.h"
 #include "GlobalStats.h"
-
-/* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-bool TrackingObj::tracking(Mat frame, Mat bg, Point* pos) {
-	
-	float rango[] = {0,255};
-    const float* ranges [] = {rango};
-    int channels [] = {0};
-    int histSize [] = {128};
-
-    Rect playerBox = Rect((*pos).x-PLAYER_WIDTH/2,(*pos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
-
-	bool inRange = isInRange(&playerBox);
-
-	if(inRange) {
-
-		Mat hsv_roi, roi = frame(playerBox);
-		cvtColor(roi,hsv_roi,COLOR_BGR2HSV);
-
-		Mat thres, diff = abs(frame-bg);
-		threshold(diff,thres,40,255,CV_THRESH_BINARY);
-		vector<Mat> planes;
-		split(thres,planes);
-		Mat filter;
-		filter = (planes[0] | planes[1] | planes[2]);
-
-		Mat mask = filter(playerBox);
-		Mat roi_hist;
-		Mat images [] = {hsv_roi};
-
-		calcHist(&hsv_roi,1,channels,mask,roi_hist,1,histSize,ranges);
-		normalize(roi_hist,roi_hist,0,255,NORM_MINMAX);
-
-		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
-
-		//int team_id = 0;
-		//Player player(team_id);
-
-		Mat hsv;
-		cvtColor(frame, hsv, COLOR_BGR2HSV);
-
-		Mat img2;
-		frame.copyTo(img2);
-
-		Mat dst;
-		calcBackProject(&hsv,1,channels,roi_hist,dst,ranges,1);
-
-		threshold(dst,dst,180,255,CV_THRESH_TOZERO);
-
-		meanShift(dst,playerBox,term_crit);
-
-		rectangle(img2,Rect(playerBox.tl(),playerBox.size()),Scalar(255,255,255),1);
-
-		//if ((int)video.get(CV_CAP_PROP_POS_FRAMES)%5 == 0) {
-		//Point bcenter = Point(playerBox.tl().x + playerBox.width/2, playerBox.br().y);
-		//player.addPosition(bcenter);
-		//From3DTo2D::paint2DPositions(playerBox,D_SQ_NUM,paint);
-		//}
-
-		*pos = Point(playerBox.tl().x + playerBox.width/2,playerBox.br().y);
-		std::cout<<"CamPosReturn: "<<*pos<<std::endl;
-	}
-	return inRange;
-}
+#include "VideoManager.h"
 
 /* COMPRUEBA SI EL JUGADOR ESTÁN EN EL RANGO DENTRO DE LA IMAGEN */
 bool TrackingObj::isInRange(Rect* r) {
@@ -102,21 +40,71 @@ bool TrackingObj::isInFocus(Point p) {
 	return p.x >= 0 && p.y >= 0 && p.x <= VIDEO_WIDTH && p.y <= VIDEO_HEIGHT;
 }
 
+/* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
+bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
+	
+	float rango[] = {0,255};
+    const float* ranges [] = {rango};
+    int channels [] = {0};
+    int histSize [] = {128};
+
+    Rect playerBox = Rect((*pos).x-PLAYER_WIDTH/2,(*pos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+
+	bool inRange = isInRange(&playerBox);
+
+	if(inRange) {
+
+		Mat hsv_roi = hsv(playerBox);
+
+		Mat mask = filter(playerBox);
+		Mat roi_hist;
+		Mat images [] = {hsv_roi};
+
+		calcHist(&hsv_roi,1,channels,mask,roi_hist,1,histSize,ranges);
+		normalize(roi_hist,roi_hist,0,255,NORM_MINMAX);
+
+		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
+
+		//int team_id = 0;
+		//Player player(team_id);
+
+		Mat dst;
+		calcBackProject(&hsv,1,channels,roi_hist,dst,ranges,1);
+		dst&=filter;
+		meanShift(dst,playerBox,term_crit);
+
+		//rectangle(*paint,Rect(playerBox.tl(),playerBox.size()),Scalar(255,255,255),1);
+
+		//if ((int)video.get(CV_CAP_PROP_POS_FRAMES)%5 == 0) {
+		//Point bcenter = Point(playerBox.tl().x + playerBox.width/2, playerBox.br().y);
+		//player.addPosition(bcenter);
+		//From3DTo2D::paint2DPositions(playerBox,D_SQ_NUM,paint);
+		//}
+
+		*pos = Point(playerBox.tl().x + playerBox.width/2,playerBox.br().y);
+	}
+	return inRange;
+}
 
 /* TRACKING DE LOS JUGADORES */
-void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat bg[N_VIDEOS], Point* detectedPlayer, int index) {
+void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Point* detectedPlayer, int index) {
 	bool detected = false;
 	Point newPos;
 	vector<Point> positions;
+	Mat paint[N_VIDEOS];
 	for(int i=0; i<N_VIDEOS; i++) {
+		//cvtColor(frame[i],paint[i],CV_HSV2BGR);
 		Point* realPos = &From3DTo2D::getRealPosition(*detectedPlayer,i);
 		if(isInFocus(*realPos)) {
-			std::cout<<"CamPosBefore: "<<*realPos<<std::endl;
-			detected = tracking(frame[i],bg[i],realPos);
-			std::cout<<"CamPosAfter : "<<*realPos<<std::endl;
+			detected |= tracking(frame[i],filter[i],&paint[i],realPos);
 			positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
 		}
 	}
+	/*Mat imm=VideoManager::joinSequences(paint);
+	pyrDown(imm, imm, Size(imm.cols/2, imm.rows/2));
+	pyrDown(imm, imm, Size(imm.cols/2, imm.rows/2));
+	imshow("OLAKASE",imm);
+	waitKey();*/
 	if(detected) {
 		for(int i=0; i<positions.size(); i++) {
 			newPos+=positions.at(i);
@@ -126,7 +114,6 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat bg[N_VIDEOS], Point* det
 		GlobalStats::playersToDelete.push_back(index);
 	}
 	*detectedPlayer = newPos;
-	std::cout<<"2dPosReturn : "<<*detectedPlayer<<std::endl;
 }
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */

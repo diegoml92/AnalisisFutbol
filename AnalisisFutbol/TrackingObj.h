@@ -4,7 +4,7 @@
 class TrackingObj {
 private:
 	/* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-	static bool tracking(Mat frame, Mat bg, Point* pos);
+	static bool tracking(Mat frame, Mat filter, Mat* paint, Point* pos);
 
 	/* COMPRUEBA SI EL PUNTO ESTÁ EN EL FOCO DE LA CÁMARA */
 	static bool isInFocus(Point p);
@@ -15,7 +15,7 @@ private:
 public:
 
 	/* TRACKING DE LOS JUGADORES */
-	static void trackPlayers(Mat frame[N_VIDEOS], Mat bg[N_VIDEOS], Point* detectedPlayers, int index);
+	static void trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Point* detectedPlayers, int index);
 
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
 	static void objectDetection(Mat filtro, Mat &partido, int nVideo, Mat paint);

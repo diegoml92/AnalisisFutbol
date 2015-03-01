@@ -5,8 +5,6 @@ class PlayerClassifier {
 
 private:
 
-	static vector<Rect> players;					// Alamacena los jugadores encontrados
-
 	static vector<vector<Rect>> clasif;				// Almacena los elementos en sus respectivos grupos
 	static vector<vector<Rect>>::iterator it;		// Iterator para recorrer el vector clasif
 

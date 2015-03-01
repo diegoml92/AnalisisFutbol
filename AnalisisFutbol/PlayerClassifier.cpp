@@ -1,8 +1,6 @@
 #include "PlayerClassifier.h"
 #include "GUI.h"
 
-vector<Rect> PlayerClassifier::players;
-
 vector<vector<Rect>> PlayerClassifier::clasif;
 vector<vector<Rect>>::iterator PlayerClassifier::it;
 
@@ -11,7 +9,6 @@ vector<vector<Mat>>::iterator PlayerClassifier::itHist;
 
 /* AÑADE UN JUGADOR */
 void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Rect player) {
-	players.push_back(player);
 	comparePlayer(partido,filtro,player);	// Hacemos la comparación
 	findAndDraw(player, partido);			// Dibujamos al jugador
 }

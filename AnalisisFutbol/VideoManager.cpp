@@ -10,22 +10,27 @@ bool VideoManager::init() {
 		videoPath << VIDEO_PATH << i << VIDEO_FORMAT;
 		open = open && video[i].open(videoPath.str());
 	}
+	std::cout<<static_cast<int>(video[0].get(CV_CAP_PROP_FOURCC))<<std::endl;
+	std::cout<<video[0].get(CV_CAP_PROP_FPS)<<std::endl;
     return open;
 }
 
 /* OBTIENE EL SIGUIENTE FRAME DE VÍDEO */
-bool VideoManager::nextFrame(Mat partido[]) {
-	return video[0].read(partido[0]) && video[1].read(partido[1]) && video[2].read(partido[2]) &&
-            video[3].read(partido[3]) && video[4].read(partido[4]) && video[5].read(partido[5]);
+bool VideoManager::nextFrame(Mat frame[]) {
+	bool hasNext = true;
+	for(int i=0;i<N_VIDEOS && hasNext;i++) {
+		hasNext &= video[i].read(frame[i]);
+	}
+	return hasNext;
 }
 
 /* UNE LAS SECUENCIAS DE VÍDEO EN UNA SOLA IMAGEN */
-Mat VideoManager::joinSequences(Mat partido[]) {
+Mat VideoManager::joinSequences(Mat frame[]) {
     Mat dst = Mat::zeros(Size(VIDEO_WIDTH*3, VIDEO_HEIGHT*2+8), CV_8UC3);
     for(int i=0; i<N_VIDEOS; i++) {
         int x = VIDEO_WIDTH * (i%3);
         int y = VIDEO_HEIGHT * (i/3);
-		partido[i].copyTo(dst(Rect(Point(x,y),Point(x+partido[i].cols,y+partido[i].rows))));
+		frame[i].copyTo(dst(Rect(Point(x,y),Point(x+frame[i].cols,y+frame[i].rows))));
     }
     return dst;
 }
