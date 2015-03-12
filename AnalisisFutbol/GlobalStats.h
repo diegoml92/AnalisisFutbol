@@ -18,7 +18,7 @@ public:
 	* Vector que almacenará los elementos detectados
 	* en cada iteración por cada una de las cámaras
 	*/	
-	static vector<Point2f> locations [];
+	static vector<Rect> locations [];
 
 	/* VACÍA LOS VECTORES DE POSICIONES */
 	static void clearLocations();
@@ -29,5 +29,7 @@ public:
 	/* AÑADE LAS ESTADÍSTICAS ACTUALES */
 	static bool alreadyDetected(Point p);
 
+	/* CALCULA EL CENTRO DE UN RECTÁNGULO */
+	static Point getCenter(Rect r);
 };
 

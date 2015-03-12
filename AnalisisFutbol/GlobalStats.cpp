@@ -3,7 +3,7 @@
 
 // Iniciamos las variables
 Team GlobalStats::teams[N_TEAMS] = {Team(), Team()};
-vector<Point2f> GlobalStats::locations [N_VIDEOS];
+vector<Rect> GlobalStats::locations [N_VIDEOS];
 vector<Point> GlobalStats::detectedPlayers;
 vector<int> GlobalStats::playersToDelete;
 
@@ -35,4 +35,9 @@ bool GlobalStats::alreadyDetected(Point p) {
 		it++;
 	}
 	return found;
+}
+
+/* CALCULA EL CENTRO DE UN RECTÁNGULO */
+Point GlobalStats::getCenter(Rect r) {
+	return Point(r.tl().x + r.width/2, r.br().y);
 }

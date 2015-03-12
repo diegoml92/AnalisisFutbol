@@ -10,7 +10,7 @@ vector<vector<Mat>>::iterator PlayerClassifier::itHist;
 /* AÑADE UN JUGADOR */
 void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Rect player) {
 	comparePlayer(partido,filtro,player);	// Hacemos la comparación
-	findAndDraw(player, partido);			// Dibujamos al jugador
+	//findAndDraw(player, partido);			// Dibujamos al jugador
 }
 
 /*	

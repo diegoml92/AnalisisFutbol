@@ -110,10 +110,14 @@ int main(int argc, char* argv[]) {
 
 		a = getTickCount();
 
+		vector<Point2f> locations2D [N_VIDEOS];
 		// Obtención de posiciones 2D de jugadores detectados
 		for(int i=0; i<N_VIDEOS; i++) {
+			for(int j=0; j<GlobalStats::locations[i].size(); j++) {
+				locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
+			}
 			if(GlobalStats::locations[i].size()) {
-				GlobalStats::locations[i] = From3DTo2D::get2DPositionVector(GlobalStats::locations[i],i);
+				locations2D[i] = From3DTo2D::get2DPositionVector(locations2D[i],i);
 			}
 		}
 
@@ -125,23 +129,18 @@ int main(int argc, char* argv[]) {
 
 		// Eliminación de duplicidades (elementos localizados en varias cámaras)
 		for(int i=0; i<N_VIDEOS; i++) {
-			for(vector<Point2f>::iterator it1=GlobalStats::locations[i].begin(); it1!=GlobalStats::locations[i].end(); ++it1) {
+			for(vector<Point2f>::iterator it1=locations2D[i].begin(); it1!=locations2D[i].end(); ++it1) {
 				bool found = false;
 				for(int j=i+1; j<N_VIDEOS;j++) {
-					for(vector<Point2f>::iterator it2=GlobalStats::locations[j].begin(); it2!=GlobalStats::locations[j].end(); ++it2) {
+					for(vector<Point2f>::iterator it2=locations2D[j].begin(); it2!=locations2D[j].end(); ++it2) {
 						if(StatsAnalyzer::isSamePoint(*it1, *it2)) {
-							//*it2 = xxxx::calculateFinalPos(*it1, *it2);
 							found = true;
 							break;
 						}
 					}
 				}
-				if(!found && From3DTo2D::isInRange(*it1) && !GlobalStats::alreadyDetected(*it1)) {
-					From3DTo2D::paint2DPositions2(*it1,i,paint);
-					//asignar();
-					//if(GlobalStats::detectedPlayers.size()<=25) {
-						GlobalStats::detectedPlayers.push_back(*it1);
-					//}
+				if(!found && From3DTo2D::isInRange(*it1) && !GlobalStats::alreadyDetected(*it1) && GlobalStats::detectedPlayers.size() < 80) {
+					GlobalStats::detectedPlayers.push_back(*it1);
 				}
 			}
 		}

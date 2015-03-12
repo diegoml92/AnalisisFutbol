@@ -40,6 +40,42 @@ bool TrackingObj::isInFocus(Point p) {
 	return p.x >= 0 && p.y >= 0 && p.x <= VIDEO_WIDTH && p.y <= VIDEO_HEIGHT;
 }
 
+/* VENTANA DE BÚSQUEDA DEL JUGADOR */
+void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relative) {
+	Point windowP = Point(SEARCH_WINDOW);
+	*searchWindow =  Rect(playerBox.tl()-windowP,playerBox.br()+windowP);
+	*relative = Rect(windowP, playerBox.size());
+	bool inRange = searchWindow->tl().x >= 0 && searchWindow->tl().y >= 0 &&
+		searchWindow->br().x < VIDEO_WIDTH && searchWindow->br().y < VIDEO_HEIGHT;
+	if(!inRange) {
+		int tl_x = searchWindow->tl().x,tl_y = searchWindow->tl().y;
+		int br_x = searchWindow->br().x,br_y = searchWindow->br().y;
+		bool relativeChanged = false;
+		Point relP = windowP;
+		if(searchWindow->tl().x < 0) {
+			relativeChanged = true;
+			relP.x = playerBox.x;
+			tl_x = 0;
+		}
+		if(searchWindow->tl().y < 0) {
+			relativeChanged = true;
+			relP.y = playerBox.y;
+			tl_y = 0;
+		}
+		if(searchWindow->br().x >= VIDEO_WIDTH) {
+			br_x = VIDEO_WIDTH-1;
+		}
+		if(searchWindow->br().y >= VIDEO_HEIGHT) {
+			br_y = VIDEO_HEIGHT-1;
+		}
+
+		if(relativeChanged) {
+			*relative = Rect(Point(relP), playerBox.size());
+		}
+		*searchWindow = Rect(Point(tl_x,tl_y),Point(br_x,br_y));
+	}
+}
+
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
 bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 	
@@ -69,9 +105,17 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 		//Player player(team_id);
 
 		Mat dst;
-		calcBackProject(&hsv,1,channels,roi_hist,dst,ranges,1);
-		dst&=filter;
-		meanShift(dst,playerBox,term_crit);
+		Rect searchWindowRect, relativePlayerBox;
+		searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
+		Mat window = hsv(searchWindowRect);
+		Mat windowMask = filter(searchWindowRect);
+		calcBackProject(&window,1,channels,roi_hist,dst,ranges,1);
+		dst&=windowMask;
+		Rect tmp = relativePlayerBox;
+		meanShift(dst,relativePlayerBox,term_crit);
+
+		Point desp = relativePlayerBox.tl() - tmp.tl();
+		
 
 		//rectangle(*paint,Rect(playerBox.tl(),playerBox.size()),Scalar(255,255,255),1);
 
@@ -81,7 +125,7 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 		//From3DTo2D::paint2DPositions(playerBox,D_SQ_NUM,paint);
 		//}
 
-		*pos = Point(playerBox.tl().x + playerBox.width/2,playerBox.br().y);
+		*pos = Point(playerBox.tl().x + desp.x + playerBox.width/2,playerBox.br().y + desp.y);
 	}
 	return inRange;
 }
@@ -124,20 +168,11 @@ void TrackingObj::objectDetection(Mat filtro, Mat &partido, int nVideo, Mat pain
 	vector<Vec4i> hierarchy;
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
 	if(hierarchy.size() > 0) {													// Si se encuentra algún contorno
-		PlayerClassifier::clearVectors();										// Limpiamos los vectores de clasificación
-
 		for( int i = 0; i < contours.size(); i++ ) {							// Recorremos los contornos
 			Rect elem = boundingRect(Mat(contours[i]));							// Creamos el boundingBox
-			if(PlayerClassifier::isPlayerSize(elem)) {							// Si cumple las restricciones de tamaño...
-				PlayerClassifier::addPlayer(partido, filtro, elem);				// ...añade el jugador y lo clasifica
-				Point playerPos = Point(elem.br().x-elem.width/2, elem.br().y); // Calculamos el punto en el que está el jugador
-				From3DTo2D::get2DPosition(playerPos, nVideo);					// Transformamos a posición 2D
-				GlobalStats::locations[nVideo].push_back(playerPos);			// Añadimos al vector de elementos encontrados
-				From3DTo2D::paint2DPositions(elem, nVideo, paint);				// Representamos las posiciones en el plano 2D
+			if(PlayerClassifier::isPlayerSize(elem)) {
+				GlobalStats::locations[nVideo].push_back(elem);			// Añadimos al vector de elementos encontrados
 			}
 		}
-
-		PlayerClassifier::sortVectors();										// Ordenamos los vectores de clasificación
-		PlayerClassifier::drawTeams(partido);									// Dibujamos la etiqueta de cada elemento
 	}
 }

@@ -17,6 +17,8 @@ using namespace cv;
 #define DESP 335
 #define LONG 265
 
+#define SEARCH_WINDOW 15,15
+
 #define ANALYZER_VIDEO_SIZE_RELATION 8
 
 #define SOCCER_FIELD_WIDTH 1200
