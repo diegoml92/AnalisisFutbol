@@ -14,6 +14,8 @@ public:
 	static vector<Point> detectedPlayers;
 	static vector<int> playersToDelete;
 
+	static vector<Scalar> colors;
+
 	/*
 	* Vector que almacenará los elementos detectados
 	* en cada iteración por cada una de las cámaras

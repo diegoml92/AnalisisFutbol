@@ -6,6 +6,7 @@ Team GlobalStats::teams[N_TEAMS] = {Team(), Team()};
 vector<Rect> GlobalStats::locations [N_VIDEOS];
 vector<Point> GlobalStats::detectedPlayers;
 vector<int> GlobalStats::playersToDelete;
+vector<Scalar> GlobalStats::colors;
 
 /* VACÍA LOS VECTORES DE POSICIONES */
 void GlobalStats::clearLocations() {

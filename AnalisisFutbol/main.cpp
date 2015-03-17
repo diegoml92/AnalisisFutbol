@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
 			TrackingObj::trackPlayers(hsv,filter,&GlobalStats::detectedPlayers.at(i),i);
 			b_1 = getTickCount();
 			a_2 = getTickCount();
-			From3DTo2D::paint2DPositions2(GlobalStats::detectedPlayers.at(i),-1,paint);
+			//From3DTo2D::paint2DPositions2(GlobalStats::detectedPlayers.at(i),-1,paint);
 			b_2 = getTickCount();
 		}
 
@@ -115,6 +115,7 @@ int main(int argc, char* argv[]) {
 		for(int i=0; i<N_VIDEOS; i++) {
 			for(int j=0; j<GlobalStats::locations[i].size(); j++) {
 				locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
+				//rectangle(frame[i],GlobalStats::locations[i].at(j),Scalar(128,0,255),2);
 			}
 			if(GlobalStats::locations[i].size()) {
 				locations2D[i] = From3DTo2D::get2DPositionVector(locations2D[i],i);
@@ -148,6 +149,28 @@ int main(int argc, char* argv[]) {
 		b = getTickCount();
 
 		std::cout<<"Duplicados: "<<(b-a)/getTickFrequency()<<std::endl;
+
+		a = getTickCount();
+
+		for(int i=0; i<GlobalStats::detectedPlayers.size(); i++) {
+			if(GlobalStats::colors.size()<(i+1)) {
+				RNG rng(getTickCount());
+				GlobalStats::colors.push_back(Scalar(rng.uniform(0,256),rng.uniform(0,256),rng.uniform(0,256)));
+			}
+			Scalar colour = GlobalStats::colors.at(i);
+			Point p = GlobalStats::detectedPlayers.at(i);
+			circle(paint,p,3,colour,2);
+			for (int k=0; k<N_VIDEOS; k++) {
+				Point realP = From3DTo2D::getRealPosition(p,k);
+				Rect paintR(Point(realP.x - PLAYER_WIDTH/2, realP.y - PLAYER_HEIGHT),
+							Point(realP.x + PLAYER_WIDTH/2, realP.y));
+				rectangle(frame[k],paintR,colour,2);
+			}
+		}
+		
+		b = getTickCount();
+
+		std::cout<<"Pintado   : "<<(b-a)/getTickFrequency()<<std::endl;
 
 		a = getTickCount();
 
