@@ -2,9 +2,9 @@
 #include "StatsAnalyzer.h"
 
 // Iniciamos las variables
-Team GlobalStats::teams[N_TEAMS] = {Team(), Team()};
+bool GlobalStats::playersDetected = false;
+vector<Team> GlobalStats::teams;
 vector<Rect> GlobalStats::locations [N_VIDEOS];
-vector<Point> GlobalStats::detectedPlayers;
 vector<int> GlobalStats::playersToDelete;
 vector<Scalar> GlobalStats::colors;
 
@@ -15,25 +15,17 @@ void GlobalStats::clearLocations() {
 	}
 }
 
-/* AÑADE LAS ESTADÍSTICAS ACTUALES */
-void GlobalStats::addStats() {
-	for(int i=0; i<N_TEAMS; i++) {
-		for(int j=0; j<N_PLAYERS; j++) {
-			Player p = teams[i].getPlayers()[j];
-			//Point loc = p.getAssociatedLocation();
-			//if(loc != null) {
-				//p.addPosition(loc);
-			//}
-		}
-	}
-}
-
 bool GlobalStats::alreadyDetected(Point p) {
-	vector<Point>::iterator it = detectedPlayers.begin();
 	bool found = false;
-	while(!found && it!=detectedPlayers.end()) {
-		found = StatsAnalyzer::isSamePoint(p,*it);
-		it++;
+	int i=0;
+	while(!found && i<teams.size()) {
+		vector<Player> players = teams.at(i).getPlayers();
+		vector<Player>::iterator it = players.begin();
+		while(!found && it!=players.end()) {
+			found = StatsAnalyzer::isSamePoint(p,it->getPosition());
+			it++;
+		}
+		i++;
 	}
 	return found;
 }
@@ -41,4 +33,17 @@ bool GlobalStats::alreadyDetected(Point p) {
 /* CALCULA EL CENTRO DE UN RECTÁNGULO */
 Point GlobalStats::getCenter(Rect r) {
 	return Point(r.tl().x + r.width/2, r.br().y);
+}
+
+/* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
+bool GlobalStats::allPlayersDetected() {
+	return playersDetected;
+}
+
+int GlobalStats::totalPlayers() {
+	int n=0;
+	for(int i=0;i<teams.size();i++) {
+		n+=teams[i].getPlayers().size();
+	}
+	return n;
 }

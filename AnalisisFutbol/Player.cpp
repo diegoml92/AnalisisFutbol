@@ -4,26 +4,19 @@
 vector<int> Player::id;
 
 /* CONSTRUCTOR */
-Player::Player(int team_id) {
+Player::Player(int team_id, Point pos) {
 	Player::team_id = team_id;
 	Player::player_id = Player::id.at(team_id)++;
 	Player::distance = 0;
 	Player::area = Mat::zeros((VIDEO_HEIGHT+8)/ANALYZER_VIDEO_SIZE_RELATION,
 		                      VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
-	Player::lastPoint = Point3i(-1,-1,-1);
-}
-
-/* CONSTRUCTOR AUXILIAR */
-Player::Player() {
-	Player::team_id = -1;
-	Player::player_id = -1;
-	Player::lastPoint = Point3i(-1,-1,-1);
+	Player::lastPoint = pos;
 }
 
 /* INCREMENTA EL VALOR EN LA POSICION INDICADA */
-void Player::addPosition(Point3i p) {
-	StatsAnalyzer::addPosition(Player::area, Point(p.x,p.y));
-	StatsAnalyzer::addDistance(Player::distance,p,Player::lastPoint);
+void Player::addPosition(Point p) {
+	StatsAnalyzer::addPosition(Player::area, p);
+	StatsAnalyzer::addDistance(&(Player::distance),p,Player::lastPoint);
 	Player::lastPoint = p;
 }
 
@@ -45,4 +38,9 @@ Mat Player::getAreaStats() {
 /* DEVUELVE LA DISTANCIA RECORRIDA */
 float Player::getDistance() {
 	return Player::distance;
+}
+
+/* DEVUELVE EL PUNTO ACUTAL */
+Point Player::getPosition() {
+	return Point(lastPoint.x,lastPoint.y);
 }

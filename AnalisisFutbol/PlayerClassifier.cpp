@@ -1,106 +1,65 @@
 #include "PlayerClassifier.h"
 #include "GUI.h"
-
-vector<vector<Rect>> PlayerClassifier::clasif;
-vector<vector<Rect>>::iterator PlayerClassifier::it;
-
-vector<vector<Mat>> PlayerClassifier::clasifHists;
-vector<vector<Mat>>::iterator PlayerClassifier::itHist;
+#include "TrackingObj.h"
+#include "From3DTo2D.h"
+#include "GlobalStats.h"
+#include "Team.h"
 
 /* AÑADE UN JUGADOR */
-void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Rect player) {
-	comparePlayer(partido,filtro,player);	// Hacemos la comparación
-	//findAndDraw(player, partido);			// Dibujamos al jugador
+void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Point player) {
+	vector<Rect> playerV;
+	for(int i=0; i<N_VIDEOS; i++) {
+		Point realPos = From3DTo2D::getRealPosition(player,i);
+		if(TrackingObj::isInFocus(realPos)) {
+			Rect playerBox = Rect((realPos).x-PLAYER_WIDTH/2,(realPos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+			if(TrackingObj::isInRange(&playerBox) && isPlayerSize(playerBox) && canBePlayer(filtro(playerBox))) {
+				playerV.push_back(playerBox);
+			}
+		}
+	}
+	if(playerV.size()>0) {
+		comparePlayer(partido,filtro,playerV,player);	// Hacemos la comparación
+	}
 }
 
 /*	
 *	CLASIFICA LOS ELEMENTOS DETECTADOS:
 *	Compara el histograma de los jugadores y los clasifica por equipos
 */
-void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, Rect rect) {
+void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, vector<Rect> rects, Point pos) {
 
 	int channels [] = {0,1,2};
 	int nBins = 256;
 	float range [] = {0,256};
 	const float *ranges = {range};
-	Mat hist_B, hist_G, hist_R;
-	vector<Mat> planes, hist_v;
-	split(partido(rect),planes);
-	calcHist(&planes[0],1,channels,umbral(rect),hist_B,1,&nBins,&ranges);
-	calcHist(&planes[1],1,channels,umbral(rect),hist_G,1,&nBins,&ranges);
-	calcHist(&planes[2],1,channels,umbral(rect),hist_R,1,&nBins,&ranges);
-	hist_v.push_back(hist_B);
-	hist_v.push_back(hist_G);
-	hist_v.push_back(hist_R);
-	if(clasifHists.empty()) {
-		clasifHists.push_back(hist_v);
-		clasif.push_back(vector<Rect>());
-		clasif.back().push_back(rect);
+	vector<Mat> hist_v; 
+	for(int i=0; i<rects.size(); i++) {
+		Mat hist, src = partido(rects.at(i));
+		calcHist(&src,1,channels,umbral(rects[i]),hist,1,&nBins,&ranges);
+		hist_v.push_back(hist);
+	}
+	/******************************************/
+	Mat finalHist = hist_v[0];//CALCULAR HISTOGRAMA MEDIO!!!
+	if(GlobalStats::teams.empty()) {
+		Team t = Team();
+		t.setHistogram(finalHist);
+		t.createPlayer(pos);
+		GlobalStats::teams.push_back(t);
 	} else {
 		bool found = false;
-		itHist = clasifHists.begin();
-		int k = 0;
-		vector<Mat> temp;
-		while(itHist!=clasifHists.end() && !found) {
-			temp = *itHist;
-			found = compareHist(temp[0],hist_B,CV_COMP_BHATTACHARYYA) +
-					compareHist(temp[1],hist_G,CV_COMP_BHATTACHARYYA) +
-					compareHist(temp[2],hist_R,CV_COMP_BHATTACHARYYA) < BHATTACHARYYA_THRES*3;
-			itHist++;
-			k++;
+		vector<Team>::iterator it = GlobalStats::teams.begin();
+		while(it!=GlobalStats::teams.end() && !found) {
+			found = compareHist(it->getHistogram(),finalHist,CV_COMP_BHATTACHARYYA) < BHATTACHARYYA_THRES;
+			it++;
 		}
 		if(found) {
-			clasif[k-1].push_back(rect);
+			it--;
+			it->createPlayer(pos);
 		} else {
-			clasifHists.push_back(hist_v);
-			clasif.push_back(vector<Rect>());
-			clasif.back().push_back(rect);
-		}
-	}
-}
-
-/* ENCUENTRA EL EQUIPO EN EL QUE ESTÁ UN JUGADOR */
-void PlayerClassifier::findAndDraw(Rect rect, Mat partido) {
-	vector<Rect> s;
-	it = clasif.begin();
-	bool found = false;
-	while(it!=clasif.end() && !found) {
-		s = *it;
-		found = std::find(s.begin(),s.end(),rect) != s.end();
-		it++;
-	}
-	rectangle(partido,rect,mean(partido(*s.begin())),2,8);	
-}
-
-/*	LIMPIA LOS VECTORES */
-void PlayerClassifier::clearVectors() {
-	clasif.clear();
-	clasifHists.clear();
-}
-
-/*	
-*	ORDENA LOS VECTORES:
-*	Este orden se lleva a cabo en función del número de elementos contenidos,
-*	de esta manera, lo 2 primeros serán ambos equipos y el resto serán otros
-*	elementos (porteros, árbitro...)
-*/
-void PlayerClassifier::sortVectors() {
-	bool swapped = false;
-	if(clasif.size()>1) {
-		vector<Rect> aux;
-		vector<Mat> auxHist;
-		for(int i=0;i<clasif.size()-1;i++) {
-			for(int j=0;j<clasif.size()-i-1;j++) {
-				if(clasif[j].size() < clasif[j+1].size()) {
-					aux = clasif[j];
-					clasif[j] = clasif[j+1];
-					clasif[j+1] = aux;
-
-					auxHist = clasifHists[j];
-					clasifHists[j] = clasifHists[j+1];
-					clasifHists[j+1] = auxHist;
-				}
-			}
+			Team t = Team();
+			t.setHistogram(finalHist);
+			t.createPlayer(pos);
+			GlobalStats::teams.push_back(t);
 		}
 	}
 }
@@ -111,17 +70,7 @@ bool PlayerClassifier::isPlayerSize(Rect player) {
 			&& player.width>MIN_WIDTH && player.width<MAX_WIDTH;
 }
 
-/* DIBUJA LOS JUGADORES EN EL VÍDEO */
-void PlayerClassifier::drawTeams(Mat partido) {
-	for(int i=0;i<clasif.size();i++) {
-		for(int j=0;j<clasif[i].size();j++) {
-			if(i==0) {
-				putText(partido,"Equipo1",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(COLOR_WHITE));
-			} else if(i==1) {
-				putText(partido,"Equipo2",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(COLOR_WHITE));
-			} else {
-				putText(partido,"Otros",Point(clasif[i][j].x,clasif[i][j].y),1,2,Scalar(COLOR_WHITE));
-			}
-		}
-	}
+/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
+bool PlayerClassifier::canBePlayer(Mat roi) {
+	return countNonZero(roi) / (float)(roi.cols*roi.rows) > 0.35;
 }

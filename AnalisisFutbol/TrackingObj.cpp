@@ -1,9 +1,7 @@
-#include "GUI.h"
 #include "TrackingObj.h"
 #include "PlayerClassifier.h"
 #include "From3DTo2D.h"
 #include "GlobalStats.h"
-#include "VideoManager.h"
 
 /* COMPRUEBA SI EL JUGADOR ESTÁN EN EL RANGO DENTRO DE LA IMAGEN */
 bool TrackingObj::isInRange(Rect* r) {
@@ -131,24 +129,18 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 }
 
 /* TRACKING DE LOS JUGADORES */
-void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Point* detectedPlayer, int index) {
+void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player* player, int index) {
 	bool detected = false;
 	Point newPos;
 	vector<Point> positions;
 	Mat paint[N_VIDEOS];
 	for(int i=0; i<N_VIDEOS; i++) {
-		//cvtColor(frame[i],paint[i],CV_HSV2BGR);
-		Point* realPos = &From3DTo2D::getRealPosition(*detectedPlayer,i);
+		Point* realPos = &From3DTo2D::getRealPosition(player->getPosition(),i);
 		if(isInFocus(*realPos)) {
 			detected |= tracking(frame[i],filter[i],&paint[i],realPos);
 			positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
 		}
 	}
-	/*Mat imm=VideoManager::joinSequences(paint);
-	pyrDown(imm, imm, Size(imm.cols/2, imm.rows/2));
-	pyrDown(imm, imm, Size(imm.cols/2, imm.rows/2));
-	imshow("OLAKASE",imm);
-	waitKey();*/
 	if(detected) {
 		for(int i=0; i<positions.size(); i++) {
 			newPos+=positions.at(i);
@@ -157,7 +149,7 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Point*
 	} else {
 		GlobalStats::playersToDelete.push_back(index);
 	}
-	*detectedPlayer = newPos;
+	player->addPosition(newPos);
 }
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
@@ -170,7 +162,7 @@ void TrackingObj::objectDetection(Mat filtro, Mat &partido, int nVideo, Mat pain
 	if(hierarchy.size() > 0) {													// Si se encuentra algún contorno
 		for( int i = 0; i < contours.size(); i++ ) {							// Recorremos los contornos
 			Rect elem = boundingRect(Mat(contours[i]));							// Creamos el boundingBox
-			if(PlayerClassifier::isPlayerSize(elem)) {
+			if(PlayerClassifier::isPlayerSize(elem) && PlayerClassifier::canBePlayer(filtro(elem))) {
 				GlobalStats::locations[nVideo].push_back(elem);			// Añadimos al vector de elementos encontrados
 			}
 		}

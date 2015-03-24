@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include "config_file.h"
 
 /* JUGADORES */
@@ -15,7 +18,7 @@ private:
 
 	// ATRIBUTOS AUXILIARES
 	Mat area;
-	Point3i lastPoint;
+	Point lastPoint;
 
 public:
 
@@ -23,13 +26,10 @@ public:
 	static vector<int> id;
 
 	/* CONSTRUCTOR */
-	Player(int team_id);
-
-	/* CONSTRUCTOR AUXILIAR */
-	Player();
+	Player(int team_id, Point pos);
 
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
-	void addPosition(Point3i p);
+	void addPosition(Point p);
 
 	/* CALCULA LAS ESTADÍSTICAS */
 	void calculateStats();
@@ -42,4 +42,9 @@ public:
 
 	/* DEVUELVE LA DISTANCIA RECORRIDA */
 	float getDistance();
+
+	/* DEVUELVE EL PUNTO ACUTAL */
+	Point getPosition();
 };
+
+#endif //PLAYER_H

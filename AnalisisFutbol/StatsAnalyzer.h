@@ -12,15 +12,15 @@ private:
 	static Mat normalizeAreaStats(Mat m);
 
 	/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
-	static float distance(Point3i actualPoint, Point3i lastPoint);
+	static float distance(Point actualPoint, Point lastPoint);
 
 public:
 
 	/* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
-	static void addPosition(Mat m, Point2i p);
+	static void addPosition(Mat m, Point p);
 
 	/* INCREMENTA LA DISTANCIA RECORRIDA */
-	static float addDistance(float distance, Point3i actualPoint, Point3i lastPoint);
+	static void addDistance(float* distance, Point actualPoint, Point lastPoint);
 
 	/* AÑADE EL VALOR DE LA ALTURA */
 	static void addHeight(float h, float height[]);

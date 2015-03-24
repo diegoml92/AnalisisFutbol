@@ -7,13 +7,15 @@
    RESTO DE CLASES
 */
 class GlobalStats {
+private:
+	// Determina si están todos los jugadores detectados
+	static bool playersDetected;
+
 public:
 
 	// Variables globales
-	static Team teams[N_TEAMS];
-	static vector<Point> detectedPlayers;
+	static vector<Team> teams;
 	static vector<int> playersToDelete;
-
 	static vector<Scalar> colors;
 
 	/*
@@ -26,12 +28,14 @@ public:
 	static void clearLocations();
 
 	/* AÑADE LAS ESTADÍSTICAS ACTUALES */
-	static void addStats();
-
-	/* AÑADE LAS ESTADÍSTICAS ACTUALES */
 	static bool alreadyDetected(Point p);
 
 	/* CALCULA EL CENTRO DE UN RECTÁNGULO */
 	static Point getCenter(Rect r);
+
+	/* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
+	static bool allPlayersDetected();
+
+	static int totalPlayers(); 
 };
 

@@ -4,33 +4,22 @@
 Mat soccer_field = imread(FIELD2DSMALL_PATH);
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
-void StatsAnalyzer::addPosition(Mat m, Point2i p) {
+void StatsAnalyzer::addPosition(Mat m, Point p) {
 	m.at<int>(p.y/ANALYZER_VIDEO_SIZE_RELATION,p.x/ANALYZER_VIDEO_SIZE_RELATION)++;
 }
 
 /* INCREMENTA LA DISTANCIA RECORRIDA */
-float StatsAnalyzer::addDistance(float dist, Point3i actualPoint, Point3i lastPoint) {
-	dist += distance(actualPoint, lastPoint);
-	return dist;
+void StatsAnalyzer::addDistance(float* dist, Point actualPoint, Point lastPoint) {
+	*dist += distance(actualPoint, lastPoint);
 }
 
 /* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
-float StatsAnalyzer::distance(Point3i actualPoint, Point3i lastPoint) {
+float StatsAnalyzer::distance(Point actualPoint, Point lastPoint) {
 	float dist = 0;
 	if(lastPoint.x >= 0) {
 		dist = norm(actualPoint-lastPoint)/10;
 	}
 	return dist;
-}
-
-/* AÑADE EL VALOR DE LA ALTURA */
-void StatsAnalyzer::addHeight(float h, float height[]) {
-	int hh = h;
-	if(hh < MAX_BALL_HEIGHT) {
-		height[hh]++;
-	} else {
-		height[MAX_BALL_HEIGHT-1]++;
-	}
 }
 
 /* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
@@ -41,26 +30,28 @@ Mat StatsAnalyzer::getAreaStats(Mat m) {
 	for(int i=0;i<normalized.cols;i++) {
 		for(int j=0;j<normalized.rows;j++) {
 			float val = normalized.at<float>(j,i);
-			if(val < 0.1) {
-				// No hacemos nada
-			} else if(val < 0.2) {
-				stats.at<Vec3b>(j,i) = Vec3b(255,255,0);
-			} else if(val < 0.3) {
-				stats.at<Vec3b>(j,i) = Vec3b(0,255,0);
-			} else if(val < 0.4) {
-				stats.at<Vec3b>(j,i) = Vec3b(50,255,150);
-			} else if(val < 0.5) {
-				stats.at<Vec3b>(j,i) = Vec3b(0,255,255);
-			} else if(val < 0.6) {
-				stats.at<Vec3b>(j,i) = Vec3b(25,135,255);
-			} else if(val < 0.7) {
-				stats.at<Vec3b>(j,i) = Vec3b(0,150,255);
-			} else if(val < 0.8) {
-				stats.at<Vec3b>(j,i) = Vec3b(0,85,255);
-			} else if(val < 0.9) {
-				stats.at<Vec3b>(j,i) = Vec3b(0,0,255);
-			} else {
-				stats.at<Vec3b>(j,i) = Vec3b(0,0,185);
+			if(val > 0) {
+				if(val < 0.1) {
+					stats.at<Vec3b>(j,i) = Vec3b(255,255,255);
+				} else if(val < 0.2) {
+					stats.at<Vec3b>(j,i) = Vec3b(255,255,0);
+				} else if(val < 0.3) {
+					stats.at<Vec3b>(j,i) = Vec3b(0,255,0);
+				} else if(val < 0.4) {
+					stats.at<Vec3b>(j,i) = Vec3b(50,255,150);
+				} else if(val < 0.5) {
+					stats.at<Vec3b>(j,i) = Vec3b(0,255,255);
+				} else if(val < 0.6) {
+					stats.at<Vec3b>(j,i) = Vec3b(25,135,255);
+				} else if(val < 0.7) {
+					stats.at<Vec3b>(j,i) = Vec3b(0,150,255);
+				} else if(val < 0.8) {
+					stats.at<Vec3b>(j,i) = Vec3b(0,85,255);
+				} else if(val < 0.9) {
+					stats.at<Vec3b>(j,i) = Vec3b(0,0,255);
+				} else {
+					stats.at<Vec3b>(j,i) = Vec3b(0,0,185);
+				}
 			}
 		}
 	}
@@ -95,5 +86,5 @@ void StatsAnalyzer::calculateAllStats() {
 
 /* DETERMINA SI DOS PUNTOS SE CORRESPONDEN CON EL MISMO ELEMENTO */
 bool StatsAnalyzer::isSamePoint(Point p1, Point p2) {
-	return distance(Point3i(p1),Point3i(p2)) < 3;
+	return distance(p1,p2) < 3;
 }
