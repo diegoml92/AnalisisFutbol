@@ -142,16 +142,28 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 			}
 
 			putText(stats,"Nombre:",Point(10,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-			putText(stats,"Equipo:",Point(10,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+			putText(stats,"Equipo:",Point(10,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,ssplayer.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-			putText(stats,ssteam.str(),Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+			putText(stats,ssteam.str(),Point(100,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 			if(GlobalStats::teams[team].getPlayers().size()>player) {
 				std::stringstream ssdistance;
 				ssdistance << GlobalStats::teams[team].getPlayers()[player].getDistance() << " m";
 
-				putText(stats,"Distancia:",Point(10,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,ssdistance.str(),Point(100,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				std::stringstream ssavgspeed;
+				ssavgspeed << GlobalStats::teams[team].getPlayers()[player].getAvgSpeed() << " km/h";
+
+				std::stringstream ssmaxspeed;
+				ssmaxspeed << GlobalStats::teams[team].getPlayers()[player].getMaxSpeed() << " km/h";
+
+				putText(stats,"Distancia :",Point(10,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssdistance.str(),Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+
+				putText(stats,"Vel. media:",Point(10,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssavgspeed.str(),Point(100,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+
+				putText(stats,"Vel. max. :",Point(10,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssmaxspeed.str(),Point(100,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 				Mat aux = stats(Rect(5,160,240,136));
 				GlobalStats::teams[team].getPlayers()[player].getAreaStats().copyTo(aux);
@@ -177,16 +189,28 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 				}
 
 				putText(stats,"Nombre:",Point(10+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,"Equipo:",Point(10+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,"Equipo:",Point(10+250*i,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,ssplayer.str(),Point(100+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,ssteam.str(),Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssteam.str(),Point(100+250*i,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 				if(GlobalStats::teams[i].getPlayers().size()>player) {
 					std::stringstream ssdistance;
 					ssdistance << GlobalStats::teams[i].getPlayers()[player].getDistance() << " m";
 
-					putText(stats,"Distancia:",Point(10+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-					putText(stats,ssdistance.str(),Point(100+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					std::stringstream ssavgspeed;
+					ssavgspeed << GlobalStats::teams[i].getPlayers()[player].getAvgSpeed() << " km/h";
+
+					std::stringstream ssmaxspeed;
+					ssmaxspeed << GlobalStats::teams[i].getPlayers()[player].getMaxSpeed() << " km/h";
+
+					putText(stats,"Distancia :",Point(10+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,ssdistance.str(),Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+
+					putText(stats,"Vel. media:",Point(10+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,ssavgspeed.str(),Point(100+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+
+					putText(stats,"Vel. max. :",Point(10+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,ssmaxspeed.str(),Point(100+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 					Mat aux = stats(Rect(5+250*i,160,240,136));
 					GlobalStats::teams[i].getPlayers()[player].getAreaStats().copyTo(aux);

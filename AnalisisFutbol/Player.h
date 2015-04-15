@@ -15,10 +15,13 @@ private:
 	// ESTADISTICAS
 	float distance;
 	Mat area_stats;
+	float avgSpeed;
+	float maxSpeed;
 
 	// ATRIBUTOS AUXILIARES
 	Mat area;
 	Point lastPoint;
+	int nSpeed;
 
 public:
 
@@ -42,6 +45,12 @@ public:
 
 	/* DEVUELVE LA DISTANCIA RECORRIDA */
 	float getDistance();
+
+	/* DEVUELVE LA VELOCIDAD MÁXIMA */
+	float getMaxSpeed();
+
+	/* DEVUELVE LA VELOCIDAD MEDIA */
+	float getAvgSpeed();
 
 	/* DEVUELVE EL PUNTO ACUTAL */
 	Point getPosition();

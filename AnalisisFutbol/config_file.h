@@ -11,6 +11,10 @@ using namespace cv;
 #define VIDEO_WIDTH 1920
 #define VIDEO_HEIGHT 1080
 
+#define FPS 25
+
+#define MS_TO_KMH 3.6
+
 #define N_PLAYERS 11
 #define N_TEAMS 2
 
@@ -21,7 +25,7 @@ using namespace cv;
 
 #define ANALYZER_VIDEO_SIZE_RELATION 8
 
-#define SOCCER_FIELD_WIDTH 1200
+#define SOCCER_FIELD_WIDTH 1100
 #define SOCCER_FIELD_HEIGHT 680
 
 #define MAX_BALL_HEIGHT 15

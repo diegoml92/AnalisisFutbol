@@ -19,11 +19,9 @@ public:
 	/* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 	static void addPosition(Mat m, Point p);
 
-	/* INCREMENTA LA DISTANCIA RECORRIDA */
-	static void addDistance(float* distance, Point actualPoint, Point lastPoint);
-
-	/* AÑADE EL VALOR DE LA ALTURA */
-	static void addHeight(float h, float height[]);
+	/* INCREMENTA LA DISTANCIA RECORRIDA Y ACTUALIZA LA VELOCIDAD */
+	static void addDistanceAndSpeed(float* distance, Point actualPoint, Point lastPoint,
+		                            float* speed, int* nSpeed, float* maxSpeed);
 
 	/* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
 	static Mat getAreaStats(Mat m);

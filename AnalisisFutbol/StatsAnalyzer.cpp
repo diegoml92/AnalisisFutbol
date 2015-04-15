@@ -9,8 +9,19 @@ void StatsAnalyzer::addPosition(Mat m, Point p) {
 }
 
 /* INCREMENTA LA DISTANCIA RECORRIDA */
-void StatsAnalyzer::addDistance(float* dist, Point actualPoint, Point lastPoint) {
-	*dist += distance(actualPoint, lastPoint);
+void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point lastPoint,
+										float* speed, int* nSpeed, float* maxSpeed) {
+	float d = distance(actualPoint, lastPoint);
+	*dist += d;
+
+	if(d>0) {
+		float actualSpeed = d*FPS*0.1*MS_TO_KMH;
+		*speed += actualSpeed;
+		if(actualSpeed > *maxSpeed) {
+			*maxSpeed = actualSpeed;
+		}
+		*nSpeed+=1;
+	}
 }
 
 /* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
