@@ -77,8 +77,8 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
 bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 	
-	float rango[] = {0,255};
-    const float* ranges [] = {rango};
+	float range[] = {0,256};
+    const float* ranges [] = {range};
     int channels [] = {0};
     int histSize [] = {128};
 
@@ -95,12 +95,9 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 		Mat images [] = {hsv_roi};
 
 		calcHist(&hsv_roi,1,channels,mask,roi_hist,1,histSize,ranges);
-		normalize(roi_hist,roi_hist,0,255,NORM_MINMAX);
+		normalize(roi_hist,roi_hist,0,1,NORM_MINMAX);
 
 		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
-
-		//int team_id = 0;
-		//Player player(team_id);
 
 		Mat dst;
 		Rect searchWindowRect, relativePlayerBox;
@@ -113,15 +110,6 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 		meanShift(dst,relativePlayerBox,term_crit);
 
 		Point desp = relativePlayerBox.tl() - tmp.tl();
-		
-
-		//rectangle(*paint,Rect(playerBox.tl(),playerBox.size()),Scalar(255,255,255),1);
-
-		//if ((int)video.get(CV_CAP_PROP_POS_FRAMES)%5 == 0) {
-		//Point bcenter = Point(playerBox.tl().x + playerBox.width/2, playerBox.br().y);
-		//player.addPosition(bcenter);
-		//From3DTo2D::paint2DPositions(playerBox,D_SQ_NUM,paint);
-		//}
 
 		*pos = Point(playerBox.tl().x + desp.x + playerBox.width/2,playerBox.br().y + desp.y);
 	}
@@ -137,8 +125,10 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player
 	for(int i=0; i<N_VIDEOS; i++) {
 		Point* realPos = &From3DTo2D::getRealPosition(player->getPosition(),i);
 		if(isInFocus(*realPos)) {
-			detected |= tracking(frame[i],filter[i],&paint[i],realPos);
-			positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
+			if(tracking(frame[i],filter[i],&paint[i],realPos)) {
+				positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
+				detected = true;
+			}
 		}
 	}
 	if(detected) {

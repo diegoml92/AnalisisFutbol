@@ -23,6 +23,9 @@ private:
 	Point lastPoint;
 	int nSpeed;
 
+	/* DETERMINA SI EL PUNTO ESTÁ EN UN RANGO VÁLIDO */
+	bool isInRange(Point pos);
+
 public:
 
 	// IDENTIFICADORES

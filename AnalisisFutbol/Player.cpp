@@ -18,10 +18,12 @@ Player::Player(int team_id, Point pos) {
 
 /* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 void Player::addPosition(Point p) {
-	StatsAnalyzer::addPosition(Player::area, p);
-	StatsAnalyzer::addDistanceAndSpeed(&(Player::distance),p,Player::lastPoint,
-		&(Player::avgSpeed),&(Player::nSpeed),&(Player::maxSpeed));
-	Player::lastPoint = p;
+	if(Player::isInRange(p)) {
+		StatsAnalyzer::addPosition(Player::area, p);
+		StatsAnalyzer::addDistanceAndSpeed(&(Player::distance),p,Player::lastPoint,
+			&(Player::avgSpeed),&(Player::nSpeed),&(Player::maxSpeed));
+		Player::lastPoint = p;
+	}
 }
 
 /* CALCULA LAS ESTADÍSTICAS */
@@ -58,4 +60,9 @@ float Player::getAvgSpeed() {
 /* DEVUELVE EL PUNTO ACUTAL */
 Point Player::getPosition() {
 	return Point(lastPoint.x,lastPoint.y);
+}
+
+/* DETERMINA SI EL PUNTO ESTÁ EN UN RANGO VÁLIDO */
+bool Player::isInRange(Point pos) {
+	return pos.x >= 0 && pos.y >= 0 && pos.x < SOCCER_FIELD_WIDTH && pos.y < SOCCER_FIELD_HEIGHT;
 }

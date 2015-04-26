@@ -77,13 +77,9 @@ int main(int argc, char* argv[]) {
 			a_1 = getTickCount();
 			vector<Player>* playerV = it->getPlayersP();
 			for(vector<Player>::iterator itP = playerV->begin(); itP!=playerV->end(); itP++) {
-				//Player p = *it;
 				TrackingObj::trackPlayers(hsv,filter,&*itP,indexforthis);
 			}
 			b_1 = getTickCount();
-			a_2 = getTickCount();
-			//From3DTo2D::paint2DPositions2(GlobalStats::detectedPlayers.at(i),-1,paint);
-			b_2 = getTickCount();
 			indexforthis++;
 		}
 
@@ -91,7 +87,6 @@ int main(int argc, char* argv[]) {
 
 		std::cout<<"Meanshit:   "<<(b-a)/getTickFrequency()<<std::endl;
 		std::cout<<"   +Tracking:   "<<(b_1-a_1)/getTickFrequency()<<std::endl;
-		std::cout<<"   +Paint:      "<<(b_2-a_2)/getTickFrequency()<<std::endl;
 
 		a = getTickCount();
 
@@ -123,7 +118,6 @@ int main(int argc, char* argv[]) {
 			for(int i=0; i<N_VIDEOS; i++) {
 				for(int j=0; j<GlobalStats::locations[i].size(); j++) {
 					locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
-					//rectangle(frame[i],GlobalStats::locations[i].at(j),Scalar(128,0,255),2);
 				}
 				if(GlobalStats::locations[i].size()) {
 					locations2D[i] = From3DTo2D::get2DPositionVector(locations2D[i],i);
