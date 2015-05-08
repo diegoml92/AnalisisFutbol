@@ -15,9 +15,11 @@ void From3DTo2D::initProjectionMatrices() {
 		switch(i) {
 			case 0: {
 				// SEQ0 POINTS
-				Point2f real [4] = {Point2f(282-DESP, 518), Point2f(603-DESP, 517), Point2f(459-DESP, 299), Point2f(720-DESP, 298)};
+				Point2f real [4] = {Point2f(262,520), Point2f(280,106), Point2f(912,202), Point2f(892,698)};
 				//A-B-C-D
-				Point2f model [4] = {Point2f(0, 0+LONG), Point2f(55, 0+LONG), Point2f(0, 183.2+LONG), Point2f(55, 183.2+LONG)};
+				Point2f model [4] = {Point2f(PENALTY_AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-PENALTY_AREA_HEIGHT/2-1),
+					Point2f(0,SOCCER_FIELD_HEIGHT-1), Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+AREA_HEIGHT/2-1),
+					Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-AREA_HEIGHT/2-1)};
 				// Calculamos la matriz de proyeccion 0
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
 				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
@@ -27,9 +29,10 @@ void From3DTo2D::initProjectionMatrices() {
 			case 1: {
 				int SOCCER_FIELD_WIDTH_2 = SOCCER_FIELD_WIDTH / 2;
 				// SEQ1 POINTS
-				Point2f real [4] = {Point2f(946, 516), Point2f(473, 395), Point2f(950, 297), Point2f(1432, 395)};
+				Point2f real [4] = {Point2f(940,1034), Point2f(956,98), Point2f(470,404), Point2f(1434, 402)};
 				//P-Q-R-S
-				Point2f model [4] = {Point2f(0+SOCCER_FIELD_WIDTH_2, 356-91.5), Point2f(91.5+SOCCER_FIELD_WIDTH_2, 356+0), Point2f(0+SOCCER_FIELD_WIDTH_2, 356+91.5), Point2f(SOCCER_FIELD_WIDTH_2-91.5, 356+0)};
+				Point2f model [4] = {Point2f(SOCCER_FIELD_WIDTH/2-1,0), Point2f(SOCCER_FIELD_WIDTH/2-1,SOCCER_FIELD_HEIGHT-1),
+					Point2f(SOCCER_FIELD_WIDTH/2+CIRCLE_RADIUS-1,SOCCER_FIELD_HEIGHT/2-1), Point2f(SOCCER_FIELD_WIDTH/2-CIRCLE_RADIUS-1,SOCCER_FIELD_HEIGHT/2-1)};
 				// Calculamos la matriz de proyeccion 1
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
 				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
@@ -38,9 +41,12 @@ void From3DTo2D::initProjectionMatrices() {
 			}
 			case 2: {
 				// SEQ2 POINTS
-				Point2f real [4] = {Point2f(1645, 521), Point2f(1969, 521), Point2f(1525, 300), Point2f(1790, 300)};
+				Point2f real [4] = {Point2f(1628,100), Point2f(1018,708), Point2f(1644,522), Point2f(990,204)};
 				//W-X-Y-Z
-				Point2f model [4] = {Point2f(SOCCER_FIELD_WIDTH-55, 0+LONG), Point2f(SOCCER_FIELD_WIDTH, 0+LONG), Point2f(SOCCER_FIELD_WIDTH-55, 183.2+LONG), Point2f(SOCCER_FIELD_WIDTH, 183.2+LONG)};
+				Point2f model [4] = {Point2f(SOCCER_FIELD_WIDTH-1,SOCCER_FIELD_HEIGHT-1),
+					Point2f(SOCCER_FIELD_WIDTH-AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-AREA_HEIGHT/2-1),
+					Point2f(SOCCER_FIELD_WIDTH-PENALTY_AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-PENALTY_AREA_HEIGHT/2-1),
+					Point2f(SOCCER_FIELD_WIDTH-AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+AREA_HEIGHT/2-1)};
 				// Calculamos la matriz de proyeccion 2
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
 				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
@@ -49,9 +55,11 @@ void From3DTo2D::initProjectionMatrices() {
 			}
 			case 3: {
 				// SEQ3 POINTS
-				Point2f real [4] = {Point2f(470-DESP,299), Point2f(739-DESP, 299), Point2f(290-DESP, 523), Point2f(617-DESP,523)};
+				Point2f real [4] = {Point2f(278,92), Point2f(896,710), Point2f(260,524), Point2f(934,198)};
 				//A-B-C-D
-				Point2f model [4] = {Point2f(0, 0+LONG), Point2f(55, 0+LONG), Point2f(0, 183.2+LONG), Point2f(55, 183.2+LONG)};
+				Point2f model [4] = {Point2f(0,0), Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+AREA_HEIGHT/2-1),
+					Point2f(PENALTY_AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+PENALTY_AREA_HEIGHT/2-1),
+					Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-AREA_HEIGHT/2-1)};
 				// Calculamos la matriz de proyeccion 3
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
 				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
@@ -61,9 +69,10 @@ void From3DTo2D::initProjectionMatrices() {
 			case 4: {
 				int SOCCER_FIELD_WIDTH_2 = SOCCER_FIELD_WIDTH / 2;
 				// SEQ4 POINTS
-				Point2f real [4] = {Point2f(943, 300), Point2f(1427, 398), Point2f(944, 516), Point2f(456, 398)};
+				Point2f real [4] = {Point2f(944,1024), Point2f(942,98), Point2f(456,396), Point2f(1426,396)};
 				// P-Q-R-S
-				Point2f model [4] = {Point2f(0+SOCCER_FIELD_WIDTH_2, 356-91.5), Point2f(91.5+SOCCER_FIELD_WIDTH_2, 356+0), Point2f(0+SOCCER_FIELD_WIDTH_2, 356+91.5), Point2f(SOCCER_FIELD_WIDTH_2-91.5, 356+0)};
+				Point2f model [4] = {Point2f(SOCCER_FIELD_WIDTH/2-1,SOCCER_FIELD_HEIGHT-1), Point2f(SOCCER_FIELD_WIDTH/2-1,0),
+					Point2f(SOCCER_FIELD_WIDTH/2-CIRCLE_RADIUS-1,SOCCER_FIELD_HEIGHT/2-1), Point2f(SOCCER_FIELD_WIDTH/2+CIRCLE_RADIUS-1,SOCCER_FIELD_HEIGHT/2-1)};
 				// Calculamos la matriz de proyeccion 4
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
 				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
@@ -72,9 +81,11 @@ void From3DTo2D::initProjectionMatrices() {
 			}
 			case 5: {
 				// SEQ5 POINTS
-				Point2f real [4] = {Point2f(1533, 304), Point2f(1797, 304), Point2f(1647, 525), Point2f(1962, 525)};
+				Point2f real [4] = {Point2f(1028,708), Point2f(1650,528), Point2f(1000,206), Point2f(1642,104)};
 				//W-X-Y-Z
-				Point2f model [4] = {Point2f(SOCCER_FIELD_WIDTH-55, 0+LONG), Point2f(SOCCER_FIELD_WIDTH, 0+LONG), Point2f(SOCCER_FIELD_WIDTH-55, 183.2+LONG), Point2f(SOCCER_FIELD_WIDTH, 183.2+LONG)};
+				Point2f model [4] = {Point2f(SOCCER_FIELD_WIDTH-AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+AREA_HEIGHT/2-1),
+					Point2f(SOCCER_FIELD_WIDTH-PENALTY_AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+PENALTY_AREA_HEIGHT/2-1),
+					Point2f(SOCCER_FIELD_WIDTH-AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-AREA_HEIGHT/2-1), Point2f(SOCCER_FIELD_WIDTH-1,0)};
 				// Calculamos la matriz de proyeccion 5
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
 				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);

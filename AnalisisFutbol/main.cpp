@@ -24,16 +24,18 @@ int main(int argc, char* argv[]) {
 		bg[i] = imread(path.str());
 	}
 
-	/*VideoWriter outputVideo2D,outputVideoCams;
-	Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
-	Size size2 = Size(VIDEO_WIDTH*3/4,(VIDEO_HEIGHT*2+8)/4);
-	outputVideo2D.open("video/field2D_out_2.avi", -1, 25, size1, true);
-    outputVideoCams.open("video/sequences_out_2.avi", -1, 25, size2, true);
+	VideoWriter outputVideo2D,outputVideoCams;
+	if(SAVE_RESULT_SEQ) {
+		Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
+		Size size2 = Size(VIDEO_WIDTH*3/4,(VIDEO_HEIGHT*2+8)/4);
+		outputVideo2D.open("video/field2D_out_2.avi", -1, 25, size1, true);
+		outputVideoCams.open("video/sequences_out_2.avi", -1, 25, size2, true);
 
-    if (!outputVideo2D.isOpened() && !outputVideoCams.isOpened())
-    {
-        return -1;
-    }*/
+		if (!outputVideo2D.isOpened() && !outputVideoCams.isOpened())
+		{
+			return -1;
+		}
+	}
 
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 
@@ -192,8 +194,10 @@ int main(int argc, char* argv[]) {
         imshow("2D FIELD",paint);
 		imshow(VIDEO_W, join);
 
-		//outputVideo2D<<paint;
-		//outputVideoCams<<join;
+		if(SAVE_RESULT_SEQ) {
+			outputVideo2D<<paint;
+			outputVideoCams<<join;
+		}
 
 		b = getTickCount();
 

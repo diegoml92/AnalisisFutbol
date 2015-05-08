@@ -78,9 +78,11 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 	
 	float range[] = {0,256};
-    const float* ranges [] = {range};
-    int channels [] = {0};
-    int histSize [] = {128};
+	const float* ranges [] = {range};
+    int channel_H [] = {0};
+	int channel_S [] = {1};
+	int channel_V [] = {2};
+    int histSize [] = {64};
 
     Rect playerBox = Rect((*pos).x-PLAYER_WIDTH/2,(*pos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
 
@@ -91,23 +93,35 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 		Mat hsv_roi = hsv(playerBox);
 
 		Mat mask = filter(playerBox);
-		Mat roi_hist;
+		Mat hist[3];
 		Mat images [] = {hsv_roi};
 
-		calcHist(&hsv_roi,1,channels,mask,roi_hist,1,histSize,ranges);
-		normalize(roi_hist,roi_hist,0,1,NORM_MINMAX);
+		calcHist(&hsv_roi,1,channel_H,mask,hist[0],1,histSize,ranges);
+		normalize(hist[0],hist[0],0,1,NORM_MINMAX);
+		calcHist(&hsv_roi,1,channel_S,mask,hist[1],1,histSize,ranges);
+		normalize(hist[1],hist[1],0,1,NORM_MINMAX);
+		calcHist(&hsv_roi,1,channel_V,mask,hist[2],1,histSize,ranges);
+		normalize(hist[2],hist[2],0,1,NORM_MINMAX);
+		//normalize(hist[0],roi_hist,0,1,NORM_MINMAX);
+
+		//merge(hist_planes,3,roi_hist);
 
 		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
 
-		Mat dst;
+		Mat dst[3];
 		Rect searchWindowRect, relativePlayerBox;
 		searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
 		Mat window = hsv(searchWindowRect);
 		Mat windowMask = filter(searchWindowRect);
-		calcBackProject(&window,1,channels,roi_hist,dst,ranges,1);
-		dst&=windowMask;
+		calcBackProject(&window,1,channel_H,hist[0],dst[0],ranges,1);
+		calcBackProject(&window,1,channel_H,hist[1],dst[1],ranges,1);
+		calcBackProject(&window,1,channel_H,hist[2],dst[2],ranges,1);
+		dst[0]&=windowMask;
+		dst[1]&=windowMask;
+		dst[2]&=windowMask;
+		Mat backproj = dst[0]|dst[1]|dst[2];
 		Rect tmp = relativePlayerBox;
-		meanShift(dst,relativePlayerBox,term_crit);
+		meanShift(backproj,relativePlayerBox,term_crit);
 
 		Point desp = relativePlayerBox.tl() - tmp.tl();
 
