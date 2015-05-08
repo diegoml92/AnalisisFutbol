@@ -97,14 +97,9 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 		Mat images [] = {hsv_roi};
 
 		calcHist(&hsv_roi,1,channel_H,mask,hist[0],1,histSize,ranges);
-		normalize(hist[0],hist[0],0,1,NORM_MINMAX);
 		calcHist(&hsv_roi,1,channel_S,mask,hist[1],1,histSize,ranges);
-		normalize(hist[1],hist[1],0,1,NORM_MINMAX);
 		calcHist(&hsv_roi,1,channel_V,mask,hist[2],1,histSize,ranges);
-		normalize(hist[2],hist[2],0,1,NORM_MINMAX);
-		//normalize(hist[0],roi_hist,0,1,NORM_MINMAX);
-
-		//merge(hist_planes,3,roi_hist);
+		//normalize(hist[i],hist[i],0,1,NORM_MINMAX);
 
 		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
 
