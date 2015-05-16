@@ -10,8 +10,6 @@ bool VideoManager::init() {
 		videoPath << VIDEO_PATH << i << VIDEO_FORMAT;
 		open = open && video[i].open(videoPath.str());
 	}
-	std::cout<<static_cast<int>(video[0].get(CV_CAP_PROP_FOURCC))<<std::endl;
-	std::cout<<video[0].get(CV_CAP_PROP_FPS)<<std::endl;
     return open;
 }
 

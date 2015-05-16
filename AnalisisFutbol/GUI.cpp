@@ -88,9 +88,9 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 	if(individualMode==0) {
 		if(comparativeMode==0) {	// 0,0
 			int team = getActiveTeam();
-			stats = Mat(Size(250,300), CV_8UC3);
+			stats = Mat(Size(STATS_W_WIDTH,STATS_W_HEIGHT), CV_8UC3);
 			stats.setTo(Scalar(GUI_COLOR));
-			line(stats,Point(0,25),Point(250,25),Scalar(GUI_AUX_COLOR),2);
+			line(stats,Point(0,25),Point(STATS_W_WIDTH,25),Scalar(GUI_AUX_COLOR),2);
 			std::stringstream ssname;
 			ssname << "Equipo " << team+1;
 			std::stringstream ssdistance;
@@ -100,34 +100,36 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 			putText(stats,ssname.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			putText(stats,ssdistance.str(),Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-			Mat aux = stats(Rect(5,160,240,136));
+			Mat aux = stats(Rect(5,160,
+				SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION,SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION));
 			GlobalStats::teams[team].getAreaStats().copyTo(aux);
 
 		} else {					// 0,1
-			stats = Mat(Size(250*2,300), CV_8UC3);
+			stats = Mat(Size(STATS_W_WIDTH*2,STATS_W_HEIGHT), CV_8UC3);
 			stats.setTo(Scalar(GUI_COLOR));
-			line(stats,Point(0,25),Point(250*2,25),Scalar(GUI_AUX_COLOR),2);
-			line(stats,Point(250,0),Point(250,300),Scalar(GUI_AUX_COLOR),1);
+			line(stats,Point(0,25),Point(STATS_W_WIDTH*2,25),Scalar(GUI_AUX_COLOR),2);
+			line(stats,Point(STATS_W_WIDTH,0),Point(STATS_W_WIDTH,STATS_W_HEIGHT),Scalar(GUI_AUX_COLOR),1);
 			for(int i=0; i<2; i++) {
 				std::stringstream ssname;
 				ssname << "Equipo " << i+1;
 				std::stringstream ssdistance;
 				ssdistance << GlobalStats::teams[i].getDistance() << " m";
-				putText(stats,"Distancia:",Point(10+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,"Distancia:",Point(10+STATS_W_WIDTH*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-				putText(stats,ssname.str(),Point(100+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,ssdistance.str(),Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssname.str(),Point(100+STATS_W_WIDTH*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssdistance.str(),Point(100+STATS_W_WIDTH*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-				Mat aux = stats(Rect(5+250*i,160,240,136));
+				Mat aux = stats(Rect(5+STATS_W_WIDTH*i,160,
+					SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION,SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION));
 				GlobalStats::teams[i].getAreaStats().copyTo(aux);
 			}
 		}
 	} else {
 		// AÑADIR ESTADÍSTICAS DE POSICIÓN 2D 
 		if(comparativeMode==0) {	// 1,0
-			stats = Mat(Size(250,300), CV_8UC3);
+			stats = Mat(Size(STATS_W_WIDTH,STATS_W_HEIGHT), CV_8UC3);
 			stats.setTo(Scalar(GUI_COLOR));
-			line(stats,Point(0,25),Point(250,25),Scalar(GUI_AUX_COLOR),2);
+			line(stats,Point(0,25),Point(STATS_W_WIDTH,25),Scalar(GUI_AUX_COLOR),2);
 
 			int team = getActiveTeam();
 			int player = getActivePlayer(team+1);
@@ -165,17 +167,18 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 				putText(stats,"Vel. max. :",Point(10,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				putText(stats,ssmaxspeed.str(),Point(100,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-				Mat aux = stats(Rect(5,160,240,136));
+				Mat aux = stats(Rect(5,160,
+					SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION,SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION));
 				GlobalStats::teams[team].getPlayers()[player].getAreaStats().copyTo(aux);
 			} else {
-				putText(stats,"NO EXISTE",Point(10+250*team,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,"NO EXISTE",Point(10+STATS_W_WIDTH*team,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 			}
 
 		} else {					// 1,1
-			stats = Mat(Size(250*2,300), CV_8UC3);
+			stats = Mat(Size(STATS_W_WIDTH*2,STATS_W_HEIGHT), CV_8UC3);
 			stats.setTo(Scalar(GUI_COLOR));
-			line(stats,Point(0,25),Point(250*2,25),Scalar(GUI_AUX_COLOR),2);
-			line(stats,Point(250,0),Point(250,300),Scalar(GUI_AUX_COLOR),1);
+			line(stats,Point(0,25),Point(STATS_W_WIDTH*2,25),Scalar(GUI_AUX_COLOR),2);
+			line(stats,Point(STATS_W_WIDTH,0),Point(STATS_W_WIDTH,STATS_W_HEIGHT),Scalar(GUI_AUX_COLOR),1);
 			for(int i=0; i<N_TEAMS; i++) {
 				int player = getActivePlayer(i+1);
 
@@ -188,10 +191,10 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 					ssplayer << "Jugador " << player;
 				}
 
-				putText(stats,"Nombre:",Point(10+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,"Equipo:",Point(10+250*i,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,ssplayer.str(),Point(100+250*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-				putText(stats,ssteam.str(),Point(100+250*i,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,"Nombre:",Point(10+STATS_W_WIDTH*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,"Equipo:",Point(10+STATS_W_WIDTH*i,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssplayer.str(),Point(100+STATS_W_WIDTH*i,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+				putText(stats,ssteam.str(),Point(100+STATS_W_WIDTH*i,50),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 				if(GlobalStats::teams[i].getPlayers().size()>player) {
 					std::stringstream ssdistance;
@@ -203,19 +206,20 @@ void GUI::showStatsWindow(int individualMode, int comparativeMode) {
 					std::stringstream ssmaxspeed;
 					ssmaxspeed << GlobalStats::teams[i].getPlayers()[player].getMaxSpeed() << " km/h";
 
-					putText(stats,"Distancia :",Point(10+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-					putText(stats,ssdistance.str(),Point(100+250*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,"Distancia :",Point(10+STATS_W_WIDTH*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,ssdistance.str(),Point(100+STATS_W_WIDTH*i,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-					putText(stats,"Vel. media:",Point(10+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-					putText(stats,ssavgspeed.str(),Point(100+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,"Vel. media:",Point(10+STATS_W_WIDTH*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,ssavgspeed.str(),Point(100+STATS_W_WIDTH*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-					putText(stats,"Vel. max. :",Point(10+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
-					putText(stats,ssmaxspeed.str(),Point(100+250*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,"Vel. max. :",Point(10+STATS_W_WIDTH*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,ssmaxspeed.str(),Point(100+STATS_W_WIDTH*i,125),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
-					Mat aux = stats(Rect(5+250*i,160,240,136));
+					Mat aux = stats(Rect(5+STATS_W_WIDTH*i,160,
+						SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION,SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION));
 					GlobalStats::teams[i].getPlayers()[player].getAreaStats().copyTo(aux);
 				} else {
-					putText(stats,"NO EXISTE",Point(10+250*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
+					putText(stats,"NO EXISTE",Point(10+STATS_W_WIDTH*i,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 				}
 			}
 		}

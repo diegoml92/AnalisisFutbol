@@ -9,8 +9,8 @@ using namespace cv;
 
 #define N_VIDEOS 6
 
-#define VIDEO_WIDTH 1920
-#define VIDEO_HEIGHT 1080
+#define VIDEO_WIDTH 960
+#define VIDEO_HEIGHT 540
 
 #define SAVE_RESULT_SEQ false
 
@@ -23,9 +23,9 @@ using namespace cv;
 
 #define SEARCH_WINDOW 15,15
 
-#define ANALYZER_VIDEO_SIZE_RELATION 8
+#define ANALYZER_VIDEO_SIZE_RELATION 4
 
-#define SOCCER_FIELD_WIDTH 1100
+#define SOCCER_FIELD_WIDTH 1080
 #define SOCCER_FIELD_HEIGHT 680
 
 #define CIRCLE_RADIUS 91.5
@@ -56,15 +56,18 @@ using namespace cv;
 #define R_BUTTON_ACTIVE_RADIUS 4
 #define N_RBUTTON_SGROUPS 2
 
+#define STATS_W_WIDTH 280
+#define STATS_W_HEIGHT 335
+
 #define GUI_COLOR 250,175,0
 #define GUI_AUX_COLOR 235,220,155
 #define COLOR_WHITE 255,255,255
 #define COLOR_BLACK 0,0,0
 
-#define PLAYER_WIDTH 35
-#define PLAYER_HEIGHT 90
+#define PLAYER_WIDTH 17
+#define PLAYER_HEIGHT 45
 
-#define MIN_WIDTH 20
-#define MAX_WIDTH 70
-#define MIN_HEIGH 65
-#define MAX_HEIGH 130
+#define MIN_WIDTH 10
+#define MAX_WIDTH 35
+#define MIN_HEIGH 32
+#define MAX_HEIGH 65

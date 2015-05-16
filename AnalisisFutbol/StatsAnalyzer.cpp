@@ -38,30 +38,30 @@ Mat StatsAnalyzer::getAreaStats(Mat m) {
 	Mat normalized = normalizeAreaStats(m);
 	Mat stats;
 	soccer_field.copyTo(stats);
-	for(int i=0;i<normalized.cols;i++) {
-		for(int j=0;j<normalized.rows;j++) {
-			float val = normalized.at<float>(j,i);
+	for(int i=0;i<normalized.rows;i++) {
+		for(int j=0;j<normalized.cols;j++) {
+			float val = normalized.at<float>(i,j);
 			if(val > 0) {
 				if(val < 0.1) {
-					stats.at<Vec3b>(j,i) = Vec3b(255,255,255);
+					stats.at<Vec3b>(i,j) = Vec3b(255,255,255);
 				} else if(val < 0.2) {
-					stats.at<Vec3b>(j,i) = Vec3b(255,255,0);
+					stats.at<Vec3b>(i,j) = Vec3b(255,255,0);
 				} else if(val < 0.3) {
-					stats.at<Vec3b>(j,i) = Vec3b(0,255,0);
+					stats.at<Vec3b>(i,j) = Vec3b(0,255,0);
 				} else if(val < 0.4) {
-					stats.at<Vec3b>(j,i) = Vec3b(50,255,150);
+					stats.at<Vec3b>(i,j) = Vec3b(50,255,150);
 				} else if(val < 0.5) {
-					stats.at<Vec3b>(j,i) = Vec3b(0,255,255);
+					stats.at<Vec3b>(i,j) = Vec3b(0,255,255);
 				} else if(val < 0.6) {
-					stats.at<Vec3b>(j,i) = Vec3b(25,135,255);
+					stats.at<Vec3b>(i,j) = Vec3b(25,135,255);
 				} else if(val < 0.7) {
-					stats.at<Vec3b>(j,i) = Vec3b(0,150,255);
+					stats.at<Vec3b>(i,j) = Vec3b(0,150,255);
 				} else if(val < 0.8) {
-					stats.at<Vec3b>(j,i) = Vec3b(0,85,255);
+					stats.at<Vec3b>(i,j) = Vec3b(0,85,255);
 				} else if(val < 0.9) {
-					stats.at<Vec3b>(j,i) = Vec3b(0,0,255);
+					stats.at<Vec3b>(i,j) = Vec3b(0,0,255);
 				} else {
-					stats.at<Vec3b>(j,i) = Vec3b(0,0,185);
+					stats.at<Vec3b>(i,j) = Vec3b(0,0,185);
 				}
 			}
 		}
@@ -77,10 +77,10 @@ Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
 	minMaxLoc(m, &min, &max, &pMin, &pMax);
 
 	if(max>0) {
-		for(int i=0;i<m.cols;i++) {
-			for(int j=0;j<m.rows;j++) {
-				int val = m.at<int>(j,i);
-				result.at<float>(j,i) = (val - min) / (max - min);
+		for(int i=0;i<m.rows;i++) {
+			for(int j=0;j<m.cols;j++) {
+				int val = m.at<int>(i,j);
+				result.at<float>(i,j) = (val - min) / (max - min);
 			}
 		}
 	}

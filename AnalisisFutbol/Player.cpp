@@ -10,8 +10,8 @@ Player::Player(int team_id, Point pos) {
 	Player::distance = 0;
 	Player::avgSpeed = 0;
 	Player::maxSpeed = 0;
-	Player::area = Mat::zeros((VIDEO_HEIGHT+8)/ANALYZER_VIDEO_SIZE_RELATION,
-		                      VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
+	Player::area = Mat::zeros(SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION,
+		                      SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
 	Player::lastPoint = pos;
 	Player::nSpeed = 0;
 }

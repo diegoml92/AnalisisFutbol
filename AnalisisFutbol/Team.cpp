@@ -8,8 +8,8 @@ Team::Team() {
 	Team::team_id = id++;
 	Team::distance = 0;
 	Player::id.push_back(id);
-	Team::area = Mat::zeros((VIDEO_HEIGHT+8)/ANALYZER_VIDEO_SIZE_RELATION,
-		                    VIDEO_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
+	Team::area = Mat::zeros(SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION,
+		                    SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
 }
 
 /* CALCULA LAS ESTADÍSTICAS */
