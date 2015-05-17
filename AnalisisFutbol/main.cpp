@@ -18,16 +18,20 @@ int main(int argc, char* argv[]) {
 	Mat filter[N_VIDEOS];					// Almacenará el umbral actualizado según los valores del filtro
 	Mat bg[N_VIDEOS];						// Almacenará los backgrounds de cada secuencia
 
-	for(int i=0; i<N_VIDEOS; i++) {
+	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
+
+	for(int i=0; i<N_VIDEOS; i++) {			// Inicializamos imágenes de bg y máscaras
 		std::stringstream path;
 		path << VIDEO_PATH << i << BG_FORMAT;
 		bg[i] = imread(path.str());
+
+		FieldFilter::initFilterMask(i);
 	}
 
 	VideoWriter outputVideo2D,outputVideoCams;
 	if(SAVE_RESULT_SEQ) {
 		Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
-		Size size2 = Size(VIDEO_WIDTH*3/4,(VIDEO_HEIGHT*2+8)/4);
+		Size size2 = Size(VIDEO_WIDTH*3/4,(VIDEO_HEIGHT*2+4)/4);
 		outputVideo2D.open("video/field2D_out_2.avi", -1, 25, size1, true);
 		outputVideoCams.open("video/sequences_out_2.avi", -1, 25, size2, true);
 
@@ -36,8 +40,6 @@ int main(int argc, char* argv[]) {
 			return -1;
 		}
 	}
-
-	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 
 	/*	
 	*	Bucle en el que vamos pasando los frames del video con la función nextFrame,
@@ -57,7 +59,7 @@ int main(int argc, char* argv[]) {
 		a = getTickCount();
 
 		for(int i=0; i<N_VIDEOS; i++) {
-			filter[i] = FieldFilter::discardField(frame[i].clone(), bg[i]);	// Filtramos el campo en el frame
+			filter[i] = FieldFilter::discardField(frame[i].clone(), bg[i], i);	// Filtramos el campo en el frame
 		}
 
 		b = getTickCount();
@@ -196,7 +198,8 @@ int main(int argc, char* argv[]) {
 
 		end_time = getTickCount();
 
-		std::cout<<"TOTAL:      "<<(end_time-init_time)/getTickFrequency()<<std::endl;
+		std::cout<<"TOTAL:      "<<(end_time-init_time)/getTickFrequency()<<
+			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
 		std::cout<<"PLAYERS:    "<<GlobalStats::totalPlayers()<<std::endl;
 		std::cout<<"TEAMS:      "<<GlobalStats::teams.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;

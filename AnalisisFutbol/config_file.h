@@ -71,3 +71,5 @@ using namespace cv;
 #define MAX_WIDTH 35
 #define MIN_HEIGH 32
 #define MAX_HEIGH 65
+
+#define FIELD_MARGIN 10

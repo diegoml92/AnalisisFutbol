@@ -1,14 +1,34 @@
 #include "FieldFilter.h"
+#include "From3DTo2D.h"
+
+Mat FieldFilter::mask[N_VIDEOS];
 
 /* FILTRAMOS EL CAMPO PARA ENCONTRAR A LOS JUGADORES */
-Mat FieldFilter::discardField(Mat partido, Mat bg) {
-
-	Mat thres, final, diff = abs(partido-bg);
+Mat FieldFilter::discardField(Mat partido, Mat bg, int nCam) {
+	Mat thres, tmp, final, diff = abs(partido-bg);
 	threshold(diff,thres,40,255,CV_THRESH_BINARY);
 
 	vector<Mat> planes;
 	split(thres,planes);
-	final = (planes[0] | planes[1] | planes[2]);
-
+	tmp = (planes[0] | planes[1] | planes[2]);
+	tmp.copyTo(final,mask[nCam]);
 	return final;
+}
+
+/* SE INICIALIZA LA MÁSCARA PARA EL FILTRO */
+void FieldFilter::initFilterMask(int nCam) {
+	if(nCam!=2 && nCam!=5) {
+		FieldFilter::mask[nCam] = Mat::zeros(Size(VIDEO_WIDTH,VIDEO_HEIGHT),CV_8UC1);
+	} else {
+		FieldFilter::mask[nCam] = Mat::zeros(Size(VIDEO_WIDTH,VIDEO_HEIGHT+4),CV_8UC1);
+	}
+	Point points [1][4];
+	points [0][0] = From3DTo2D::getRealPosition(Point(0-FIELD_MARGIN,0-FIELD_MARGIN),nCam);
+	points [0][1] = From3DTo2D::getRealPosition(Point(SOCCER_FIELD_WIDTH+FIELD_MARGIN,0-FIELD_MARGIN),nCam);
+	points [0][2] = From3DTo2D::getRealPosition(Point(SOCCER_FIELD_WIDTH+FIELD_MARGIN,
+		                                         SOCCER_FIELD_HEIGHT+FIELD_MARGIN),nCam);
+	points [0][3] = From3DTo2D::getRealPosition(Point(0-FIELD_MARGIN,SOCCER_FIELD_HEIGHT+FIELD_MARGIN),nCam);
+	const Point* ppt[1] = { points[0] };
+	int npt[] = { 4 };
+	fillPoly(mask[nCam],ppt,npt,1,Scalar(255));
 }
