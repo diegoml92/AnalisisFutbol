@@ -62,6 +62,11 @@ Point Player::getPosition() {
 	return Point(lastPoint.x,lastPoint.y);
 }
 
+/* DEVUELVE EL PLAYER ID */
+int Player::getPlayerId() {
+	return Player::player_id;
+}
+
 /* DETERMINA SI EL PUNTO ESTÁ EN UN RANGO VÁLIDO */
 bool Player::isInRange(Point pos) {
 	return pos.x >= 0 && pos.y >= 0 && pos.x < SOCCER_FIELD_WIDTH && pos.y < SOCCER_FIELD_HEIGHT;

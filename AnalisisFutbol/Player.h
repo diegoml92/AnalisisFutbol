@@ -57,6 +57,9 @@ public:
 
 	/* DEVUELVE EL PUNTO ACUTAL */
 	Point getPosition();
+
+	/* DEVUELVE EL PLAYER ID */
+	int Player::getPlayerId();
 };
 
 #endif //PLAYER_H

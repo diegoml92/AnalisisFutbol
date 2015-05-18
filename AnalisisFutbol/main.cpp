@@ -163,11 +163,14 @@ int main(int argc, char* argv[]) {
 				Scalar colour = GlobalStats::colors.at(i);
 				Point p = it->getPosition();
 				circle(paint,p,3,colour,2);
-				for (int k=0; k<N_VIDEOS; k++) {
+				for(int k=0; k<N_VIDEOS; k++) {
 					Point realP = From3DTo2D::getRealPosition(p,k);
 					Rect paintR(Point(realP.x - PLAYER_WIDTH/2, realP.y - PLAYER_HEIGHT),
 								Point(realP.x + PLAYER_WIDTH/2, realP.y));
 					rectangle(frame[k],paintR,colour,2);
+					std::stringstream text;
+					text << it->getPlayerId() << " / " << i;
+					putText(frame[k],text.str(),Point(realP.x-15,realP.y+15),0,0.5,colour,2);
 				}
 			}
 		}
