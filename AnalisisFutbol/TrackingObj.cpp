@@ -75,7 +75,7 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 }
 
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
+bool TrackingObj::tracking(Mat hsv, Mat filter, Point* pos) {
 	
 	float range[] = {0,256};
 	const float* ranges [] = {range};
@@ -99,7 +99,6 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 		calcHist(&hsv_roi,1,channel_H,mask,hist[0],1,histSize,ranges);
 		calcHist(&hsv_roi,1,channel_S,mask,hist[1],1,histSize,ranges);
 		calcHist(&hsv_roi,1,channel_V,mask,hist[2],1,histSize,ranges);
-		//normalize(hist[i],hist[i],0,1,NORM_MINMAX);
 
 		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
 
@@ -122,33 +121,42 @@ bool TrackingObj::tracking(Mat hsv, Mat filter, Mat* paint, Point* pos) {
 
 		*pos = Point(playerBox.tl().x + desp.x + playerBox.width/2,playerBox.br().y + desp.y);
 	}
-	return inRange;
+	playerBox = Rect((*pos).x-PLAYER_WIDTH/2,(*pos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+	return inRange && isInRange(&playerBox) && PlayerClassifier::canBePlayer2(filter(playerBox));
 }
 
 /* TRACKING DE LOS JUGADORES */
 void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player* player, int index) {
 	bool detected = false;
-	Point newPos;
 	vector<Point> positions;
-	Mat paint[N_VIDEOS];
 	for(int i=0; i<N_VIDEOS; i++) {
-		Point* realPos = &From3DTo2D::getRealPosition(player->getPosition(),i);
-		if(isInFocus(*realPos)) {
-			if(tracking(frame[i],filter[i],&paint[i],realPos)) {
+		Point* realPos;
+		if (player->getBPos(i)) {
+			realPos = &player->getCamPos(i);
+		} else {
+			realPos = &From3DTo2D::getRealPosition(player->getPosition(),i);
+		}
+		if(player->getBPos(i) || isInFocus(*realPos)) {
+			if(tracking(frame[i],filter[i],realPos)) {
+				player->setCamPos(i,*realPos);
 				positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
 				detected = true;
+				filter[i](Rect()).setTo(0);
+			} else {
+				player->unSetCamPos(i);
 			}
 		}
 	}
 	if(detected) {
+		Point newPos;
 		for(int i=0; i<positions.size(); i++) {
 			newPos+=positions.at(i);
 		}
 		newPos = Point(newPos.x/positions.size(), newPos.y/positions.size());
+		player->addPosition(newPos);
 	} else {
 		GlobalStats::playersToDelete.push_back(index);
 	}
-	player->addPosition(newPos);
 }
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */

@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	VideoWriter outputVideo2D,outputVideoCams;
 	if(SAVE_RESULT_SEQ) {
 		Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
-		Size size2 = Size(VIDEO_WIDTH*3/4,(VIDEO_HEIGHT*2+4)/4);
+		Size size2 = Size(VIDEO_WIDTH*3/2,(VIDEO_HEIGHT*2+4)/2);
 		outputVideo2D.open("video/field2D_out_2.avi", -1, 25, size1, true);
 		outputVideoCams.open("video/sequences_out_2.avi", -1, 25, size2, true);
 
@@ -164,7 +164,12 @@ int main(int argc, char* argv[]) {
 				Point p = it->getPosition();
 				circle(paint,p,3,colour,2);
 				for(int k=0; k<N_VIDEOS; k++) {
-					Point realP = From3DTo2D::getRealPosition(p,k);
+					Point realP;
+					if(it->getBPos(k)) {
+						realP = it->getCamPos(k);
+					} else {
+						realP = From3DTo2D::getRealPosition(p,k);
+					}
 					Rect paintR(Point(realP.x - PLAYER_WIDTH/2, realP.y - PLAYER_HEIGHT),
 								Point(realP.x + PLAYER_WIDTH/2, realP.y));
 					rectangle(frame[k],paintR,colour,2);
@@ -183,7 +188,7 @@ int main(int argc, char* argv[]) {
 
 		GlobalStats::clearLocations();
 
-        Mat join = VideoManager::joinSequences(frame);
+		Mat join = VideoManager::joinSequences(frame);
 
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
@@ -193,6 +198,9 @@ int main(int argc, char* argv[]) {
 		if(SAVE_RESULT_SEQ) {
 			outputVideo2D<<paint;
 			outputVideoCams<<join;
+		} else {
+			imshow("2D FIELD",paint);
+			imshow(VIDEO_W, join);
 		}
 
 		b = getTickCount();

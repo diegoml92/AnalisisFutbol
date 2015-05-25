@@ -25,5 +25,8 @@ public:
 	/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
 	static bool PlayerClassifier::canBePlayer(Mat roi);
 
+	/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
+	static bool PlayerClassifier::canBePlayer2(Mat roi);
+
 };
 

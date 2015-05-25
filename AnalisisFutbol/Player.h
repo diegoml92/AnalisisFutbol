@@ -22,6 +22,8 @@ private:
 	Mat area;
 	Point lastPoint;
 	int nSpeed;
+	bool bPos[N_VIDEOS];
+	Point camPos[N_VIDEOS];
 
 	/* DETERMINA SI EL PUNTO ESTÁ EN UN RANGO VÁLIDO */
 	bool isInRange(Point pos);
@@ -57,6 +59,18 @@ public:
 
 	/* DEVUELVE EL PUNTO ACUTAL */
 	Point getPosition();
+
+	/* DEVUELVE EL VALOR i */
+	bool getBPos(int i);
+
+	/* DEVUELVE EL VALOR i */
+	Point getCamPos(int i);
+
+	/* ACTIVA LA CÁMARA i */
+	void setCamPos(int i, Point p);
+
+	/* DESACTIVA LA CÁMARA i */
+	void unSetCamPos(int i);
 
 	/* DEVUELVE EL PLAYER ID */
 	int Player::getPlayerId();

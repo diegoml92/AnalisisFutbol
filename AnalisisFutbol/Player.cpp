@@ -12,6 +12,9 @@ Player::Player(int team_id, Point pos) {
 	Player::maxSpeed = 0;
 	Player::area = Mat::zeros(SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION,
 		                      SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION, CV_32SC1);
+	for(int i=0; i<N_VIDEOS; i++) {
+		Player::bPos[i] = false;
+	}
 	Player::lastPoint = pos;
 	Player::nSpeed = 0;
 }
@@ -65,6 +68,27 @@ Point Player::getPosition() {
 /* DEVUELVE EL PLAYER ID */
 int Player::getPlayerId() {
 	return Player::player_id;
+}
+
+/* DEVUELVE EL VALOR i */
+bool Player::getBPos(int i) {
+	return Player::bPos[i];
+}
+
+/* DEVUELVE EL VALOR i */
+Point Player::getCamPos(int i) {
+	return Player::camPos[i];
+}
+
+/* ACTIVA LA CÁMARA i */
+void Player::setCamPos(int i, Point p) {
+	Player::bPos[i] = true;
+	Player::camPos[i] = p;
+}
+
+/* DESACTIVA LA CÁMARA i */
+void Player::unSetCamPos(int i) {
+	Player::bPos[i] = false;
 }
 
 /* DETERMINA SI EL PUNTO ESTÁ EN UN RANGO VÁLIDO */

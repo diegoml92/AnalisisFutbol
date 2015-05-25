@@ -29,27 +29,24 @@ void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Point player) {
 void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, vector<Rect> rects, Point pos) {
 
 	int channels [] = {0,1,2};
-	int nBins = 256;
+	int nBins = 32;
 	float range [] = {0,256};
 	const float *ranges = {range};
-	vector<Mat> hist_v; 
+	Mat hist;
 	for(int i=0; i<rects.size(); i++) {
-		Mat hist, src = partido(rects.at(i));
-		calcHist(&src,1,channels,umbral(rects[i]),hist,1,&nBins,&ranges);
-		hist_v.push_back(hist);
+		Mat src = partido(rects.at(i));
+		calcHist(&src,1,channels,umbral(rects[i]),hist,1,&nBins,&ranges,true,true);
 	}
-	/******************************************/
-	Mat finalHist = hist_v[0];//CALCULAR HISTOGRAMA MEDIO!!!
 	if(GlobalStats::teams.empty()) {
 		Team t = Team();
-		t.setHistogram(finalHist);
+		t.setHistogram(hist);
 		t.createPlayer(pos);
 		GlobalStats::teams.push_back(t);
 	} else {
 		bool found = false;
 		vector<Team>::iterator it = GlobalStats::teams.begin();
 		while(it!=GlobalStats::teams.end() && !found) {
-			found = compareHist(it->getHistogram(),finalHist,CV_COMP_BHATTACHARYYA) < BHATTACHARYYA_THRES;
+			found = compareHist(it->getHistogram(),hist,CV_COMP_BHATTACHARYYA) < BHATTACHARYYA_THRES;
 			it++;
 		}
 		if(found) {
@@ -57,7 +54,7 @@ void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, vector<Rect> rects
 			it->createPlayer(pos);
 		} else {
 			Team t = Team();
-			t.setHistogram(finalHist);
+			t.setHistogram(hist);
 			t.createPlayer(pos);
 			GlobalStats::teams.push_back(t);
 		}
@@ -73,4 +70,9 @@ bool PlayerClassifier::isPlayerSize(Rect player) {
 /* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
 bool PlayerClassifier::canBePlayer(Mat roi) {
 	return countNonZero(roi) / (float)(roi.cols*roi.rows) > 0.35;
+}
+
+/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
+bool PlayerClassifier::canBePlayer2(Mat roi) {
+	return countNonZero(roi) / (float)(roi.cols*roi.rows) > 0.2;
 }
