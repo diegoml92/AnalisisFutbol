@@ -37,7 +37,7 @@ Point GlobalStats::getCenter(Rect r) {
 
 /* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
 bool GlobalStats::allPlayersDetected() {
-	return playersDetected;
+	return GlobalStats::totalPlayers() > 35;
 }
 
 int GlobalStats::totalPlayers() {

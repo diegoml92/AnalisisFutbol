@@ -192,9 +192,6 @@ int main(int argc, char* argv[]) {
 
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
-        imshow("2D FIELD",paint);
-		imshow(VIDEO_W, join);
-
 		if(SAVE_RESULT_SEQ) {
 			outputVideo2D<<paint;
 			outputVideoCams<<join;
