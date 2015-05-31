@@ -80,10 +80,27 @@ int main(int argc, char* argv[]) {
 			indexforthis++;
 		}
 
+		for(vector<Team>::iterator it = GlobalStats::teams.begin(); it!=GlobalStats::teams.end(); it++) {
+			a_2 = getTickCount();
+			vector<Player>* playerV = it->getPlayersP();
+			for(vector<Player>::iterator itP = playerV->begin(); itP!=playerV->end(); itP++) {
+				for(int i=0; i<N_VIDEOS; i++) {
+					if(itP->getBPos(i)) {
+						Rect rectP = GlobalStats::getPlayerRect(itP->getCamPos(i));
+						if(TrackingObj::isInRange(&rectP)) {
+							filter[i](rectP).setTo(0);
+						}
+					}
+				}
+			}
+			b_2 = getTickCount();
+		}
+
 		b = getTickCount();
 
 		std::cout<<"Meanshit:   "<<(b-a)/getTickFrequency()<<std::endl;
 		std::cout<<"   +Tracking:   "<<(b_1-a_1)/getTickFrequency()<<std::endl;
+		std::cout<<"   +Cleaning:   "<<(b_2-a_2)/getTickFrequency()<<std::endl;
 
 		a = getTickCount();
 

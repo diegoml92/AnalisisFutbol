@@ -35,6 +35,11 @@ Point GlobalStats::getCenter(Rect r) {
 	return Point(r.tl().x + r.width/2, r.br().y);
 }
 
+/* CALCULA EL RECTÁNGULO A PARTIR DEL CENTRO */
+Rect GlobalStats::getPlayerRect(Point pos) {
+	return Rect(pos.x-PLAYER_WIDTH/2,pos.y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+}
+
 /* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
 bool GlobalStats::allPlayersDetected() {
 	return GlobalStats::totalPlayers() > 35;

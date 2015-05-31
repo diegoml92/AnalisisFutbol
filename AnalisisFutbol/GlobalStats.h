@@ -33,6 +33,9 @@ public:
 	/* CALCULA EL CENTRO DE UN RECTÁNGULO */
 	static Point getCenter(Rect r);
 
+	/* CALCULA EL RECTÁNGULO A PARTIR DEL CENTRO */
+	static Rect getPlayerRect(Point pos);
+
 	/* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
 	static bool allPlayersDetected();
 

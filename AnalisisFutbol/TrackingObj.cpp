@@ -75,53 +75,55 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 }
 
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-bool TrackingObj::tracking(Mat hsv, Mat filter, Point* pos) {
+bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos) {
 	
 	float range[] = {0,256};
 	const float* ranges [] = {range};
-    int channel_H [] = {0};
-	int channel_S [] = {1};
-	int channel_V [] = {2};
+    int channel_B [] = {0};
+	int channel_G [] = {1};
+	int channel_R [] = {2};
     int histSize [] = {64};
 
-    Rect playerBox = Rect((*pos).x-PLAYER_WIDTH/2,(*pos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+    Rect playerBox = GlobalStats::getPlayerRect(*pos);
 
 	bool inRange = isInRange(&playerBox);
 
 	if(inRange) {
 
-		Mat hsv_roi = hsv(playerBox);
+		Mat roi = frame(playerBox);
 
 		Mat mask = filter(playerBox);
 		Mat hist[3];
-		Mat images [] = {hsv_roi};
+		Mat images [] = {roi};
 
-		calcHist(&hsv_roi,1,channel_H,mask,hist[0],1,histSize,ranges);
-		calcHist(&hsv_roi,1,channel_S,mask,hist[1],1,histSize,ranges);
-		calcHist(&hsv_roi,1,channel_V,mask,hist[2],1,histSize,ranges);
+		calcHist(&roi,1,channel_B,mask,hist[0],1,histSize,ranges);
+		calcHist(&roi,1,channel_G,mask,hist[1],1,histSize,ranges);
+		calcHist(&roi,1,channel_R,mask,hist[2],1,histSize,ranges);
 
-		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 5, 1);
-
-		Mat dst[3];
 		Rect searchWindowRect, relativePlayerBox;
 		searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
-		Mat window = hsv(searchWindowRect);
+		Mat window = frame(searchWindowRect);
 		Mat windowMask = filter(searchWindowRect);
-		calcBackProject(&window,1,channel_H,hist[0],dst[0],ranges,1);
-		calcBackProject(&window,1,channel_H,hist[1],dst[1],ranges,1);
-		calcBackProject(&window,1,channel_H,hist[2],dst[2],ranges,1);
+
+		Mat dst[3];
+		calcBackProject(&window,1,channel_B,hist[0],dst[0],ranges);
+		calcBackProject(&window,1,channel_B,hist[1],dst[1],ranges);
+		calcBackProject(&window,1,channel_B,hist[2],dst[2],ranges);
+
 		dst[0]&=windowMask;
 		dst[1]&=windowMask;
 		dst[2]&=windowMask;
+
 		Mat backproj = dst[0]|dst[1]|dst[2];
 		Rect tmp = relativePlayerBox;
+
+		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 3, 1);
 		meanShift(backproj,relativePlayerBox,term_crit);
 
 		Point desp = relativePlayerBox.tl() - tmp.tl();
-
 		*pos = Point(playerBox.tl().x + desp.x + playerBox.width/2,playerBox.br().y + desp.y);
 	}
-	playerBox = Rect((*pos).x-PLAYER_WIDTH/2,(*pos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+	playerBox = GlobalStats::getPlayerRect(*pos);
 	return inRange && isInRange(&playerBox) && PlayerClassifier::canBePlayer2(filter(playerBox));
 }
 
