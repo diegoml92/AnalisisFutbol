@@ -1,5 +1,5 @@
 #include "config_file.h"
-#include "Team.h"
+#include "Player.h"
 
 /*
    CONTIENE LAS INSTANCIAS GLOBALES DE LOS JUGADORES
@@ -7,15 +7,11 @@
    RESTO DE CLASES
 */
 class GlobalStats {
-private:
-	// Determina si están todos los jugadores detectados
-	static bool playersDetected;
-
 public:
 
 	// Variables globales
-	static vector<Team> teams;
-	static vector<int> playersToDelete;
+	static vector<Player> playerV;
+	static vector<Player*> playersToDelete;
 	static vector<Scalar> colors;
 
 	/*

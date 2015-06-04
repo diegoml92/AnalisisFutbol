@@ -10,7 +10,6 @@ private:
 
 	// IDENTIFICADORES
 	int player_id;
-	int team_id;
 
 	// ESTADISTICAS
 	float distance;
@@ -31,10 +30,10 @@ private:
 public:
 
 	// IDENTIFICADORES
-	static vector<int> id;
+	static int id;
 
 	/* CONSTRUCTOR */
-	Player(int team_id, Point pos);
+	Player(Point pos);
 
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 	void addPosition(Point p);

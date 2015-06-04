@@ -2,7 +2,6 @@
 #include "VideoManager.h"
 #include "TrackingObj.h"
 #include "GUI.h"
-#include "EventManager.h"
 #include "FieldFilter.h"
 #include "From3DTo2D.h"
 #include "StatsAnalyzer.h"
@@ -48,13 +47,13 @@ int main(int argc, char* argv[]) {
 	*/
 	while(VideoManager::nextFrame(frame) && waitKey(1)!=27) {
 
-		double init_time,end_time;
+		int64 init_time,end_time;
 		init_time = getTickCount();
 
 		Mat paint;
 		From3DTo2D::field2D.copyTo(paint);
 
-		double a,b,a_1,b_1,a_2,b_2;
+		int64 a,b;
 		
 		a = getTickCount();
 
@@ -67,42 +66,33 @@ int main(int argc, char* argv[]) {
 		std::cout<<"Filtro    : "<<(b-a)/getTickFrequency()<<std::endl;
 
 		a = getTickCount();
-        
-		// Hacemos tracking del jugador
-		int indexforthis = 0;
-		for(vector<Team>::iterator it = GlobalStats::teams.begin(); it!=GlobalStats::teams.end(); it++) {
-			a_1 = getTickCount();
-			vector<Player>* playerV = it->getPlayersP();
-			for(vector<Player>::iterator itP = playerV->begin(); itP!=playerV->end(); itP++) {
-				TrackingObj::trackPlayers(frame,filter,&*itP,indexforthis);
-			}
-			b_1 = getTickCount();
-			indexforthis++;
-		}
 
-		for(vector<Team>::iterator it = GlobalStats::teams.begin(); it!=GlobalStats::teams.end(); it++) {
-			a_2 = getTickCount();
-			vector<Player>* playerV = it->getPlayersP();
-			for(vector<Player>::iterator itP = playerV->begin(); itP!=playerV->end(); itP++) {
-				for(int i=0; i<N_VIDEOS; i++) {
-					if(itP->getBPos(i)) {
-						Rect rectP = GlobalStats::getPlayerRect(itP->getCamPos(i));
-						if(TrackingObj::isInRange(&rectP)) {
-							filter[i](rectP).setTo(0);
-						}
-					}
-				}
-			}
-			b_2 = getTickCount();
+		// Hacemos tracking del jugador
+		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
+			TrackingObj::trackPlayers(frame,filter,&*itP);
 		}
 
 		b = getTickCount();
 
-		std::cout<<"Meanshit:   "<<(b-a)/getTickFrequency()<<std::endl;
-		std::cout<<"   +Tracking:   "<<(b_1-a_1)/getTickFrequency()<<std::endl;
-		std::cout<<"   +Cleaning:   "<<(b_2-a_2)/getTickFrequency()<<std::endl;
+		std::cout<<"   +Tracking:   "<<(b-a)/getTickFrequency()<<std::endl;
 
-		a = getTickCount();
+		/*a = getTickCount();
+
+		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
+			for(int i=0; i<N_VIDEOS; i++) {
+				if(itP->getBPos(i)) {
+					Rect rectP = GlobalStats::getPlayerRect(itP->getCamPos(i));
+					if(TrackingObj::isInRange(&rectP)) {
+						filter[i](rectP).setTo(0);
+					}
+				}
+			}
+		}
+		b = getTickCount();
+
+		std::cout<<"Cleaning:   "<<(b-a)/getTickFrequency()<<std::endl;
+		*/
+		//a = getTickCount();
 
 		/*for(int i=GlobalStats::playersToDelete.size()-1; i>=0; i--) {
 			int k = GlobalStats::playersToDelete.at(i);
@@ -110,9 +100,9 @@ int main(int argc, char* argv[]) {
 			GlobalStats::playersToDelete.pop_back();
 		}*/
 
-		b = getTickCount();
+		//b = getTickCount();
 
-		std::cout<<"Deleting:   "<<(b-a)/getTickFrequency()<<std::endl;
+		//std::cout<<"Deleting:   "<<(b-a)/getTickFrequency()<<std::endl;
 
 		a = getTickCount();
 
@@ -130,7 +120,7 @@ int main(int argc, char* argv[]) {
 			vector<Point2f> locations2D [N_VIDEOS];
 			// Obtención de posiciones 2D de jugadores detectados
 			for(int i=0; i<N_VIDEOS; i++) {
-				for(int j=0; j<GlobalStats::locations[i].size(); j++) {
+				for(unsigned j=0; j<GlobalStats::locations[i].size(); j++) {
 					locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
 				}
 				if(GlobalStats::locations[i].size()) {
@@ -156,7 +146,7 @@ int main(int argc, char* argv[]) {
 							}
 						}
 					}
-					if(!found && From3DTo2D::isInRange(*it1) && !GlobalStats::alreadyDetected(*it1) && !GlobalStats::totalPlayers()<35) {
+					if(!found && From3DTo2D::isInRange(*it1) && !GlobalStats::alreadyDetected(*it1) && !GlobalStats::allPlayersDetected()) {
 						PlayerClassifier::addPlayer(frame[i],filter[i],*it1);
 					}
 				}
@@ -169,31 +159,32 @@ int main(int argc, char* argv[]) {
 
 		a = getTickCount();
 
-		for(int i=0; i<GlobalStats::teams.size(); i++) {
-			Team t = GlobalStats::teams.at(i);
-			vector<Player> playerV = t.getPlayers();
-			for(vector<Player>::iterator it = playerV.begin(); it!=playerV.end(); it++) {
-				if(GlobalStats::colors.size()<(i+1)) {
-					RNG rng(getTickCount());
-					GlobalStats::colors.push_back(Scalar(rng.uniform(0,256),rng.uniform(0,256),rng.uniform(0,256)));
+		//Pintar jugadores
+		for(vector<Player>::iterator it = GlobalStats::playerV.begin(); it!=GlobalStats::playerV.end(); it++) {
+			Point p = it->getPosition();
+			Scalar colour;
+			bool exists = false;
+			for(int k=0; k<N_VIDEOS; k++) {
+				Point realP;
+				if(it->getBPos(k)) {
+					realP = it->getCamPos(k);
+				} else {
+					realP = From3DTo2D::getRealPosition(p,k);
 				}
-				Scalar colour = GlobalStats::colors.at(i);
-				Point p = it->getPosition();
-				circle(paint,p,3,colour,2);
-				for(int k=0; k<N_VIDEOS; k++) {
-					Point realP;
-					if(it->getBPos(k)) {
-						realP = it->getCamPos(k);
-					} else {
-						realP = From3DTo2D::getRealPosition(p,k);
+				if (TrackingObj::isInFocus(realP)) {
+					Rect paintR = GlobalStats::getPlayerRect(realP);
+					if(TrackingObj::isInRange(&paintR)) {
+						exists = true;
+						colour = mean(frame[k](paintR), filter[k](paintR));
+						rectangle(frame[k],paintR,colour,2);
+						std::stringstream text;
+						text << it->getPlayerId();
+						putText(frame[k],text.str(),Point(realP.x-15,realP.y+15),0,0.5,colour,2);
 					}
-					Rect paintR(Point(realP.x - PLAYER_WIDTH/2, realP.y - PLAYER_HEIGHT),
-								Point(realP.x + PLAYER_WIDTH/2, realP.y));
-					rectangle(frame[k],paintR,colour,2);
-					std::stringstream text;
-					text << it->getPlayerId() << " / " << i;
-					putText(frame[k],text.str(),Point(realP.x-15,realP.y+15),0,0.5,colour,2);
 				}
+			}
+			if(exists) {
+				circle(paint,p,3,colour,2);
 			}
 		}
 		
@@ -226,7 +217,6 @@ int main(int argc, char* argv[]) {
 		std::cout<<"TOTAL:      "<<(end_time-init_time)/getTickFrequency()<<
 			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
 		std::cout<<"PLAYERS:    "<<GlobalStats::totalPlayers()<<std::endl;
-		std::cout<<"TEAMS:      "<<GlobalStats::teams.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;
 	}
 
@@ -234,28 +224,18 @@ int main(int argc, char* argv[]) {
 
 	StatsAnalyzer::calculateAllStats();
 
-	namedWindow(SGUI_W);					// Creamos la ventana para la interfaz
-	EventManager::initMouseListener();		// Inicializamos el controlador de eventos de ratón
-	GUI::initStatsGUI();
-
-	while(waitKey(1)!=27) {
-		GUI::showStatsGUI();
-		if (!GUI::isActiveIndividualMode())
-		{
-			if (GUI::isActiveComparativeMode())
-			{
-				GUI::showStatsWindow(0,1);
+	int command = 0;
+	while(command != 27) {
+		GUI::showStatsWindow();
+		if(command == 13) {
+			if(GUI::nPlayer < GlobalStats::totalPlayers()-1) {
+				GUI::nPlayer++;
 			} else {
-				GUI::showStatsWindow(0,0);
+				GUI::nPlayer = 0;
 			}
-		} else {
-			if (GUI::isActiveComparativeMode())
-			{
-				GUI::showStatsWindow(1,1);
-			} else {
-				GUI::showStatsWindow(1,0);
-			}
+			std::cout<<"Player: "<<GUI::nPlayer<<std::endl;
 		}
+		command = waitKey(1);
 	}
 
 	return 0;

@@ -3,7 +3,6 @@
 #include "TrackingObj.h"
 #include "From3DTo2D.h"
 #include "GlobalStats.h"
-#include "Team.h"
 
 /* AÑADE UN JUGADOR */
 void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Point player) {
@@ -18,46 +17,7 @@ void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Point player) {
 		}
 	}
 	if(playerV.size()>0) {
-		comparePlayer(partido,filtro,playerV,player);	// Hacemos la comparación
-	}
-}
-
-/*	
-*	CLASIFICA LOS ELEMENTOS DETECTADOS:
-*	Compara el histograma de los jugadores y los clasifica por equipos
-*/
-void PlayerClassifier::comparePlayer(Mat partido, Mat umbral, vector<Rect> rects, Point pos) {
-
-	int channels [] = {0,1,2};
-	int nBins = 32;
-	float range [] = {0,256};
-	const float *ranges = {range};
-	Mat hist;
-	for(int i=0; i<rects.size(); i++) {
-		Mat src = partido(rects.at(i));
-		calcHist(&src,1,channels,umbral(rects[i]),hist,1,&nBins,&ranges,true,true);
-	}
-	if(GlobalStats::teams.empty()) {
-		Team t = Team();
-		t.setHistogram(hist);
-		t.createPlayer(pos);
-		GlobalStats::teams.push_back(t);
-	} else {
-		bool found = false;
-		vector<Team>::iterator it = GlobalStats::teams.begin();
-		while(it!=GlobalStats::teams.end() && !found) {
-			found = compareHist(it->getHistogram(),hist,CV_COMP_BHATTACHARYYA) < BHATTACHARYYA_THRES;
-			it++;
-		}
-		if(found) {
-			it--;
-			it->createPlayer(pos);
-		} else {
-			Team t = Team();
-			t.setHistogram(hist);
-			t.createPlayer(pos);
-			GlobalStats::teams.push_back(t);
-		}
+		GlobalStats::playerV.push_back(Player(player));
 	}
 }
 

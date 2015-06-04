@@ -2,10 +2,9 @@
 #include "StatsAnalyzer.h"
 
 // Iniciamos las variables
-bool GlobalStats::playersDetected = false;
-vector<Team> GlobalStats::teams;
+vector<Player> GlobalStats::playerV;
 vector<Rect> GlobalStats::locations [N_VIDEOS];
-vector<int> GlobalStats::playersToDelete;
+vector<Player*> GlobalStats::playersToDelete;
 vector<Scalar> GlobalStats::colors;
 
 /* VACÍA LOS VECTORES DE POSICIONES */
@@ -18,14 +17,10 @@ void GlobalStats::clearLocations() {
 bool GlobalStats::alreadyDetected(Point p) {
 	bool found = false;
 	int i=0;
-	while(!found && i<teams.size()) {
-		vector<Player> players = teams.at(i).getPlayers();
-		vector<Player>::iterator it = players.begin();
-		while(!found && it!=players.end()) {
-			found = StatsAnalyzer::isSamePoint(p,it->getPosition());
-			it++;
-		}
-		i++;
+	vector<Player>::iterator it = playerV.begin();
+	while(!found && it!=playerV.end()) {
+		found = StatsAnalyzer::isSamePoint(p,it->getPosition());
+		it++;
 	}
 	return found;
 }
@@ -42,13 +37,9 @@ Rect GlobalStats::getPlayerRect(Point pos) {
 
 /* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
 bool GlobalStats::allPlayersDetected() {
-	return GlobalStats::totalPlayers() > 35;
+	return GlobalStats::totalPlayers() >= 35;
 }
 
 int GlobalStats::totalPlayers() {
-	int n=0;
-	for(int i=0;i<teams.size();i++) {
-		n+=teams[i].getPlayers().size();
-	}
-	return n;
+	return playerV.size();
 }

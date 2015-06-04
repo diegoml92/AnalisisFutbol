@@ -15,7 +15,7 @@ void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point la
 	*dist += d;
 
 	if(d>0) {
-		float actualSpeed = d*FPS*0.1*MS_TO_KMH;
+		float actualSpeed = (float)d*FPS*0.1*MS_TO_KMH;
 		*speed += actualSpeed;
 		if(actualSpeed > *maxSpeed) {
 			*maxSpeed = actualSpeed;
@@ -28,7 +28,7 @@ void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point la
 float StatsAnalyzer::distance(Point actualPoint, Point lastPoint) {
 	float dist = 0;
 	if(lastPoint.x >= 0) {
-		dist = norm(actualPoint-lastPoint)/10;
+		dist = (float) norm(actualPoint-lastPoint)/10;
 	}
 	return dist;
 }
@@ -80,7 +80,7 @@ Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
 		for(int i=0;i<m.rows;i++) {
 			for(int j=0;j<m.cols;j++) {
 				int val = m.at<int>(i,j);
-				result.at<float>(i,j) = (val - min) / (max - min);
+				result.at<float>(i,j) = (float) (val - min) / (max - min);
 			}
 		}
 	}
@@ -90,8 +90,8 @@ Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
 
 /* CALCULA TODAS LAS ESTADÍSTICAS */
 void StatsAnalyzer::calculateAllStats() {
-	for(int i=0; i<N_TEAMS; i++) {
-		GlobalStats::teams[i].calculateStats();
+	for(unsigned i=0; i<GlobalStats::playerV.size(); i++) {
+		GlobalStats::playerV[i].calculateStats();
 	}
 }
 

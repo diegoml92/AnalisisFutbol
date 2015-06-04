@@ -1,12 +1,11 @@
 #include "Player.h"
 #include "StatsAnalyzer.h"
 
-vector<int> Player::id;
+int Player::id = 0;
 
 /* CONSTRUCTOR */
-Player::Player(int team_id, Point pos) {
-	Player::team_id = team_id;
-	Player::player_id = Player::id.at(team_id)++;
+Player::Player(Point pos) {
+	Player::player_id = Player::id++;
 	Player::distance = 0;
 	Player::avgSpeed = 0;
 	Player::maxSpeed = 0;
