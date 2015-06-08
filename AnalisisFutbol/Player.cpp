@@ -1,11 +1,14 @@
 #include "Player.h"
 #include "StatsAnalyzer.h"
+#include "From3DTo2D.h"
+#include "VideoManager.h"
 
 int Player::id = 0;
 
 /* CONSTRUCTOR */
-Player::Player(Point pos) {
+Player::Player(Point pos, Mat histogram) {
 	Player::player_id = Player::id++;
+	Player::histogram = histogram;
 	Player::distance = 0;
 	Player::avgSpeed = 0;
 	Player::maxSpeed = 0;
@@ -20,11 +23,13 @@ Player::Player(Point pos) {
 
 /* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 void Player::addPosition(Point p) {
-	if(Player::isInRange(p)) {
+	if(From3DTo2D::isInRange(p)) {
 		StatsAnalyzer::addPosition(Player::area, p);
-		StatsAnalyzer::addDistanceAndSpeed(&(Player::distance),p,Player::lastPoint,
-			&(Player::avgSpeed),&(Player::nSpeed),&(Player::maxSpeed));
-		Player::lastPoint = p;
+		if(VideoManager::getActualFrame() % 5 == 0) {
+			StatsAnalyzer::addDistanceAndSpeed(&(Player::distance),p,Player::lastPoint,
+				&(Player::avgSpeed),&(Player::nSpeed),&(Player::maxSpeed));
+			Player::lastPoint = p;
+		}
 	}
 }
 
@@ -90,7 +95,6 @@ void Player::unSetCamPos(int i) {
 	Player::bPos[i] = false;
 }
 
-/* DETERMINA SI EL PUNTO ESTÁ EN UN RANGO VÁLIDO */
-bool Player::isInRange(Point pos) {
-	return pos.x >= 0 && pos.y >= 0 && pos.x < SOCCER_FIELD_WIDTH && pos.y < SOCCER_FIELD_HEIGHT;
+bool Player::operator==(const Player &other) const {
+	return this == &other;
 }

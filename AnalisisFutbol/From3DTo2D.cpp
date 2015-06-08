@@ -6,7 +6,7 @@ Mat From3DTo2D::field2D = imread(FIELD2D_PATH);
 
 /* DETERMINA SI EL PUNTO PERTENECE A UNA POSICIÓN VÁLIDA */
 bool From3DTo2D::isInRange(Point p) {
-	return p.x >= 0 && p.y >= 0 && p.x <= SOCCER_FIELD_WIDTH && p.y <= SOCCER_FIELD_HEIGHT;
+	return p.x >= 0 && p.y >= 0 && p.x < SOCCER_FIELD_WIDTH && p.y < SOCCER_FIELD_HEIGHT;
 }
 
 /* INICIAMOS LAS MATRICES DE PROYECCION */

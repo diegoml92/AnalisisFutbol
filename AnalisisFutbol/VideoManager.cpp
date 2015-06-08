@@ -1,10 +1,12 @@
 #include "VideoManager.h"
 
 VideoCapture VideoManager::video [N_VIDEOS];
+int VideoManager::actualFrame;
 
 /* INICIALIZA LA CAPTURA DE VÍDEO */
 bool VideoManager::init() {
 	bool open = true;
+	VideoManager::actualFrame = 0;
 	for(int i=0;i<N_VIDEOS && open;i++) {
 		std::stringstream videoPath;
 		videoPath << VIDEO_PATH << i << VIDEO_FORMAT;
@@ -16,6 +18,7 @@ bool VideoManager::init() {
 /* OBTIENE EL SIGUIENTE FRAME DE VÍDEO */
 bool VideoManager::nextFrame(Mat frame[]) {
 	bool hasNext = true;
+	VideoManager::actualFrame++;
 	for(int i=0;i<N_VIDEOS && hasNext;i++) {
 		hasNext &= video[i].read(frame[i]);
 	}
@@ -31,4 +34,9 @@ Mat VideoManager::joinSequences(Mat frame[]) {
 		frame[i].copyTo(dst(Rect(Point(x,y),Point(x+frame[i].cols,y+frame[i].rows))));
     }
     return dst;
+}
+
+/* DEVUELVE EL NÚMERO DE FRAME ACTUAL */
+int VideoManager::getActualFrame() {
+	return VideoManager::actualFrame;
 }

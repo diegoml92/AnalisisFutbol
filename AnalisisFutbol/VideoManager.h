@@ -7,6 +7,8 @@ private:
 
 	static VideoCapture video[];	// Almacenará la captura de vídeo
 
+	static int actualFrame;			// Determina el número de frames recorridos
+
 public:
 
 	/* INICILIZA LA CAPTURA DE VÍDEO */
@@ -17,6 +19,9 @@ public:
     
     /* UNE LAS SECUENCIAS DE VêDEO EN UNA SOLA IMAGEN */
     static Mat joinSequences(Mat frame[]);
+
+	/* DEVUELVE EL NÚMERO DE FRAME ACTUAL */
+	static int getActualFrame();
 
 };
 

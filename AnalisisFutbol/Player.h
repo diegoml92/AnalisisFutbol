@@ -23,9 +23,7 @@ private:
 	int nSpeed;
 	bool bPos[N_VIDEOS];
 	Point camPos[N_VIDEOS];
-
-	/* DETERMINA SI EL PUNTO ESTÁ EN UN RANGO VÁLIDO */
-	bool isInRange(Point pos);
+	Mat histogram;
 
 public:
 
@@ -33,7 +31,7 @@ public:
 	static int id;
 
 	/* CONSTRUCTOR */
-	Player(Point pos);
+	Player(Point pos, Mat histogram);
 
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 	void addPosition(Point p);
@@ -73,6 +71,8 @@ public:
 
 	/* DEVUELVE EL PLAYER ID */
 	int Player::getPlayerId();
+
+	bool Player::operator==(const Player &other) const;
 };
 
 #endif //PLAYER_H

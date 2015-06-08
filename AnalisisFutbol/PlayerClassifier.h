@@ -2,6 +2,13 @@
 
 /* CLASE ENCARGADA DE LA CLASIFICACIÓN DE LOS JUGADORES EN DIFERENTES EQUIPOS */
 class PlayerClassifier {
+private:
+
+	/*	
+	*	CLASIFICA LOS ELEMENTOS DETECTADOS:
+	*	Compara el histograma de los jugadores y los clasifica por equipos
+	*/
+	static Mat PlayerClassifier::comparePlayer(Mat frame, Mat filter, vector<Rect> rects, Point pos);
 
 public:
 

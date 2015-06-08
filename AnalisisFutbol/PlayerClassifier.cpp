@@ -5,20 +5,39 @@
 #include "GlobalStats.h"
 
 /* AÑADE UN JUGADOR */
-void PlayerClassifier::addPlayer(Mat partido, Mat filtro, Point player) {
+void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 	vector<Rect> playerV;
 	for(int i=0; i<N_VIDEOS; i++) {
-		Point realPos = From3DTo2D::getRealPosition(player,i);
+		Point realPos = From3DTo2D::getRealPosition(position,i);
 		if(TrackingObj::isInFocus(realPos)) {
 			Rect playerBox = Rect((realPos).x-PLAYER_WIDTH/2,(realPos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
-			if(TrackingObj::isInRange(&playerBox) && isPlayerSize(playerBox) && canBePlayer(filtro(playerBox))) {
+			if(TrackingObj::isInRange(&playerBox) && isPlayerSize(playerBox) && canBePlayer(filter(playerBox))) {
 				playerV.push_back(playerBox);
 			}
 		}
 	}
 	if(playerV.size()>0) {
-		GlobalStats::playerV.push_back(Player(player));
+		Mat hist = comparePlayer(frame, filter, playerV, position);
+		GlobalStats::playerV.push_back(Player(position, hist));
 	}
+}
+
+/*	
+*	CLASIFICA LOS ELEMENTOS DETECTADOS:
+*	Compara el histograma de los jugadores y los clasifica por equipos
+*/
+Mat PlayerClassifier::comparePlayer(Mat frame, Mat filter, vector<Rect> rects, Point pos) {
+
+	int channels [] = {0,1,2};
+	int nBins = 32;
+	float range [] = {0,256};
+	const float *ranges = {range};
+	Mat hist;
+	for(int i=0; i<rects.size(); i++) {
+		Mat src = frame(rects.at(i));
+		calcHist(&src,1,channels,filter(rects[i]),hist,1,&nBins,&ranges,true,true);
+	}
+	return hist;
 }
 
 /* DETERMINA SI CUMPLE EL TAMAÑO PROPIO DE UN JUGADOR */

@@ -75,7 +75,22 @@ int main(int argc, char* argv[]) {
 		b = getTickCount();
 
 		std::cout<<"   +Tracking:   "<<(b-a)/getTickFrequency()<<std::endl;
+		
+		a = getTickCount();
+		// Borrado de jugadores descartados
+		for(vector<Player*>::iterator it = GlobalStats::playersToDelete.begin();
+				it!=GlobalStats::playersToDelete.end(); it++) {
+			vector<Player>::iterator itP = std::find(GlobalStats::playerV.begin(),GlobalStats::playerV.end(),**it);
+			if(itP != GlobalStats::playerV.end()) {
+				GlobalStats::playerV.erase(itP);
+			}
+		}
+		GlobalStats::playersToDelete.clear();
 
+		b = getTickCount();
+
+		std::cout<<"Borrado:    "<<(b-a)/getTickFrequency()<<std::endl;
+		
 		/*a = getTickCount();
 
 		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
@@ -217,6 +232,12 @@ int main(int argc, char* argv[]) {
 		std::cout<<"TOTAL:      "<<(end_time-init_time)/getTickFrequency()<<
 			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
 		std::cout<<"PLAYERS:    "<<GlobalStats::totalPlayers()<<std::endl;
+		for(vector<Player>::iterator it = GlobalStats::playerV.begin();
+			it != GlobalStats::playerV.end(); it ++) {
+			std::cout<<it->getPlayerId()<<" ";
+		}
+		std::cout<<std::endl;
+		std::cout<<"TO DELETE : "<<GlobalStats::playersToDelete.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;
 	}
 
