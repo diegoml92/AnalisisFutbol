@@ -5,7 +5,7 @@
 class TrackingObj {
 private:
 	/* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-	static bool tracking(Mat frame, Mat filter, Point* pos);
+	static bool tracking(Mat frame, Mat filter, Point* pos, Player player);
 
 	/* VENTANA DE BÚSQUEDA DEL JUGADOR */
 	static void searchWindow(Rect playerBox, Rect* searchWindow, Rect* relative);

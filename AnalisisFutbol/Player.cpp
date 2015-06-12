@@ -6,7 +6,7 @@
 int Player::id = 0;
 
 /* CONSTRUCTOR */
-Player::Player(Point pos, Mat histogram) {
+Player::Player(Point pos, vector<Mat> histogram) {
 	Player::player_id = Player::id++;
 	Player::histogram = histogram;
 	Player::distance = 0;
@@ -67,6 +67,11 @@ float Player::getAvgSpeed() {
 /* DEVUELVE EL PUNTO ACUTAL */
 Point Player::getPosition() {
 	return Point(lastPoint.x,lastPoint.y);
+}
+
+/* DEVUELVE EL HISTOGRAMA DEL JUGADOR */
+vector<Mat> Player::getHistogram() {
+	return Player::histogram;
 }
 
 /* DEVUELVE EL PLAYER ID */

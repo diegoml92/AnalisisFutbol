@@ -75,14 +75,13 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 }
 
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos) {
+bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos, Player player) {
 	
 	float range[] = {0,256};
 	const float* ranges [] = {range};
     int channel_B [] = {0};
 	int channel_G [] = {1};
 	int channel_R [] = {2};
-    int histSize [] = {64};
 
     Rect playerBox = GlobalStats::getPlayerRect(*pos);
 
@@ -92,13 +91,7 @@ bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos) {
 
 		Mat roi = frame(playerBox);
 
-		Mat mask = filter(playerBox);
-		Mat hist[3];
-		Mat images [] = {roi};
-
-		calcHist(&roi,1,channel_B,mask,hist[0],1,histSize,ranges);
-		calcHist(&roi,1,channel_G,mask,hist[1],1,histSize,ranges);
-		calcHist(&roi,1,channel_R,mask,hist[2],1,histSize,ranges);
+		vector<Mat> hist = player.getHistogram();
 
 		Rect searchWindowRect, relativePlayerBox;
 		searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
@@ -114,11 +107,11 @@ bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos) {
 		dst[1]&=windowMask;
 		dst[2]&=windowMask;
 
-		Mat backproj = dst[0]|dst[1]|dst[2];
+		Mat backProj = dst[0]|dst[1]|dst[2];
 		Rect tmp = relativePlayerBox;
 
 		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 3, 1);
-		meanShift(backproj,relativePlayerBox,term_crit);
+		meanShift(backProj,relativePlayerBox,term_crit);
 
 		Point desp = relativePlayerBox.tl() - tmp.tl();
 		*pos = Point(playerBox.tl().x + desp.x + playerBox.width/2,playerBox.br().y + desp.y);
@@ -139,7 +132,7 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player
 			realPos = &From3DTo2D::getRealPosition(player->getPosition(),i);
 		}
 		if(player->getBPos(i) || isInFocus(*realPos)) {
-			if(tracking(frame[i],filter[i],realPos)) {
+			if(tracking(frame[i],filter[i],realPos,*player)) {
 				player->setCamPos(i,*realPos);
 				positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
 				detected = true;

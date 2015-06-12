@@ -8,6 +8,30 @@
 #include "GlobalStats.h"
 #include "PlayerClassifier.h"
 
+Scalar calculateColor(vector<Mat> hist) {
+	int bgr[3];
+	for(int i=0; i<hist.size(); i++) {
+		vector<int> total;
+		int nBins = hist[i].rows;
+		for(int j=0; j<nBins; j++) {
+			for(int k=0; k<hist[i].at<float>(j);k++) {
+				total.push_back(j);
+			}
+		}
+		int half = total.size()/2;
+		if(total.size()%2==0){
+			int bin1 = total.at(half);
+			int bin2 = total.at(half+1);
+			bgr[i] = (RGB/nBins*bin1 + RGB/nBins*(bin2+1) - 1) / 2;
+			
+		} else {
+			int bin = total.at(half);
+			bgr[i] = (RGB/nBins*bin + RGB/nBins*(bin+1) - 1) / 2;
+		}
+	}
+	return Scalar(bgr[0],bgr[1],bgr[2]);
+}
+
 /* FUNCIÓN DE ENTRADA AL PROGRAMA */
 int main(int argc, char* argv[]) {
 
@@ -177,7 +201,7 @@ int main(int argc, char* argv[]) {
 		//Pintar jugadores
 		for(vector<Player>::iterator it = GlobalStats::playerV.begin(); it!=GlobalStats::playerV.end(); it++) {
 			Point p = it->getPosition();
-			Scalar colour;
+			Scalar colour = calculateColor(it->getHistogram());
 			bool exists = false;
 			for(int k=0; k<N_VIDEOS; k++) {
 				Point realP;
@@ -190,7 +214,6 @@ int main(int argc, char* argv[]) {
 					Rect paintR = GlobalStats::getPlayerRect(realP);
 					if(TrackingObj::isInRange(&paintR)) {
 						exists = true;
-						colour = mean(frame[k](paintR), filter[k](paintR));
 						rectangle(frame[k],paintR,colour,2);
 						std::stringstream text;
 						text << it->getPlayerId();
@@ -229,13 +252,10 @@ int main(int argc, char* argv[]) {
 
 		end_time = getTickCount();
 
-		std::cout<<"TOTAL:      "<<(end_time-init_time)/getTickFrequency()<<
+		std::cout<<"TOTAL :     "<<(end_time-init_time)/getTickFrequency()<<
 			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
-		std::cout<<"PLAYERS:    "<<GlobalStats::totalPlayers()<<std::endl;
-		for(vector<Player>::iterator it = GlobalStats::playerV.begin();
-			it != GlobalStats::playerV.end(); it ++) {
-			std::cout<<it->getPlayerId()<<" ";
-		}
+		std::cout<<"PLAYERS :   "<<GlobalStats::totalPlayers()<<std::endl;
+		std::cout<<"LAST ID :   "<<GlobalStats::playerV.at(GlobalStats::totalPlayers()-1).getPlayerId()<<std::endl;
 		std::cout<<std::endl;
 		std::cout<<"TO DELETE : "<<GlobalStats::playersToDelete.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;

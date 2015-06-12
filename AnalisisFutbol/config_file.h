@@ -16,6 +16,8 @@ using namespace cv;
 
 #define FPS 25
 
+#define RGB 256
+
 #define MS_TO_KMH 3.6
 
 #define N_PLAYERS 11

@@ -17,7 +17,7 @@ void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 		}
 	}
 	if(playerV.size()>0) {
-		Mat hist = comparePlayer(frame, filter, playerV, position);
+		vector<Mat> hist = comparePlayer(frame, filter, playerV, position);
 		GlobalStats::playerV.push_back(Player(position, hist));
 	}
 }
@@ -26,18 +26,27 @@ void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 *	CLASIFICA LOS ELEMENTOS DETECTADOS:
 *	Compara el histograma de los jugadores y los clasifica por equipos
 */
-Mat PlayerClassifier::comparePlayer(Mat frame, Mat filter, vector<Rect> rects, Point pos) {
+vector<Mat> PlayerClassifier::comparePlayer(Mat frame, Mat filter, vector<Rect> rects, Point pos) {
 
-	int channels [] = {0,1,2};
-	int nBins = 32;
+	int channel_B [] = {0};
+	int channel_G [] = {1};
+	int channel_R [] = {2};
+	int nBins = 16;
 	float range [] = {0,256};
 	const float *ranges = {range};
-	Mat hist;
+	vector<Mat> hist_v;
+	Mat hist[3];
 	for(int i=0; i<rects.size(); i++) {
+		Mat mask = filter(rects[i]);
 		Mat src = frame(rects.at(i));
-		calcHist(&src,1,channels,filter(rects[i]),hist,1,&nBins,&ranges,true,true);
+		calcHist(&src,1,channel_B,mask,hist[0],1,&nBins,&ranges,true,true);
+		calcHist(&src,1,channel_G,mask,hist[1],1,&nBins,&ranges,true,true);
+		calcHist(&src,1,channel_R,mask,hist[2],1,&nBins,&ranges,true,true);
 	}
-	return hist;
+	for(int i=0 ; i<3; i++) {
+		hist_v.push_back(hist[i]);
+	}
+	return hist_v;
 }
 
 /* DETERMINA SI CUMPLE EL TAMAÑO PROPIO DE UN JUGADOR */

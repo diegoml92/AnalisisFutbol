@@ -23,7 +23,7 @@ private:
 	int nSpeed;
 	bool bPos[N_VIDEOS];
 	Point camPos[N_VIDEOS];
-	Mat histogram;
+	vector<Mat> histogram;
 
 public:
 
@@ -31,7 +31,7 @@ public:
 	static int id;
 
 	/* CONSTRUCTOR */
-	Player(Point pos, Mat histogram);
+	Player(Point pos, vector<Mat> histogram);
 
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 	void addPosition(Point p);
@@ -56,6 +56,9 @@ public:
 
 	/* DEVUELVE EL PUNTO ACUTAL */
 	Point getPosition();
+
+	/* DEVUELVE EL HISTOGRAMA DEL JUGADOR */
+	vector<Mat> getHistogram();
 
 	/* DEVUELVE EL VALOR i */
 	bool getBPos(int i);
