@@ -17,16 +17,13 @@ void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 		}
 	}
 	if(playerV.size()>0) {
-		vector<Mat> hist = comparePlayer(frame, filter, playerV, position);
+		vector<Mat> hist = calculateHistogram(frame, filter, playerV, position);
 		GlobalStats::playerV.push_back(Player(position, hist));
 	}
 }
 
-/*	
-*	CLASIFICA LOS ELEMENTOS DETECTADOS:
-*	Compara el histograma de los jugadores y los clasifica por equipos
-*/
-vector<Mat> PlayerClassifier::comparePlayer(Mat frame, Mat filter, vector<Rect> rects, Point pos) {
+/* CALCULA EL HISTOGRAMA DEL JUGADOR */
+vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<Rect> rects, Point pos) {
 
 	int channel_B [] = {0};
 	int channel_G [] = {1};

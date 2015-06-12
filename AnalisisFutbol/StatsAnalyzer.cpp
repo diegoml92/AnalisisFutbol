@@ -1,7 +1,7 @@
 #include "StatsAnalyzer.h"
 #include "GlobalStats.h"
 
-Mat soccer_field = imread(FIELD2DSMALL_PATH);
+Mat StatsAnalyzer::soccer_field = imread(FIELD2DSMALL_PATH);
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 void StatsAnalyzer::addPosition(Mat m, Point p) {
@@ -15,7 +15,7 @@ void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point la
 	*dist += d;
 
 	if(d>0) {
-		float actualSpeed = (float)d*FPS*0.1*MS_TO_KMH;
+		float actualSpeed = d*FPS*0.1*MS_TO_KMH;
 		*speed += actualSpeed;
 		if(actualSpeed > *maxSpeed) {
 			*maxSpeed = actualSpeed;
@@ -80,7 +80,7 @@ Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
 		for(int i=0;i<m.rows;i++) {
 			for(int j=0;j<m.cols;j++) {
 				int val = m.at<int>(i,j);
-				result.at<float>(i,j) = (float) (val - min) / (max - min);
+				result.at<float>(i,j) = (val - min) / (max - min);
 			}
 		}
 	}
@@ -90,7 +90,7 @@ Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
 
 /* CALCULA TODAS LAS ESTADÍSTICAS */
 void StatsAnalyzer::calculateAllStats() {
-	for(unsigned i=0; i<GlobalStats::playerV.size(); i++) {
+	for(int i=0; i<GlobalStats::playerV.size(); i++) {
 		GlobalStats::playerV[i].calculateStats();
 	}
 }

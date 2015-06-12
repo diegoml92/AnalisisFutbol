@@ -1,10 +1,7 @@
 #include "GUI.h"
 #include "GlobalStats.h"
 
-unsigned GUI::nPlayer = 0;
-Mat GUI::statsInterface;
-
-// STATS GUI
+int GUI::nPlayer = 0;
 
 /* MUESTRA LAS ESTADÍSTICAS SELECCIONADAS */
 void GUI::showStatsWindow() {

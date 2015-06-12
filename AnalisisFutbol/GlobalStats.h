@@ -12,7 +12,6 @@ public:
 	// Variables globales
 	static vector<Player> playerV;
 	static vector<Player*> playersToDelete;
-	static vector<Scalar> colors;
 
 	/*
 	* Vector que almacenará los elementos detectados
@@ -23,7 +22,7 @@ public:
 	/* VACÍA LOS VECTORES DE POSICIONES */
 	static void clearLocations();
 
-	/* AÑADE LAS ESTADÍSTICAS ACTUALES */
+	/* DETERMINA SI UN ELEMENTO YA HA SIDO DETECTADO */
 	static bool alreadyDetected(Point p);
 
 	/* CALCULA EL CENTRO DE UN RECTÁNGULO */
@@ -35,6 +34,10 @@ public:
 	/* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
 	static bool allPlayersDetected();
 
-	static int totalPlayers(); 
+	/* DEVUELVE EL NÚMERO DE JUGADORES DETECTADOS */
+	static int totalPlayers();
+
+	/* DETERMINA EL "COLOR" DE UN JUGADOR A PARTIR DE SU HISTOGRAMA */
+	static Scalar calculateColor(vector<Mat> hist);
 };
 

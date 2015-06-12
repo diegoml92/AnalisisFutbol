@@ -5,14 +5,13 @@ class GUI {
 
 private:
 
-	static Mat statsInterface;				// Interfaz para las estadísticas
+	static Mat statsInterface;	// Interfaz para las estadísticas
 
 public:
 
-	// Jugador marcado actualmente
-	static unsigned nPlayer;
+	static int nPlayer;	// Jugador visualizado actualmente
 
-	/* MUESTRA LAS ESTADÍSTICAS SELECCIONADAS */
+	/* MUESTRA LAS ESTADÍSTICAS DEL JUGADOR */
 	static void showStatsWindow();
 
 };

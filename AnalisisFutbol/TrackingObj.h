@@ -22,6 +22,6 @@ public:
 	static void trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player* player);
 
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
-	static void objectDetection(Mat filtro, Mat &partido, int nVideo, Mat paint);
+	static void objectDetection(Mat filtro, Mat &partido, int nVideo);
 
 };

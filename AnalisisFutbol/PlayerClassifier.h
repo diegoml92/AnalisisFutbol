@@ -1,14 +1,11 @@
 #include "config_file.h"
 
-/* CLASE ENCARGADA DE LA CLASIFICACIÓN DE LOS JUGADORES EN DIFERENTES EQUIPOS */
+/* CLASE ENCARGADA DE LA GESTIÓN DE LOS JUGADORES */
 class PlayerClassifier {
 private:
 
-	/*	
-	*	CLASIFICA LOS ELEMENTOS DETECTADOS:
-	*	Compara el histograma de los jugadores y los clasifica por equipos
-	*/
-	static vector<Mat> PlayerClassifier::comparePlayer(Mat frame, Mat filter, vector<Rect> rects, Point pos);
+	/* CALCULA EL HISTOGRAMA DEL JUGADOR */
+	static vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<Rect> rects, Point pos);
 
 public:
 

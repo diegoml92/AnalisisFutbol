@@ -32,7 +32,6 @@ bool TrackingObj::isInRange(Rect* r) {
 	return inRange;
 }
 
-
 /* COMPRUEBA SI EL PUNTO ESTÁ EN EL FOCO DE LA CÁMARA */
 bool TrackingObj::isInFocus(Point p) {
 	return p.x >= 0 && p.y >= 0 && p.x <= VIDEO_WIDTH && p.y <= VIDEO_HEIGHT;
@@ -144,7 +143,7 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player
 	}
 	if(detected) {
 		Point newPos;
-		for(unsigned i=0; i<positions.size(); i++) {
+		for(int i=0; i<positions.size(); i++) {
 			newPos+=positions.at(i);
 		}
 		newPos = Point(newPos.x/positions.size(), newPos.y/positions.size());
@@ -155,14 +154,14 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player
 }
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
-void TrackingObj::objectDetection(Mat filtro, Mat &partido, int nVideo, Mat paint) {
+void TrackingObj::objectDetection(Mat filtro, Mat &partido, int nVideo) {
 	Mat temp;		// Matriz auxiliar en la que buscaremos los contornos
 	filtro.copyTo(temp);
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
 	if(hierarchy.size() > 0) {													// Si se encuentra algún contorno
-		for(unsigned i = 0; i < contours.size(); i++ ) {							// Recorremos los contornos
+		for(int i = 0; i < contours.size(); i++ ) {							// Recorremos los contornos
 			Rect elem = boundingRect(Mat(contours[i]));							// Creamos el boundingBox
 			if(PlayerClassifier::isPlayerSize(elem) && PlayerClassifier::canBePlayer(filtro(elem))) {
 				GlobalStats::locations[nVideo].push_back(elem);			// Añadimos al vector de elementos encontrados

@@ -5,7 +5,6 @@
 vector<Player> GlobalStats::playerV;
 vector<Rect> GlobalStats::locations [N_VIDEOS];
 vector<Player*> GlobalStats::playersToDelete;
-vector<Scalar> GlobalStats::colors;
 
 /* VACÍA LOS VECTORES DE POSICIONES */
 void GlobalStats::clearLocations() {
@@ -14,6 +13,7 @@ void GlobalStats::clearLocations() {
 	}
 }
 
+/* DETERMINA SI UN ELEMENTO YA HA SIDO DETECTADO */
 bool GlobalStats::alreadyDetected(Point p) {
 	bool found = false;
 	int i=0;
@@ -37,9 +37,35 @@ Rect GlobalStats::getPlayerRect(Point pos) {
 
 /* INDICA SE ESTÁN TODOS LOS JUGADORES DETECTADOS */
 bool GlobalStats::allPlayersDetected() {
-	return GlobalStats::totalPlayers() >= 35;
+	return GlobalStats::totalPlayers() >= MAX_PLAYERS;
 }
 
+/* DEVUELVE EL NÚMERO DE JUGADORES DETECTADOS */
 int GlobalStats::totalPlayers() {
 	return playerV.size();
+}
+
+/* DETERMINA EL "COLOR" DE UN JUGADOR A PARTIR DE SU HISTOGRAMA */
+Scalar GlobalStats::calculateColor(vector<Mat> hist) {
+	int bgr[3];
+	for(int i=0; i<hist.size(); i++) {
+		vector<int> total;
+		int nBins = hist[i].rows;
+		for(int j=0; j<nBins; j++) {
+			for(int k=0; k<hist[i].at<float>(j);k++) {
+				total.push_back(j);
+			}
+		}
+		int half = total.size()/2;
+		if(total.size()%2==0){
+			int bin1 = total.at(half);
+			int bin2 = total.at(half+1);
+			bgr[i] = (RGB/nBins*bin1 + RGB/nBins*(bin2+1) - 1) / 2;
+			
+		} else {
+			int bin = total.at(half);
+			bgr[i] = (RGB/nBins*bin + RGB/nBins*(bin+1) - 1) / 2;
+		}
+	}
+	return Scalar(bgr[0],bgr[1],bgr[2]);
 }

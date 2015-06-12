@@ -39,9 +39,6 @@ public:
 	/* CALCULA LAS ESTADÍSTICAS */
 	void calculateStats();
 
-	/* DEVUELVE LA MATRIZ DE POSICIONES ACUMULADAS */
-	Mat getArea();
-
 	/* DEVUELVE LAS ESTADÍSITCAS DEL ÁREA RECORRIDA */
 	Mat getAreaStats();
 
@@ -75,6 +72,7 @@ public:
 	/* DEVUELVE EL PLAYER ID */
 	int Player::getPlayerId();
 
+	/* SE IMPLEMENTA ESTE MÉTODO PARA PERMITIR LA COMPARACIÓN*/
 	bool Player::operator==(const Player &other) const;
 };
 

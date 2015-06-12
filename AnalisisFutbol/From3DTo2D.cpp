@@ -96,7 +96,7 @@ void From3DTo2D::initProjectionMatrices() {
 	}
 }
 
-/* CONVERTIMOS COORDENADAS DEL MUNDO A POSICIONES 2D */
+/* CONVERTIMOS COORDENADAS DE LA CÁMARA A POSICIONES 2D */
 Point2f From3DTo2D::get2DPosition(Point2f p, int nVideo) {
 	vector<Point2f> pv;
 	pv.push_back(p);
@@ -104,13 +104,13 @@ Point2f From3DTo2D::get2DPosition(Point2f p, int nVideo) {
 	return pv.at(0);
 }
 
-/* CONVERTIMOS COORDENADAS DEL MUNDO A POSICIONES 2D */
+/* CONVERTIMOS COORDENADAS DE LA CÁMARA A POSICIONES 2D */
 vector<Point2f> From3DTo2D::get2DPositionVector(vector<Point2f> p, int nVideo) {
 	perspectiveTransform(p,p,projectionMatrix[nVideo]);
 	return p;
 }
 
-/* CONVERTIMOS COORDENADAS DEL MODELO AL COORDENADAS REALES */
+/* CONVERTIMOS COORDENADAS DEL MODELO AL COORDENADAS DE LA CÁMARA */
 Point From3DTo2D::getRealPosition(Point modelPos, int nVideo) {
 	vector<Point2f> pv;
         pv.push_back(modelPos);
@@ -118,65 +118,3 @@ Point From3DTo2D::getRealPosition(Point modelPos, int nVideo) {
         return pv.at(0);
 }
 
-/* PINTAMOS LAS POSICIONES EN EL PLANO 2D */
-void From3DTo2D::paint2DPositions(Rect player, int nVideo, Mat paint) {
-	Point center = player.br();
-	center.x -= (player.width/2);
-	vector<Point2f> point_array;
-	point_array.push_back(center);
-	perspectiveTransform(point_array,point_array, projectionMatrix[nVideo]);
-	// DEBUG!!
-	Scalar color;
-	int radius;
-	int thickness;
-	switch(nVideo) {
-		case 0:
-			radius = 7;
-			thickness = 2;
-			color = Scalar(0,128,255);
-			break;
-		case 1:
-			radius = 7;
-			thickness = 2;
-			color = Scalar(255,50,255);
-			break;
-		case 2:
-			radius = 7;
-			thickness = 2;
-			color = Scalar(0,255,0);
-			break;
-		case 3:
-			radius = 5;
-			thickness = -1;
-			color = Scalar(255,0,0);
-			break;
-		case 4:
-			radius = 5;
-			thickness = -1;
-			color = Scalar(0,255,255);
-			break;
-		case 5:
-			radius = 5;
-			thickness = -1;
-			color = Scalar(0,0,255);
-			break;
-	}
-	circle(paint,point_array.at(0),radius,color,thickness);
-}
-
-/* PINTAMOS LAS POSICIONES EN EL PLANO 2D */
-void From3DTo2D::paint2DPositions2(Point player, int nVideo, Mat paint) {
-	// DEBUG!!
-	Scalar color;
-	int radius=3;
-	int thickness=1;
-	if(nVideo<=0) {
-		circle(paint,player,radius+2,Scalar(50,50,50),2);
-	}
-	if(nVideo<=2) {
-		color = Scalar(COLOR_WHITE);
-	} else {
-		color = Scalar(COLOR_BLACK);
-	}
-	circle(paint,player,radius,color,thickness);
-}

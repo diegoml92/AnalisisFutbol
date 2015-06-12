@@ -8,30 +8,6 @@
 #include "GlobalStats.h"
 #include "PlayerClassifier.h"
 
-Scalar calculateColor(vector<Mat> hist) {
-	int bgr[3];
-	for(int i=0; i<hist.size(); i++) {
-		vector<int> total;
-		int nBins = hist[i].rows;
-		for(int j=0; j<nBins; j++) {
-			for(int k=0; k<hist[i].at<float>(j);k++) {
-				total.push_back(j);
-			}
-		}
-		int half = total.size()/2;
-		if(total.size()%2==0){
-			int bin1 = total.at(half);
-			int bin2 = total.at(half+1);
-			bgr[i] = (RGB/nBins*bin1 + RGB/nBins*(bin2+1) - 1) / 2;
-			
-		} else {
-			int bin = total.at(half);
-			bgr[i] = (RGB/nBins*bin + RGB/nBins*(bin+1) - 1) / 2;
-		}
-	}
-	return Scalar(bgr[0],bgr[1],bgr[2]);
-}
-
 /* FUNCIÓN DE ENTRADA AL PROGRAMA */
 int main(int argc, char* argv[]) {
 
@@ -51,6 +27,8 @@ int main(int argc, char* argv[]) {
 		FieldFilter::initFilterMask(i);
 	}
 
+	// DEBUG!!!
+	// Guardamos los resultados de la ejecución
 	VideoWriter outputVideo2D,outputVideoCams;
 	if(SAVE_RESULT_SEQ) {
 		Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
@@ -67,22 +45,23 @@ int main(int argc, char* argv[]) {
 	/*	
 	*	Bucle en el que vamos pasando los frames del video con la función nextFrame,
     *   que coge el frame actual del video y lo guarda en la matriz frame. Cuando nextFrame
-	*	devuelva false, el vídeo abrá acabado.
+	*	devuelva false, la secuencia abrá acabado. También finaliza si se pulsa ESC.
 	*/
 	while(VideoManager::nextFrame(frame) && waitKey(1)!=27) {
 
-		int64 init_time,end_time;
+		// DEBUG!!!
+		int64 init_time,end_time,a,b;
 		init_time = getTickCount();
 
-		Mat paint;
-		From3DTo2D::field2D.copyTo(paint);
-
-		int64 a,b;
+		// Cargamos el campo 2D en field
+		Mat field;
+		From3DTo2D::field2D.copyTo(field);
 		
 		a = getTickCount();
 
+		// Filtramos el campo en el frame
 		for(int i=0; i<N_VIDEOS; i++) {
-			filter[i] = FieldFilter::discardField(frame[i].clone(), bg[i], i);	// Filtramos el campo en el frame
+			filter[i] = FieldFilter::discardField(frame[i].clone(), bg[i], i);
 		}
 
 		b = getTickCount();
@@ -91,14 +70,14 @@ int main(int argc, char* argv[]) {
 
 		a = getTickCount();
 
-		// Hacemos tracking del jugador
+		// Hacemos tracking de cada jugador
 		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
 			TrackingObj::trackPlayers(frame,filter,&*itP);
 		}
 
 		b = getTickCount();
 
-		std::cout<<"   +Tracking:   "<<(b-a)/getTickFrequency()<<std::endl;
+		std::cout<<"Tracking  : "<<(b-a)/getTickFrequency()<<std::endl;
 		
 		a = getTickCount();
 		// Borrado de jugadores descartados
@@ -113,10 +92,10 @@ int main(int argc, char* argv[]) {
 
 		b = getTickCount();
 
-		std::cout<<"Borrado:    "<<(b-a)/getTickFrequency()<<std::endl;
+		std::cout<<"Deleting  : "<<(b-a)/getTickFrequency()<<std::endl;
 		
 		/*a = getTickCount();
-
+		// Eliminamos del filtro los jugadores ya trackeados para que no sean detectados de nuevo
 		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
 			for(int i=0; i<N_VIDEOS; i++) {
 				if(itP->getBPos(i)) {
@@ -131,35 +110,25 @@ int main(int argc, char* argv[]) {
 
 		std::cout<<"Cleaning:   "<<(b-a)/getTickFrequency()<<std::endl;
 		*/
-		//a = getTickCount();
-
-		/*for(int i=GlobalStats::playersToDelete.size()-1; i>=0; i--) {
-			int k = GlobalStats::playersToDelete.at(i);
-			GlobalStats::detectedPlayers.erase(GlobalStats::detectedPlayers.begin()+k-1);
-			GlobalStats::playersToDelete.pop_back();
-		}*/
-
-		//b = getTickCount();
-
-		//std::cout<<"Deleting:   "<<(b-a)/getTickFrequency()<<std::endl;
 
 		a = getTickCount();
 
         if(!GlobalStats::allPlayersDetected()) {
+			// Se lleva a cabo la detección de los elementos del campo
 			for(int i=0; i<N_VIDEOS; i++) {
-				TrackingObj::objectDetection(filter[i],frame[i], i, paint);		// Hacemos el tracking de los elementos del campo
+				TrackingObj::objectDetection(filter[i],frame[i], i);
 			}
 
 			b = getTickCount();
 
-			std::cout<<"Detection:  "<<(b-a)/getTickFrequency()<<std::endl;
+			std::cout<<"Detection : "<<(b-a)/getTickFrequency()<<std::endl;
 
 			a = getTickCount();
 
 			vector<Point2f> locations2D [N_VIDEOS];
 			// Obtención de posiciones 2D de jugadores detectados
 			for(int i=0; i<N_VIDEOS; i++) {
-				for(unsigned j=0; j<GlobalStats::locations[i].size(); j++) {
+				for(int j=0; j<GlobalStats::locations[i].size(); j++) {
 					locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
 				}
 				if(GlobalStats::locations[i].size()) {
@@ -169,7 +138,7 @@ int main(int argc, char* argv[]) {
 
 			b = getTickCount();
 
-			std::cout<<"Pos2D:      "<<(b-a)/getTickFrequency()<<std::endl;
+			std::cout<<"Pos2D     : "<<(b-a)/getTickFrequency()<<std::endl;
 
 			a = getTickCount();
 
@@ -201,7 +170,7 @@ int main(int argc, char* argv[]) {
 		//Pintar jugadores
 		for(vector<Player>::iterator it = GlobalStats::playerV.begin(); it!=GlobalStats::playerV.end(); it++) {
 			Point p = it->getPosition();
-			Scalar colour = calculateColor(it->getHistogram());
+			Scalar colour = GlobalStats::calculateColor(it->getHistogram());
 			bool exists = false;
 			for(int k=0; k<N_VIDEOS; k++) {
 				Point realP;
@@ -222,50 +191,56 @@ int main(int argc, char* argv[]) {
 				}
 			}
 			if(exists) {
-				circle(paint,p,3,colour,2);
+				circle(field,p,3,colour,2);
 			}
 		}
 		
 		b = getTickCount();
 
-		std::cout<<"Pintado   : "<<(b-a)/getTickFrequency()<<std::endl;
+		std::cout<<"Painting  : "<<(b-a)/getTickFrequency()<<std::endl;
 
 		a = getTickCount();
 
+		// Limpiamos el vector de posiciones
 		GlobalStats::clearLocations();
-
+		// Unimos las secuencias en una sola para mostrarla
 		Mat join = VideoManager::joinSequences(frame);
-
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
+		// DEBUG!!!
 		if(SAVE_RESULT_SEQ) {
-			outputVideo2D<<paint;
+			outputVideo2D<<field;
 			outputVideoCams<<join;
 		} else {
-			imshow("2D FIELD",paint);
+			imshow(FIELD_W,field);
 			imshow(VIDEO_W, join);
 		}
 
 		b = getTickCount();
 
-		std::cout<<"Resto:      "<<(b-a)/getTickFrequency()<<std::endl;
+		std::cout<<"Resto     : "<<(b-a)/getTickFrequency()<<std::endl;
 
 		end_time = getTickCount();
 
-		std::cout<<"TOTAL :     "<<(end_time-init_time)/getTickFrequency()<<
-			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
-		std::cout<<"PLAYERS :   "<<GlobalStats::totalPlayers()<<std::endl;
-		std::cout<<"LAST ID :   "<<GlobalStats::playerV.at(GlobalStats::totalPlayers()-1).getPlayerId()<<std::endl;
 		std::cout<<std::endl;
+		std::cout<<"TOTAL     : "<<(end_time-init_time)/getTickFrequency()<<
+			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
+		std::cout<<"PLAYERS   : "<<GlobalStats::totalPlayers()<<std::endl;
+		std::cout<<"LAST ID   : "<<GlobalStats::playerV.at(GlobalStats::totalPlayers()-1).getPlayerId()<<std::endl;
 		std::cout<<"TO DELETE : "<<GlobalStats::playersToDelete.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;
 	}
 
 	destroyAllWindows();
-
+	// Hacemos el cálculo de las estadísticas a partir de los datos recopilados
 	StatsAnalyzer::calculateAllStats();
 
 	int command = 0;
+	/*
+	* Interfaz de usuario en la que se tiene acceso a las estadísticas calculadas
+	* anteriormente. Si se pulsa ENTER se mostrará el siguiente jugador, si se pulsa
+	* ESC, se finalizará la ejecución.
+	*/
 	while(command != 27) {
 		GUI::showStatsWindow();
 		if(command == 13) {
