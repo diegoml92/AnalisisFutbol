@@ -120,7 +120,7 @@ bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos, Player player) {
 }
 
 /* TRACKING DE LOS JUGADORES */
-void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player* player) {
+void TrackingObj::trackPlayers(Player* player) {
 	bool detected = false;
 	vector<Point> positions;
 	for(int i=0; i<N_VIDEOS; i++) {
@@ -131,11 +131,11 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player
 			realPos = &From3DTo2D::getRealPosition(player->getPosition(),i);
 		}
 		if(player->getBPos(i) || isInFocus(*realPos)) {
-			if(tracking(frame[i],filter[i],realPos,*player)) {
+			if(tracking(GlobalStats::frame[i],GlobalStats::filter[i],realPos,*player)) {
 				player->setCamPos(i,*realPos);
 				positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
 				detected = true;
-				filter[i](Rect()).setTo(0);
+				GlobalStats::filter[i](Rect()).setTo(0);
 			} else {
 				player->unSetCamPos(i);
 			}
@@ -154,17 +154,19 @@ void TrackingObj::trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player
 }
 
 /* REALIZA EL SEGUIMIENTO DE LOS ELEMENTOS DEL PARTIDO */
-void TrackingObj::objectDetection(Mat filtro, Mat &partido, int nVideo) {
-	Mat temp;		// Matriz auxiliar en la que buscaremos los contornos
-	filtro.copyTo(temp);
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
-	if(hierarchy.size() > 0) {													// Si se encuentra algún contorno
-		for(int i = 0; i < contours.size(); i++ ) {							// Recorremos los contornos
-			Rect elem = boundingRect(Mat(contours[i]));							// Creamos el boundingBox
-			if(PlayerClassifier::isPlayerSize(elem) && PlayerClassifier::canBePlayer(filtro(elem))) {
-				GlobalStats::locations[nVideo].push_back(elem);			// Añadimos al vector de elementos encontrados
+void TrackingObj::objectDetection() {
+	for(int i=0; i<N_VIDEOS; i++) {
+		Mat temp;		// Matriz auxiliar en la que buscaremos los contornos
+		GlobalStats::filter[i].copyTo(temp);
+		vector<vector<Point>> contours;
+		vector<Vec4i> hierarchy;
+		findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
+		if(hierarchy.size() > 0) {													// Si se encuentra algún contorno
+			for(int j = 0; j < contours.size(); j++ ) {							// Recorremos los contornos
+				Rect elem = boundingRect(Mat(contours[j]));							// Creamos el boundingBox
+				if(PlayerClassifier::isPlayerSize(elem) && PlayerClassifier::canBePlayer(GlobalStats::filter[i](elem))) {
+					GlobalStats::locations[i].push_back(elem);			// Añadimos al vector de elementos encontrados
+				}
 			}
 		}
 	}

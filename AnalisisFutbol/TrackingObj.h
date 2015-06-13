@@ -19,9 +19,9 @@ public:
 	static bool isInRange(Rect* r);
 
 	/* TRACKING DE LOS JUGADORES */
-	static void trackPlayers(Mat frame[N_VIDEOS], Mat filter[N_VIDEOS], Player* player);
+	static void trackPlayers(Player* player);
 
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
-	static void objectDetection(Mat filtro, Mat &partido, int nVideo);
+	static void objectDetection();
 
 };

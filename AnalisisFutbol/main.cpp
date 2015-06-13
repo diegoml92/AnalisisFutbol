@@ -12,20 +12,8 @@
 int main(int argc, char* argv[]) {
 
 	VideoManager::init();					// Cargamos el vídeo que vamos a utilizar
-
-	Mat frame[N_VIDEOS];					// Irá almacenando cada fotograma del vídeo de entrada
-	Mat filter[N_VIDEOS];					// Almacenará el umbral actualizado según los valores del filtro
-	Mat bg[N_VIDEOS];						// Almacenará los backgrounds de cada secuencia
-
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
-
-	for(int i=0; i<N_VIDEOS; i++) {			// Inicializamos imágenes de bg y máscaras
-		std::stringstream path;
-		path << VIDEO_PATH << i << BG_FORMAT;
-		bg[i] = imread(path.str());
-
-		FieldFilter::initFilterMask(i);
-	}
+	FieldFilter::initFilter();				// Inicializamos imágenes de bg y máscaras
 
 	// DEBUG!!!
 	// Guardamos los resultados de la ejecución
@@ -47,7 +35,7 @@ int main(int argc, char* argv[]) {
     *   que coge el frame actual del video y lo guarda en la matriz frame. Cuando nextFrame
 	*	devuelva false, la secuencia abrá acabado. También finaliza si se pulsa ESC.
 	*/
-	while(VideoManager::nextFrame(frame) && waitKey(1)!=27) {
+	while(VideoManager::nextFrame(GlobalStats::frame) && waitKey(1)!=27) {
 
 		// DEBUG!!!
 		int64 init_time,end_time,a,b;
@@ -60,9 +48,7 @@ int main(int argc, char* argv[]) {
 		a = getTickCount();
 
 		// Filtramos el campo en el frame
-		for(int i=0; i<N_VIDEOS; i++) {
-			filter[i] = FieldFilter::discardField(frame[i].clone(), bg[i], i);
-		}
+		FieldFilter::discardField();
 
 		b = getTickCount();
 
@@ -72,7 +58,7 @@ int main(int argc, char* argv[]) {
 
 		// Hacemos tracking de cada jugador
 		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
-			TrackingObj::trackPlayers(frame,filter,&*itP);
+			TrackingObj::trackPlayers(&*itP);
 		}
 
 		b = getTickCount();
@@ -115,9 +101,7 @@ int main(int argc, char* argv[]) {
 
         if(!GlobalStats::allPlayersDetected()) {
 			// Se lleva a cabo la detección de los elementos del campo
-			for(int i=0; i<N_VIDEOS; i++) {
-				TrackingObj::objectDetection(filter[i],frame[i], i);
-			}
+			TrackingObj::objectDetection();
 
 			b = getTickCount();
 
@@ -155,7 +139,7 @@ int main(int argc, char* argv[]) {
 						}
 					}
 					if(!found && From3DTo2D::isInRange(*it1) && !GlobalStats::alreadyDetected(*it1) && !GlobalStats::allPlayersDetected()) {
-						PlayerClassifier::addPlayer(frame[i],filter[i],*it1);
+						PlayerClassifier::addPlayer(GlobalStats::frame[i],GlobalStats::filter[i],*it1);
 					}
 				}
 			}
@@ -183,10 +167,10 @@ int main(int argc, char* argv[]) {
 					Rect paintR = GlobalStats::getPlayerRect(realP);
 					if(TrackingObj::isInRange(&paintR)) {
 						exists = true;
-						rectangle(frame[k],paintR,colour,2);
+						rectangle(GlobalStats::frame[k],paintR,colour,2);
 						std::stringstream text;
 						text << it->getPlayerId();
-						putText(frame[k],text.str(),Point(realP.x-15,realP.y+15),0,0.5,colour,2);
+						putText(GlobalStats::frame[k],text.str(),Point(realP.x-15,realP.y+15),0,0.5,colour,2);
 					}
 				}
 			}
@@ -204,7 +188,7 @@ int main(int argc, char* argv[]) {
 		// Limpiamos el vector de posiciones
 		GlobalStats::clearLocations();
 		// Unimos las secuencias en una sola para mostrarla
-		Mat join = VideoManager::joinSequences(frame);
+		Mat join = VideoManager::joinSequences(GlobalStats::frame);
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
 		// DEBUG!!!

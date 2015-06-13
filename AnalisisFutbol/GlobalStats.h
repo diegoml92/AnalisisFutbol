@@ -13,6 +13,11 @@ public:
 	static vector<Player> playerV;
 	static vector<Player*> playersToDelete;
 
+	// Irá almacenando cada fotograma del vídeo de entrada
+	static Mat frame[N_VIDEOS];
+	// Almacenará el umbral actualizado según los valores del filtro
+	static Mat filter[N_VIDEOS];
+
 	/*
 	* Vector que almacenará los elementos detectados
 	* en cada iteración por cada una de las cámaras

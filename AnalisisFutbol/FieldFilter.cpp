@@ -1,18 +1,33 @@
 #include "FieldFilter.h"
 #include "From3DTo2D.h"
+#include "GlobalStats.h"
 
 Mat FieldFilter::mask[N_VIDEOS];
+Mat FieldFilter::bg[N_VIDEOS];
+
+/* INICIA LOS ELEMENTOS NECESARIOS PARA EL FILTRADO */
+void FieldFilter::initFilter() {
+	for(int i=0; i<N_VIDEOS; i++) {
+		std::stringstream path;
+		path << VIDEO_PATH << i << BG_FORMAT;
+		bg[i] = imread(path.str());
+
+		FieldFilter::initFilterMask(i);
+	}
+}
 
 /* FILTRAMOS EL CAMPO PARA ENCONTRAR A LOS JUGADORES */
-Mat FieldFilter::discardField(Mat partido, Mat bg, int nCam) {
-	Mat thres, tmp, final, diff = abs(partido-bg);
-	threshold(diff,thres,40,255,CV_THRESH_BINARY);
+void FieldFilter::discardField() {
+	for (int i=0; i<N_VIDEOS; i++) {
+		Mat thres, tmp, final, diff = abs(GlobalStats::frame[i]-bg[i]);
+		threshold(diff,thres,40,255,CV_THRESH_BINARY);
 
-	vector<Mat> planes;
-	split(thres,planes);
-	tmp = (planes[0] | planes[1] | planes[2]);
-	tmp.copyTo(final,mask[nCam]);
-	return final;
+		vector<Mat> planes;
+		split(thres,planes);
+		tmp = (planes[0] | planes[1] | planes[2]);
+		tmp.copyTo(final,mask[i]);
+		GlobalStats::filter[i]=final;
+	}
 }
 
 /* SE INICIALIZA LA MÁSCARA PARA EL FILTRO */

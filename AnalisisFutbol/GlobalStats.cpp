@@ -2,6 +2,9 @@
 #include "StatsAnalyzer.h"
 
 // Iniciamos las variables
+Mat GlobalStats::frame[N_VIDEOS];
+Mat GlobalStats::filter[N_VIDEOS];
+
 vector<Player> GlobalStats::playerV;
 vector<Rect> GlobalStats::locations [N_VIDEOS];
 vector<Player*> GlobalStats::playersToDelete;
