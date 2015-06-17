@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Archivos de recursos\img">
+      <UniqueIdentifier>{ab14fda9-e5cd-456f-8627-ee586f94718a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de recursos\Sequences">
+      <UniqueIdentifier>{b27bb1d4-58fc-4040-b4c4-2a5776586f19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,5 +83,49 @@
     <ClInclude Include="GlobalStats.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\soccer_field.jpg">
+      <Filter>Archivos de recursos\img</Filter>
+    </None>
+    <None Include="img\soccer_field_small.jpg">
+      <Filter>Archivos de recursos\img</Filter>
+    </None>
+    <None Include="Sequences\Seq0.avi">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq0_bg.jpg">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq1.avi">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq1_bg.jpg">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq2.avi">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq2_bg.jpg">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq3.avi">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq3_bg.jpg">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq4.avi">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq4_bg.jpg">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq5.avi">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
+    <None Include="Sequences\Seq5_bg.jpg">
+      <Filter>Archivos de recursos\Sequences</Filter>
+    </None>
   </ItemGroup>
 </Project>

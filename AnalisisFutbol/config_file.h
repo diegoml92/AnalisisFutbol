@@ -15,11 +15,11 @@ using namespace cv;
 #define STATS_W "ESTADÍSTICAS"
 
 /* PATHS */
-#define VIDEO_PATH "C:/Proyecto/Sequences/Seq"
+#define VIDEO_PATH "./Sequences/Seq"
 #define VIDEO_FORMAT ".avi"
 #define BG_FORMAT "_bg.jpg"
-#define FIELD2D_PATH "C:/Proyecto/img/soccer_field.jpg"
-#define FIELD2DSMALL_PATH "C:/Proyecto/img/soccer_field_small.jpg"
+#define FIELD2D_PATH "./img/soccer_field.jpg"
+#define FIELD2DSMALL_PATH "./img/soccer_field_small.jpg"
 
 /* VIDEO */
 #define N_VIDEOS 6

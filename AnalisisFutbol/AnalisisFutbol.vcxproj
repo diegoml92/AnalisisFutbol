@@ -34,6 +34,22 @@
     <ClInclude Include="TrackingObj.h" />
     <ClInclude Include="VideoManager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="img\soccer_field.jpg" />
+    <None Include="img\soccer_field_small.jpg" />
+    <None Include="Sequences\Seq0.avi" />
+    <None Include="Sequences\Seq0_bg.jpg" />
+    <None Include="Sequences\Seq1.avi" />
+    <None Include="Sequences\Seq1_bg.jpg" />
+    <None Include="Sequences\Seq2.avi" />
+    <None Include="Sequences\Seq2_bg.jpg" />
+    <None Include="Sequences\Seq3.avi" />
+    <None Include="Sequences\Seq3_bg.jpg" />
+    <None Include="Sequences\Seq4.avi" />
+    <None Include="Sequences\Seq4_bg.jpg" />
+    <None Include="Sequences\Seq5.avi" />
+    <None Include="Sequences\Seq5_bg.jpg" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{844D7C75-B838-4DE4-9F09-4947E694A1C7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
