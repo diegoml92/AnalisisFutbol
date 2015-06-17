@@ -1,11 +1,18 @@
 #include "config_file.h"
+#include "Player.h"
 
 /* CLASE ENCARGADA DE LA GESTIÓN DE LOS JUGADORES */
 class PlayerClassifier {
 private:
 
 	/* CALCULA EL HISTOGRAMA DEL JUGADOR */
-	static vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<Rect> rects, Point pos);
+	static vector<Mat> calculateHistogram(Mat frame, Mat filter, vector<Rect> rects);
+
+	/* CALCULA EL HISTOGRAMA DEL JUGADOR */
+	static vector<Mat> calculateHistogram(Point pos, int nCam);
+
+	/* COMPARA LOS HISTOGRAMAS DE LOS JUGADORES */
+	static double compareHistogram(vector<Mat> playerHist, vector<Mat> newHist);
 
 public:
 
@@ -15,11 +22,14 @@ public:
 	/* DETERMINA SI CUMPLE EL TAMAÑO PROPIO DE UN JUGADOR */
 	static bool isPlayerSize(Rect player);
 
-	/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
-	static bool PlayerClassifier::canBePlayer(Mat roi);
+	/* DETERMINA CUÁL DE LOS ELEMENTOS ASIGNADOS A UN JUGADOR ES EL CORRECTO */
+	static Point findBestMatch(Player* player);
 
 	/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
-	static bool PlayerClassifier::canBePlayer2(Mat roi);
+	static bool PlayerClassifier::canBePlayer(Mat roi, float val = 0.35);
+
+	/* DETERMINA SI PUEDE SER EL MISMO JUGADOR */
+	static bool PlayerClassifier::isSamePlayer(Player player, Rect playerBox, int nCam);
 
 };
 

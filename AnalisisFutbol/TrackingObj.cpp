@@ -74,7 +74,7 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 }
 
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos, Player player) {
+bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 	
 	float range[] = {0,256};
 	const float* ranges [] = {range};
@@ -88,14 +88,14 @@ bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos, Player player) {
 
 	if(inRange) {
 
-		Mat roi = frame(playerBox);
+		Mat roi = GlobalStats::frame[nCam](playerBox);
 
 		vector<Mat> hist = player.getHistogram();
 
 		Rect searchWindowRect, relativePlayerBox;
 		searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
-		Mat window = frame(searchWindowRect);
-		Mat windowMask = filter(searchWindowRect);
+		Mat window = GlobalStats::frame[nCam](searchWindowRect);
+		Mat windowMask = GlobalStats::filter[nCam](searchWindowRect);
 
 		Mat dst[3];
 		calcBackProject(&window,1,channel_B,hist[0],dst[0],ranges);
@@ -116,7 +116,31 @@ bool TrackingObj::tracking(Mat frame, Mat filter, Point* pos, Player player) {
 		*pos = Point(playerBox.tl().x + desp.x + playerBox.width/2,playerBox.br().y + desp.y);
 	}
 	playerBox = GlobalStats::getPlayerRect(*pos);
-	return inRange && isInRange(&playerBox) && PlayerClassifier::canBePlayer2(filter(playerBox));
+	return inRange && isInRange(&playerBox) &&
+		PlayerClassifier::isSamePlayer(player, playerBox, nCam);
+}
+
+/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
+float TrackingObj::distance(Point p1, Point p2) {
+	float dist = 0;
+	if(p2.x >= 0) {
+		dist = norm(p1-p2)/10;
+	}
+	return dist;
+}
+
+/*
+* DETERMINA SI LOS ELEMENTOS ASOCIADOS POR CADA SECUENCIA
+* EN LA QUE HAYA SIDO DETECTADO UN JUGADOR NO SE CORRESPONDEN
+*/
+bool TrackingObj::isDifferentPosition(vector<Point> positions) {
+	bool different = false;
+	for(int i=0; i<positions.size(); i++) {
+		for(int j=i+1; j<positions.size(); j++) {
+			different = TrackingObj::distance(positions[i],positions[j]) > DIFF_POINTS_DIST;
+		}
+	}
+	return different;
 }
 
 /* TRACKING DE LOS JUGADORES */
@@ -131,7 +155,7 @@ void TrackingObj::trackPlayers(Player* player) {
 			realPos = &From3DTo2D::getRealPosition(player->getPosition(),i);
 		}
 		if(player->getBPos(i) || isInFocus(*realPos)) {
-			if(tracking(GlobalStats::frame[i],GlobalStats::filter[i],realPos,*player)) {
+			if(tracking(realPos,*player,i)) {
 				player->setCamPos(i,*realPos);
 				positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
 				detected = true;
@@ -143,11 +167,16 @@ void TrackingObj::trackPlayers(Player* player) {
 	}
 	if(detected) {
 		Point newPos;
-		for(int i=0; i<positions.size(); i++) {
-			newPos+=positions.at(i);
+		if(!TrackingObj::isDifferentPosition(positions)) {
+			for(int i=0; i<positions.size(); i++) {
+				newPos+=positions.at(i);
+			}
+			newPos = Point(newPos.x/positions.size(), newPos.y/positions.size());
+			player->addPosition(newPos);
+		} else {
+			newPos = PlayerClassifier::findBestMatch(player);
+			player->addPosition(newPos);
 		}
-		newPos = Point(newPos.x/positions.size(), newPos.y/positions.size());
-		player->addPosition(newPos);
 	} else {
 		GlobalStats::playersToDelete.push_back(player);
 	}
@@ -161,11 +190,12 @@ void TrackingObj::objectDetection() {
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
 		findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
-		if(hierarchy.size() > 0) {													// Si se encuentra algún contorno
-			for(int j = 0; j < contours.size(); j++ ) {							// Recorremos los contornos
-				Rect elem = boundingRect(Mat(contours[j]));							// Creamos el boundingBox
-				if(PlayerClassifier::isPlayerSize(elem) && PlayerClassifier::canBePlayer(GlobalStats::filter[i](elem))) {
-					GlobalStats::locations[i].push_back(elem);			// Añadimos al vector de elementos encontrados
+		if(hierarchy.size() > 0) {									// Si se encuentra algún contorno
+			for(int j = 0; j < contours.size(); j++ ) {				// Recorremos los contornos
+				Rect elem = boundingRect(Mat(contours[j]));			// Creamos el boundingBox
+				if(PlayerClassifier::isPlayerSize(elem) &&
+					PlayerClassifier::canBePlayer(GlobalStats::filter[i](elem))) {
+					GlobalStats::locations[i].push_back(elem);		// Añadimos al vector de elementos encontrados
 				}
 			}
 		}

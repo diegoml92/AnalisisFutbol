@@ -54,10 +54,12 @@ using namespace cv;
 
 /* OTRAS */
 #define RGB 256
+#define N_CHANNELS 3
 #define MS_TO_KMH 3.6
-#define MAX_PLAYERS 35
+#define MAX_PLAYERS 25
 #define FIELD_MARGIN 10
-#define SEARCH_WINDOW 15,15
+#define SEARCH_WINDOW 15,10
+#define DIFF_POINTS_DIST 5
 #define ANALYZER_VIDEO_SIZE_RELATION 4
 
 // DEBUG!!!

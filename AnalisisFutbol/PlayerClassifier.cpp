@@ -17,13 +17,13 @@ void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 		}
 	}
 	if(playerV.size()>0) {
-		vector<Mat> hist = calculateHistogram(frame, filter, playerV, position);
+		vector<Mat> hist = calculateHistogram(frame, filter, playerV);
 		GlobalStats::playerV.push_back(Player(position, hist));
 	}
 }
 
 /* CALCULA EL HISTOGRAMA DEL JUGADOR */
-vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<Rect> rects, Point pos) {
+vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<Rect> rects) {
 
 	int channel_B [] = {0};
 	int channel_G [] = {1};
@@ -46,18 +46,68 @@ vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<R
 	return hist_v;
 }
 
+/* CALCULA EL HISTOGRAMA DEL JUGADOR */
+vector<Mat> PlayerClassifier::calculateHistogram(Point pos, int nCam) {
+	vector<Rect> v;
+	v.push_back(GlobalStats::getPlayerRect(pos));
+	return PlayerClassifier::calculateHistogram(GlobalStats::frame[nCam],GlobalStats::filter[nCam],v);
+}
+
+/* COMPARA LOS HISTOGRAMAS DE LOS JUGADORES */
+double PlayerClassifier::compareHistogram(vector<Mat> playerHist, vector<Mat> newHist) {
+	double diff = 0;
+	for(int i=0; i<N_CHANNELS; i++) {
+		diff += compareHist(playerHist.at(i),newHist.at(i),CV_COMP_BHATTACHARYYA);
+	}
+	return diff;
+}
+
 /* DETERMINA SI CUMPLE EL TAMAÑO PROPIO DE UN JUGADOR */
 bool PlayerClassifier::isPlayerSize(Rect player) {
 	return player.height>MIN_HEIGH && player.height<MAX_HEIGH
 			&& player.width>MIN_WIDTH && player.width<MAX_WIDTH;
 }
 
-/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
-bool PlayerClassifier::canBePlayer(Mat roi) {
-	return countNonZero(roi) / (float)(roi.cols*roi.rows) > 0.35;
+/* DETERMINA CUÁL DE LOS ELEMENTOS ASIGNADOS A UN JUGADOR ES EL CORRECTO */
+Point PlayerClassifier::findBestMatch(Player* player) {
+	float min = N_CHANNELS; // La distancia bhattacharya es mámixo 1; Como trabajamos con
+							// cada canal por separado, el máximo será 3.
+	int cam = -1;
+	for(int i=0; i<N_VIDEOS; i++) {
+		if (player->getBPos(i)) {
+			float res = PlayerClassifier::compareHistogram(player->getHistogram(),
+				calculateHistogram(player->getCamPos(i), i));
+			//DEBUG!!!
+			/*std::stringstream name;
+			name << "TMP_PLAYER_AT_CAM_" << i;
+			imshow(name.str(),GlobalStats::frame[i](GlobalStats::getPlayerRect(player->getCamPos(i))));
+			std::cout<<"RES["<<i<<"] = "<<res<<std::endl; */
+			if(res < min) {
+				min = res;
+				cam = i;
+			}
+		}
+	}
+	// Desactivamos todas las localizaciones excepto la de la mejor opcion
+	for(int i=0; i<N_VIDEOS; i++) {
+		if (player->getBPos(i) && i!=cam) {
+			player->unSetCamPos(i);
+		}
+	}
+	return From3DTo2D::get2DPosition(player->getCamPos(cam),cam);
 }
 
 /* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
-bool PlayerClassifier::canBePlayer2(Mat roi) {
-	return countNonZero(roi) / (float)(roi.cols*roi.rows) > 0.2;
+bool PlayerClassifier::canBePlayer(Mat roi, float val) {
+	return countNonZero(roi) / (float)(roi.cols*roi.rows) >= val;
+}
+
+/* DETERMINA SI PUEDE SER EL MISMO JUGADOR */
+bool PlayerClassifier::isSamePlayer(Player player, Rect playerBox, int nCam) {
+	// Cumple la restricción de puntos blancos en el filtro &&
+	// El histograma es lo suficientemente parecido
+	return PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2)/* &&
+			PlayerClassifier::compareHistogram(player.getHistogram(),
+				calculateHistogram(GlobalStats::getCenter(playerBox),nCam)) < 0.9*/;
+
 }

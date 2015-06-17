@@ -5,10 +5,20 @@
 class TrackingObj {
 private:
 	/* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
-	static bool tracking(Mat frame, Mat filter, Point* pos, Player player);
+	static bool tracking(Point* pos, Player player, int nCam);
 
 	/* VENTANA DE BÚSQUEDA DEL JUGADOR */
 	static void searchWindow(Rect playerBox, Rect* searchWindow, Rect* relative);
+
+	/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
+	static float distance(Point actualPoint, Point lastPoint);
+
+	/*
+	* DETERMINA SI LOS ELEMENTOS ASOCIADOS POR CADA SECUENCIA
+	* EN LA QUE HAYA SIDO DETECTADO UN JUGADOR NO SE CORRESPONDEN
+	*/
+	static bool isDifferentPosition(vector<Point> positions);
+
 
 public:
 
