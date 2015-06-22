@@ -29,7 +29,7 @@ public:
 	static bool isInRange(Rect* r);
 
 	/* TRACKING DE LOS JUGADORES */
-	static void trackPlayers(Player* player);
+	static void trackPlayers(vector<Player>::iterator* player);
 
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
 	static void objectDetection();
