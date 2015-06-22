@@ -7,11 +7,12 @@
    RESTO DE CLASES
 */
 class GlobalStats {
+
 public:
 
 	// Variables globales
 	static vector<Player> playerV;
-	static vector<Player*> playersToDelete;
+	static std::list<Player*> playersToDelete;
 
 	// Irá almacenando cada fotograma del vídeo de entrada
 	static Mat frame[N_VIDEOS];
@@ -23,6 +24,15 @@ public:
 	* en cada iteración por cada una de las cámaras
 	*/	
 	static vector<Rect> locations [];
+
+	/*
+	* AÑADE UN JUGADOR A LA LISTA DE BORRADO 
+	* Y LO BORRA DE LA LISTA DE JUGADORES ACTUALES
+	*/
+	static void addPlayerToDelete(vector<Player>::iterator* itP);
+
+	/* COMPRUEBA LOS JUGADORES A BORRAR */
+	static void checkPlayersToDelete();
 
 	/* VACÍA LOS VECTORES DE POSICIONES */
 	static void clearLocations();

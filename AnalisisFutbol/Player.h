@@ -24,6 +24,7 @@ private:
 	bool bPos[N_VIDEOS];
 	Point camPos[N_VIDEOS];
 	vector<Mat> histogram;
+	int deletionCounter;
 
 public:
 
@@ -70,10 +71,19 @@ public:
 	void unSetCamPos(int i);
 
 	/* DEVUELVE EL PLAYER ID */
-	int Player::getPlayerId();
+	int getPlayerId();
+
+	/* INICIA EL CONTADOR DE BORRADO A 0 */
+	void startDeletionCounter();
+
+	/* INCREMENTA EL CONTADOR DE BORRADO */
+	void increaseDeletionCounter();
+
+	/* DEVUELVE EL VALOR DEL CONTADOR DE BORRADO */
+	int getDeletionCounter();
 
 	/* SE IMPLEMENTA ESTE MÉTODO PARA PERMITIR LA COMPARACIÓN*/
-	bool Player::operator==(const Player &other) const;
+	bool operator==(const Player &other) const;
 };
 
 #endif //PLAYER_H

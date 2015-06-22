@@ -28,11 +28,11 @@ vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<R
 	int channel_B [] = {0};
 	int channel_G [] = {1};
 	int channel_R [] = {2};
-	int nBins = 16;
-	float range [] = {0,256};
+	int nBins = N_BINS;
+	float range [] = {0,RGB};
 	const float *ranges = {range};
 	vector<Mat> hist_v;
-	Mat hist[3];
+	Mat hist[N_CHANNELS];
 	for(int i=0; i<rects.size(); i++) {
 		Mat mask = filter(rects[i]);
 		Mat src = frame(rects.at(i));
@@ -40,7 +40,7 @@ vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<R
 		calcHist(&src,1,channel_G,mask,hist[1],1,&nBins,&ranges,true,true);
 		calcHist(&src,1,channel_R,mask,hist[2],1,&nBins,&ranges,true,true);
 	}
-	for(int i=0 ; i<3; i++) {
+	for(int i=0 ; i<N_CHANNELS; i++) {
 		hist_v.push_back(hist[i]);
 	}
 	return hist_v;

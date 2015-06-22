@@ -7,7 +7,37 @@ Mat GlobalStats::filter[N_VIDEOS];
 
 vector<Player> GlobalStats::playerV;
 vector<Rect> GlobalStats::locations [N_VIDEOS];
-vector<Player*> GlobalStats::playersToDelete;
+std::list<Player*> GlobalStats::playersToDelete;
+
+/*
+* AÑADE UN JUGADOR A LA LISTA DE BORRADO 
+* Y LO BORRA DE LA LISTA DE JUGADORES ACTUALES
+*/
+void GlobalStats::addPlayerToDelete(vector<Player>::iterator* it) {
+	Player* player = &(**it);
+	player->startDeletionCounter();
+	GlobalStats::playersToDelete.push_back(player);
+	vector<Player>::iterator itP = std::find(GlobalStats::playerV.begin(),GlobalStats::playerV.end(),*player);
+	if(itP != GlobalStats::playerV.end()) {
+		std::cout<<itP->getPlayerId()<<std::endl;
+		*it = GlobalStats::playerV.erase(itP);
+		if(*it == GlobalStats::playerV.end()) {
+		}
+	}
+}
+
+/* COMPRUEBA LOS JUGADORES A BORRAR */
+void GlobalStats::checkPlayersToDelete() {
+	std::list<Player*>::iterator it = playersToDelete.begin();
+	while (it!=playersToDelete.end()) {
+		(*it)->increaseDeletionCounter();
+		if((*it)->getDeletionCounter() > TIME_TO_DELETE * FPS) {
+			it = GlobalStats::playersToDelete.erase(it);
+		} else {
+			it++;
+		}
+	}
+}
 
 /* VACÍA LOS VECTORES DE POSICIONES */
 void GlobalStats::clearLocations() {
@@ -50,8 +80,8 @@ int GlobalStats::totalPlayers() {
 
 /* DETERMINA EL "COLOR" DE UN JUGADOR A PARTIR DE SU HISTOGRAMA */
 Scalar GlobalStats::calculateColor(vector<Mat> hist) {
-	int bgr[3];
-	for(int i=0; i<hist.size(); i++) {
+	int bgr[N_CHANNELS];
+	for(int i=0; i<N_CHANNELS; i++) {
 		vector<int> total;
 		int nBins = hist[i].rows;
 		for(int j=0; j<nBins; j++) {

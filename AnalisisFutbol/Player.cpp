@@ -19,6 +19,7 @@ Player::Player(Point pos, vector<Mat> histogram) {
 	}
 	Player::lastPoint = pos;
 	Player::nSpeed = 0;
+	Player::deletionCounter = 0;
 }
 
 /* INCREMENTA EL VALOR EN LA POSICION INDICADA */
@@ -93,6 +94,21 @@ void Player::setCamPos(int i, Point p) {
 /* DESACTIVA LA CÁMARA i */
 void Player::unSetCamPos(int i) {
 	Player::bPos[i] = false;
+}
+
+/* INICIA EL CONTADOR DE BORRADO A 0 */
+void Player::startDeletionCounter() {
+	Player::deletionCounter = 0;
+}
+
+/* INCREMENTA EL CONTADOR DE BORRADO */
+void Player::increaseDeletionCounter() {
+	Player::deletionCounter++;
+}
+
+/* DEVUELVE EL VALOR DEL CONTADOR DE BORRADO */
+int Player::getDeletionCounter() {
+	return Player::deletionCounter;
 }
 
 bool Player::operator==(const Player &other) const {

@@ -2,6 +2,7 @@
 #include <opencv2\highgui\highgui.hpp>
 #include <opencv2\imgproc\imgproc.hpp>
 #include <opencv2\video\tracking.hpp>
+#include <list>
 #include <iostream>
 
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
@@ -54,12 +55,14 @@ using namespace cv;
 
 /* OTRAS */
 #define RGB 256
+#define N_BINS 16
 #define N_CHANNELS 3
 #define MS_TO_KMH 3.6
 #define MAX_PLAYERS 25
 #define FIELD_MARGIN 10
-#define SEARCH_WINDOW 15,10
+#define TIME_TO_DELETE 3
 #define DIFF_POINTS_DIST 5
+#define SEARCH_WINDOW 15,10
 #define ANALYZER_VIDEO_SIZE_RELATION 4
 
 // DEBUG!!!

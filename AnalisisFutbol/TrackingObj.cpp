@@ -76,11 +76,9 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
 bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 	
-	float range[] = {0,256};
-	const float* ranges [] = {range};
-    int channel_B [] = {0};
-	int channel_G [] = {1};
-	int channel_R [] = {2};
+	float range[] = {0,RGB};
+	const float* ranges[] = {range};
+    int channel [] = {0};
 
     Rect playerBox = GlobalStats::getPlayerRect(*pos);
 
@@ -88,19 +86,16 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 
 	if(inRange) {
 
-		Mat roi = GlobalStats::frame[nCam](playerBox);
-
-		vector<Mat> hist = player.getHistogram();
-
 		Rect searchWindowRect, relativePlayerBox;
 		searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
 		Mat window = GlobalStats::frame[nCam](searchWindowRect);
 		Mat windowMask = GlobalStats::filter[nCam](searchWindowRect);
 
-		Mat dst[3];
-		calcBackProject(&window,1,channel_B,hist[0],dst[0],ranges);
-		calcBackProject(&window,1,channel_B,hist[1],dst[1],ranges);
-		calcBackProject(&window,1,channel_B,hist[2],dst[2],ranges);
+		Mat dst[N_CHANNELS];
+		vector<Mat> hist = player.getHistogram();
+		calcBackProject(&window,1,channel,hist[0],dst[0],ranges);
+		calcBackProject(&window,1,channel,hist[1],dst[1],ranges);
+		calcBackProject(&window,1,channel,hist[2],dst[2],ranges);
 
 		dst[0]&=windowMask;
 		dst[1]&=windowMask;
@@ -144,7 +139,8 @@ bool TrackingObj::isDifferentPosition(vector<Point> positions) {
 }
 
 /* TRACKING DE LOS JUGADORES */
-void TrackingObj::trackPlayers(Player* player) {
+void TrackingObj::trackPlayers(vector<Player>::iterator* itP) {
+	Player* player = &(**itP);
 	bool detected = false;
 	vector<Point> positions;
 	for(int i=0; i<N_VIDEOS; i++) {
@@ -178,7 +174,7 @@ void TrackingObj::trackPlayers(Player* player) {
 			player->addPosition(newPos);
 		}
 	} else {
-		GlobalStats::playersToDelete.push_back(player);
+		GlobalStats::addPlayerToDelete(itP);
 	}
 }
 

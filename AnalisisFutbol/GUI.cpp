@@ -15,7 +15,7 @@ void GUI::showStatsWindow() {
 		int player = GUI::nPlayer;
 
 		std::stringstream ssplayer;
-		ssplayer << "Jugador " << player;
+		ssplayer << "Jugador " << GlobalStats::playerV[player].getPlayerId();
 
 		putText(stats,"Nombre:",Point(10,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 		putText(stats,ssplayer.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);

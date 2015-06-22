@@ -44,6 +44,8 @@ int main(int argc, char* argv[]) {
 		// Cargamos el campo 2D en field
 		Mat field;
 		From3DTo2D::field2D.copyTo(field);
+
+		GlobalStats::checkPlayersToDelete();
 		
 		a = getTickCount();
 
@@ -57,28 +59,20 @@ int main(int argc, char* argv[]) {
 		a = getTickCount();
 
 		// Hacemos tracking de cada jugador
-		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
-			TrackingObj::trackPlayers(&*itP);
+		vector<Player>::iterator itP = GlobalStats::playerV.begin();
+		while(itP != GlobalStats::playerV.end()) {
+			TrackingObj::trackPlayers(&itP);
+			// Si se ha borrado dentro el último elemento de la lista, el operador
+			// itP++ provocaría una salida de rango al hacer la comprobación en el
+			// while, por lo que debemos tener en cuenta este caso para no incrementarlo.
+			if(itP != GlobalStats::playerV.end()) {
+				itP++;
+			}
 		}
 
 		b = getTickCount();
 
 		std::cout<<"Tracking  : "<<(b-a)/getTickFrequency()<<std::endl;
-		
-		a = getTickCount();
-		// Borrado de jugadores descartados
-		for(vector<Player*>::iterator it = GlobalStats::playersToDelete.begin();
-				it!=GlobalStats::playersToDelete.end(); it++) {
-			vector<Player>::iterator itP = std::find(GlobalStats::playerV.begin(),GlobalStats::playerV.end(),**it);
-			if(itP != GlobalStats::playerV.end()) {
-				GlobalStats::playerV.erase(itP);
-			}
-		}
-		GlobalStats::playersToDelete.clear();
-
-		b = getTickCount();
-
-		std::cout<<"Deleting  : "<<(b-a)/getTickFrequency()<<std::endl;
 		
 		/*a = getTickCount();
 		// Eliminamos del filtro los jugadores ya trackeados para que no sean detectados de nuevo
@@ -87,15 +81,15 @@ int main(int argc, char* argv[]) {
 				if(itP->getBPos(i)) {
 					Rect rectP = GlobalStats::getPlayerRect(itP->getCamPos(i));
 					if(TrackingObj::isInRange(&rectP)) {
-						filter[i](rectP).setTo(0);
+						GlobalStats::filter[i](rectP).setTo(0);
 					}
 				}
 			}
 		}
 		b = getTickCount();
 
-		std::cout<<"Cleaning:   "<<(b-a)/getTickFrequency()<<std::endl;
-		*/
+		std::cout<<"Cleaning:   "<<(b-a)/getTickFrequency()<<std::endl;*/
+		
 
 		a = getTickCount();
 
@@ -168,9 +162,8 @@ int main(int argc, char* argv[]) {
 					if(TrackingObj::isInRange(&paintR)) {
 						exists = true;
 						rectangle(GlobalStats::frame[k],paintR,colour,2);
-						std::stringstream text;
-						text << it->getPlayerId();
-						putText(GlobalStats::frame[k],text.str(),Point(realP.x-15,realP.y+15),0,0.5,colour,2);
+						putText(GlobalStats::frame[k],std::to_string((long double)it->getPlayerId()),
+							Point(realP.x-15,realP.y+15),0,0.5,Scalar(0,0,255),2);
 					}
 				}
 			}
