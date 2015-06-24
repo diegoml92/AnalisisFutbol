@@ -60,6 +60,7 @@ using namespace cv;
 #define MS_TO_KMH 3.6
 #define MAX_PLAYERS 25
 #define FIELD_MARGIN 10
+#define SAMPLING_RATE 5	
 #define TIME_TO_DELETE 3
 #define DIFF_POINTS_DIST 5
 #define SEARCH_WINDOW 15,10

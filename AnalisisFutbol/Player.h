@@ -34,8 +34,14 @@ public:
 	/* CONSTRUCTOR */
 	Player(Point pos, vector<Mat> histogram);
 
+	/* CONSTRUCTOR AUXILIAR */
+	Player(Player* p);
+
 	/* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 	void addPosition(Point p);
+
+	/* ACTUALIZA ESTADÍSTICAS SI SE RECUPERA EL JUGADOR */
+	void updateStats(Point pos);
 
 	/* CALCULA LAS ESTADÍSTICAS */
 	void calculateStats();
@@ -83,7 +89,7 @@ public:
 	int getDeletionCounter();
 
 	/* SE IMPLEMENTA ESTE MÉTODO PARA PERMITIR LA COMPARACIÓN*/
-	bool operator==(const Player &other) const;
+	bool operator==(const Player other) const;
 };
 
 #endif //PLAYER_H

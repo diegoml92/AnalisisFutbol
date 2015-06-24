@@ -62,19 +62,14 @@ int main(int argc, char* argv[]) {
 		vector<Player>::iterator itP = GlobalStats::playerV.begin();
 		while(itP != GlobalStats::playerV.end()) {
 			TrackingObj::trackPlayers(&itP);
-			// Si se ha borrado dentro el último elemento de la lista, el operador
-			// itP++ provocaría una salida de rango al hacer la comprobación en el
-			// while, por lo que debemos tener en cuenta este caso para no incrementarlo.
-			if(itP != GlobalStats::playerV.end()) {
-				itP++;
-			}
+			// El iterador itP++ se controla dentro de trackPlayers
 		}
 
 		b = getTickCount();
 
 		std::cout<<"Tracking  : "<<(b-a)/getTickFrequency()<<std::endl;
 		
-		/*a = getTickCount();
+		a = getTickCount();
 		// Eliminamos del filtro los jugadores ya trackeados para que no sean detectados de nuevo
 		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
 			for(int i=0; i<N_VIDEOS; i++) {
@@ -88,7 +83,7 @@ int main(int argc, char* argv[]) {
 		}
 		b = getTickCount();
 
-		std::cout<<"Cleaning:   "<<(b-a)/getTickFrequency()<<std::endl;*/
+		std::cout<<"Cleaning:   "<<(b-a)/getTickFrequency()<<std::endl;
 		
 
 		a = getTickCount();
@@ -171,6 +166,16 @@ int main(int argc, char* argv[]) {
 				circle(field,p,3,colour,2);
 			}
 		}
+
+		//DEBUG!!!
+		for(std::list<Player>::iterator it = GlobalStats::playersToDelete.begin(); it!=GlobalStats::playersToDelete.end(); it++) {
+			Point p = it->getPosition();
+			for(int k=0; k<N_VIDEOS; k++) {
+				Point realP = From3DTo2D::getRealPosition(p,k);
+				Rect paintR = GlobalStats::getPlayerRect(realP);
+				rectangle(GlobalStats::frame[k],paintR,Scalar(0,0,255),-1);
+			}
+		}
 		
 		b = getTickCount();
 
@@ -203,9 +208,15 @@ int main(int argc, char* argv[]) {
 		std::cout<<"TOTAL     : "<<(end_time-init_time)/getTickFrequency()<<
 			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
 		std::cout<<"PLAYERS   : "<<GlobalStats::totalPlayers()<<std::endl;
-		std::cout<<"LAST ID   : "<<GlobalStats::playerV.at(GlobalStats::totalPlayers()-1).getPlayerId()<<std::endl;
+		std::cout<<"LAST ID   : "<<Player::id<<std::endl;
 		std::cout<<"TO DELETE : "<<GlobalStats::playersToDelete.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;
+
+		// DEBUG!!!
+		if(GlobalStats::evento) {
+			waitKey();
+			GlobalStats::evento = false;
+		}
 	}
 
 	destroyAllWindows();

@@ -18,7 +18,18 @@ void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 	}
 	if(playerV.size()>0) {
 		vector<Mat> hist = calculateHistogram(frame, filter, playerV);
-		GlobalStats::playerV.push_back(Player(position, hist));
+		// No se ha asociado a ningún jugador perdido anteriormente
+		if(!GlobalStats::recoverPlayer(position,hist)) {
+			GlobalStats::playerV.push_back(Player(position, hist));
+		} else {
+			// DEBUG!!!
+			for(int i=0; i<N_VIDEOS; i++) {
+				Point realPos = From3DTo2D::getRealPosition(position,i);
+				Rect playerBox = GlobalStats::getPlayerRect(realPos);
+				rectangle(GlobalStats::frame[i],playerBox,Scalar(0,255,0),-1);
+				GlobalStats::evento = true;
+			}
+		}
 	}
 }
 
@@ -77,11 +88,6 @@ Point PlayerClassifier::findBestMatch(Player* player) {
 		if (player->getBPos(i)) {
 			float res = PlayerClassifier::compareHistogram(player->getHistogram(),
 				calculateHistogram(player->getCamPos(i), i));
-			//DEBUG!!!
-			/*std::stringstream name;
-			name << "TMP_PLAYER_AT_CAM_" << i;
-			imshow(name.str(),GlobalStats::frame[i](GlobalStats::getPlayerRect(player->getCamPos(i))));
-			std::cout<<"RES["<<i<<"] = "<<res<<std::endl; */
 			if(res < min) {
 				min = res;
 				cam = i;
@@ -100,14 +106,4 @@ Point PlayerClassifier::findBestMatch(Player* player) {
 /* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
 bool PlayerClassifier::canBePlayer(Mat roi, float val) {
 	return countNonZero(roi) / (float)(roi.cols*roi.rows) >= val;
-}
-
-/* DETERMINA SI PUEDE SER EL MISMO JUGADOR */
-bool PlayerClassifier::isSamePlayer(Player player, Rect playerBox, int nCam) {
-	// Cumple la restricción de puntos blancos en el filtro &&
-	// El histograma es lo suficientemente parecido
-	return PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2)/* &&
-			PlayerClassifier::compareHistogram(player.getHistogram(),
-				calculateHistogram(GlobalStats::getCenter(playerBox),nCam)) < 0.9*/;
-
 }

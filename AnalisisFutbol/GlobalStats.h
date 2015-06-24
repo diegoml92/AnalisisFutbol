@@ -10,9 +10,12 @@ class GlobalStats {
 
 public:
 
+	//DEBUG!!!
+	static bool evento;
+
 	// Variables globales
 	static vector<Player> playerV;
-	static std::list<Player*> playersToDelete;
+	static std::list<Player> playersToDelete;
 
 	// Irá almacenando cada fotograma del vídeo de entrada
 	static Mat frame[N_VIDEOS];
@@ -33,6 +36,9 @@ public:
 
 	/* COMPRUEBA LOS JUGADORES A BORRAR */
 	static void checkPlayersToDelete();
+
+	/* INTENTA ASOCIAR UNA NUEVA DETECCIÓN A ALGÚN JUGADOR PERDIDO */
+	static bool recoverPlayer(Point pos, vector<Mat> hist);
 
 	/* VACÍA LOS VECTORES DE POSICIONES */
 	static void clearLocations();

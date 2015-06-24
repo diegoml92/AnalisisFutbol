@@ -112,7 +112,7 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 	}
 	playerBox = GlobalStats::getPlayerRect(*pos);
 	return inRange && isInRange(&playerBox) &&
-		PlayerClassifier::isSamePlayer(player, playerBox, nCam);
+		PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2);
 }
 
 /* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
@@ -163,6 +163,7 @@ void TrackingObj::trackPlayers(vector<Player>::iterator* itP) {
 	}
 	if(detected) {
 		Point newPos;
+		// DEBUG!!!
 		if(!TrackingObj::isDifferentPosition(positions)) {
 			for(int i=0; i<positions.size(); i++) {
 				newPos+=positions.at(i);
@@ -173,7 +174,15 @@ void TrackingObj::trackPlayers(vector<Player>::iterator* itP) {
 			newPos = PlayerClassifier::findBestMatch(player);
 			player->addPosition(newPos);
 		}
+		(*itP)++;
 	} else {
+		//DEBUG!!!
+		for(int i=0; i<N_VIDEOS; i++) {
+			Point realPos = From3DTo2D::getRealPosition((*itP)->getPosition(),i);
+			Rect playerBox = GlobalStats::getPlayerRect(realPos);
+			rectangle(GlobalStats::frame[i],playerBox,Scalar(125,0,255),-1);
+		}
+		GlobalStats::evento = true;
 		GlobalStats::addPlayerToDelete(itP);
 	}
 }

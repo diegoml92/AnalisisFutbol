@@ -8,14 +8,23 @@ void StatsAnalyzer::addPosition(Mat m, Point p) {
 	m.at<int>(p.y/ANALYZER_VIDEO_SIZE_RELATION,p.x/ANALYZER_VIDEO_SIZE_RELATION)++;
 }
 
+/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
+float StatsAnalyzer::distance(Point actualPoint, Point lastPoint) {
+	float dist = 0;
+	if(lastPoint.x >= 0) {
+		dist = norm(actualPoint-lastPoint)/10.0;
+	}
+	return dist;
+}
+
 /* INCREMENTA LA DISTANCIA RECORRIDA */
 void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point lastPoint,
 										float* speed, int* nSpeed, float* maxSpeed) {
-	float d = distance(actualPoint, lastPoint);
+	float d = StatsAnalyzer::distance(actualPoint, lastPoint);
 	*dist += d;
 
 	if(d>0) {
-		float actualSpeed = d*FPS*0.1*MS_TO_KMH;
+		float actualSpeed = d*FPS*MS_TO_KMH / SAMPLING_RATE;
 		*speed += actualSpeed;
 		if(actualSpeed > *maxSpeed) {
 			*maxSpeed = actualSpeed;
@@ -24,13 +33,20 @@ void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point la
 	}
 }
 
-/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
-float StatsAnalyzer::distance(Point actualPoint, Point lastPoint) {
-	float dist = 0;
-	if(lastPoint.x >= 0) {
-		dist = (float) norm(actualPoint-lastPoint)/10;
+/* ACTUALIZA LAS ESTADÍSTICAS PARA UN JUGADOR RECUPERADO */
+void StatsAnalyzer::updateStats(float* dist, Point actualPoint, Point lastPoint,
+										float* speed, int* nSpeed, float* maxSpeed) {
+	float d = StatsAnalyzer::distance(actualPoint, lastPoint);
+	*dist += d;
+
+	if(d>0) {
+		float actualSpeed = d*FPS*MS_TO_KMH; //DEBUG!!! calcular n frames en lugar de 1
+		*speed += actualSpeed;
+		if(actualSpeed > *maxSpeed) {
+			*maxSpeed = actualSpeed;
+		}
+		*nSpeed+=1;
 	}
-	return dist;
 }
 
 /* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
@@ -98,4 +114,11 @@ void StatsAnalyzer::calculateAllStats() {
 /* DETERMINA SI DOS PUNTOS SE CORRESPONDEN CON EL MISMO ELEMENTO */
 bool StatsAnalyzer::isSamePoint(Point p1, Point p2) {
 	return distance(p1,p2) < 3;
+}
+
+/* DETERMINA SI EL PUNTO ESTÁ EN EL RANGO PARA SER RECUPERADO */
+bool StatsAnalyzer::isInRecoverRange(Point p1, Point p2, int time, float* dist) {
+	time /= FPS;
+	*dist = distance(p1,p2);
+	return *dist < 5 + 2.5*time;
 }

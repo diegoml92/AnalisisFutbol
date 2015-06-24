@@ -31,5 +31,12 @@ public:
 	/* DETERMINA SI DOS PUNTOS SE CORRESPONDEN CON EL MISMO ELEMENTO */
 	static bool isSamePoint(Point p1, Point p2);
 
+	/* DETERMINA SI EL PUNTO ESTÁ EN EL RANGO PARA SER RECUPERADO */
+	static bool isInRecoverRange(Point p1, Point p2, int time, float* dist);
+
+	/* ACTUALIZA LAS ESTADÍSTICAS PARA UN JUGADOR RECUPERADO */
+	static void updateStats(float* dist, Point actualPoint, Point lastPoint,
+							float* speed, int* nSpeed, float* maxSpeed);
+
 };
 
