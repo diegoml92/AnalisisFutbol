@@ -1,7 +1,6 @@
 #include "GlobalStats.h"
 #include "StatsAnalyzer.h"
 #include "PlayerClassifier.h"
-#include "From3DTo2D.h" // DEBUG!!!
 
 // Iniciamos las variables
 Mat GlobalStats::frame[N_VIDEOS];
@@ -10,7 +9,6 @@ Mat GlobalStats::filter[N_VIDEOS];
 vector<Player> GlobalStats::playerV;
 std::list<Player> GlobalStats::playersToDelete;
 vector<Rect> GlobalStats::locations [N_VIDEOS];
-bool GlobalStats::evento = false;
 
 /*
 * AÑADE UN JUGADOR A LA LISTA DE BORRADO 
@@ -37,31 +35,20 @@ void GlobalStats::checkPlayersToDelete() {
 }
 
 /* INTENTA ASOCIAR UNA NUEVA DETECCIÓN A ALGÚN JUGADOR PERDIDO */
-//DEBUG!!!
 bool GlobalStats::recoverPlayer(Point pos, vector<Mat> hist) {
 	float min_dist = 5+2.5*TIME_TO_DELETE;
 	Player* found = NULL;
-	std::cout<<"COMIENZA LA BUSQUEDA!"<<std::endl;
 	for(std::list<Player>::iterator it = GlobalStats::playersToDelete.begin();
 			it != GlobalStats::playersToDelete.end(); it++) {
 		float dist;
-		std::cout<<it->getPlayerId()<<std::endl;
 		if(StatsAnalyzer::isInRecoverRange(pos,it->getPosition(),it->getDeletionCounter(),&dist) &&
 				dist < min_dist &&
 				PlayerClassifier::compareHistogram(hist,it->getHistogram()) <= 0.4*N_CHANNELS) {
 			found = &(*it);
-			std::cout<<"JUGADOR ENCONTRADO: "<<found->getPlayerId()<<std::endl;
 			min_dist = dist;
 		}
 	}
-	std::cout<<"FIN DE LAS COMPARACIONES"<<std::endl;
 	if(found!=NULL) {
-		for(int i=0; i<N_VIDEOS; i++) {
-			Point ori,dst;
-			ori = From3DTo2D::getRealPosition(found->getPosition(),i);
-			dst = From3DTo2D::getRealPosition(pos,i);
-			line(GlobalStats::frame[i],ori,dst,Scalar(255,0,0),2);
-		}
 		found->updateStats(pos);
 		GlobalStats::playerV.push_back(*found);
 		std::list<Player>::iterator it =
@@ -69,8 +56,6 @@ bool GlobalStats::recoverPlayer(Point pos, vector<Mat> hist) {
 		if(it != GlobalStats::playersToDelete.end()) {
 			GlobalStats::playersToDelete.erase(it);
 		}
-	} else {
-		std::cout<<"NO SE ENCONTRO JUGADOR ASOCIADO"<<std::endl;
 	}
 	return found != NULL;
 }

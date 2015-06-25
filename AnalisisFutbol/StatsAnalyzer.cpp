@@ -18,34 +18,46 @@ float StatsAnalyzer::distance(Point actualPoint, Point lastPoint) {
 }
 
 /* INCREMENTA LA DISTANCIA RECORRIDA */
-void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point lastPoint,
-										float* speed, int* nSpeed, float* maxSpeed) {
-	float d = StatsAnalyzer::distance(actualPoint, lastPoint);
-	*dist += d;
+void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point* lastPoint,
+										float* speed, int* nSpeed, float* maxSpeed, int* retries) {
+	float d = StatsAnalyzer::distance(actualPoint, *lastPoint);
 
 	if(d>0) {
-		float actualSpeed = d*FPS*MS_TO_KMH / SAMPLING_RATE;
-		*speed += actualSpeed;
-		if(actualSpeed > *maxSpeed) {
-			*maxSpeed = actualSpeed;
+		float actualSpeed = d*FPS*MS_TO_KMH / (SAMPLING_RATE * (*retries + 1));
+		if(actualSpeed < 40) {
+			*retries = 0;
+			*dist += d;
+			*speed += actualSpeed;
+			if(actualSpeed > *maxSpeed) {
+				*maxSpeed = actualSpeed;
+			}
+			*nSpeed += 1;
+			*lastPoint = actualPoint;
+		} else {
+			*retries += 1;
 		}
-		*nSpeed+=1;
 	}
 }
 
 /* ACTUALIZA LAS ESTADÍSTICAS PARA UN JUGADOR RECUPERADO */
-void StatsAnalyzer::updateStats(float* dist, Point actualPoint, Point lastPoint,
-										float* speed, int* nSpeed, float* maxSpeed) {
-	float d = StatsAnalyzer::distance(actualPoint, lastPoint);
-	*dist += d;
+void StatsAnalyzer::updateStats(float* dist, Point actualPoint, Point* lastPoint, float* speed,
+								int* nSpeed, float* maxSpeed, int* retries, int nFrames) {
+	float d = StatsAnalyzer::distance(actualPoint, *lastPoint);
 
 	if(d>0) {
-		float actualSpeed = d*FPS*MS_TO_KMH; //DEBUG!!! calcular n frames en lugar de 1
-		*speed += actualSpeed;
-		if(actualSpeed > *maxSpeed) {
-			*maxSpeed = actualSpeed;
+		float actualSpeed = d*FPS*MS_TO_KMH / ( nFrames + SAMPLING_RATE * (*retries));
+		if(actualSpeed < 40) {
+			*retries = 0;
+			*dist += d;
+			*speed += actualSpeed;
+			if(actualSpeed > *maxSpeed) {
+				*maxSpeed = actualSpeed;
+			}
+			*nSpeed += 1;
+			*lastPoint = actualPoint;
+		} else {
+			*retries += 1;
 		}
-		*nSpeed+=1;
 	}
 }
 

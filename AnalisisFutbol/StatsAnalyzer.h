@@ -19,8 +19,8 @@ public:
 	static void addPosition(Mat m, Point p);
 
 	/* INCREMENTA LA DISTANCIA RECORRIDA Y ACTUALIZA LA VELOCIDAD */
-	static void addDistanceAndSpeed(float* distance, Point actualPoint, Point lastPoint,
-		                            float* speed, int* nSpeed, float* maxSpeed);
+	static void addDistanceAndSpeed(float* dist, Point actualPoint, Point* lastPoint,
+									float* speed, int* nSpeed, float* maxSpeed, int* retries);
 
 	/* DEVUELVE LAS ESTADÍSTICAS DE POSICIONES */
 	static Mat getAreaStats(Mat m);
@@ -35,8 +35,8 @@ public:
 	static bool isInRecoverRange(Point p1, Point p2, int time, float* dist);
 
 	/* ACTUALIZA LAS ESTADÍSTICAS PARA UN JUGADOR RECUPERADO */
-	static void updateStats(float* dist, Point actualPoint, Point lastPoint,
-							float* speed, int* nSpeed, float* maxSpeed);
+	static void updateStats(float* dist, Point actualPoint, Point* lastPoint,
+					float* speed, int* nSpeed, float* maxSpeed, int* retries, int nFrames);
 
 };
 

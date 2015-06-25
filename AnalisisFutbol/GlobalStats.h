@@ -10,9 +10,6 @@ class GlobalStats {
 
 public:
 
-	//DEBUG!!!
-	static bool evento;
-
 	// Variables globales
 	static vector<Player> playerV;
 	static std::list<Player> playersToDelete;

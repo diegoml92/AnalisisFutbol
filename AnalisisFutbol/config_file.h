@@ -59,9 +59,9 @@ using namespace cv;
 #define N_CHANNELS 3
 #define MS_TO_KMH 3.6
 #define MAX_PLAYERS 25
-#define FIELD_MARGIN 10
-#define SAMPLING_RATE 5	
+#define FIELD_MARGIN 10	
 #define TIME_TO_DELETE 3
+#define SAMPLING_RATE 5.0
 #define DIFF_POINTS_DIST 5
 #define SEARCH_WINDOW 15,10
 #define ANALYZER_VIDEO_SIZE_RELATION 4

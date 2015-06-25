@@ -20,6 +20,7 @@ Player::Player(Point pos, vector<Mat> histogram) {
 	this->lastPoint = pos;
 	this->nSpeed = 0;
 	this->deletionCounter = 0;
+	this->retries = 0;
 }
 
 /* CONSTRUCTOR AUXILIAR */
@@ -36,25 +37,24 @@ Player::Player(Player* p) {
 		this->bPos[i] = false;
 	}
 	this->deletionCounter = p->deletionCounter;
+	this->retries = p->retries;
 }
 
 /* INCREMENTA EL VALOR EN LA POSICION INDICADA */
 void Player::addPosition(Point p) {
 	if(From3DTo2D::isInRange(p)) {
 		StatsAnalyzer::addPosition(this->area, p);
-		if(VideoManager::getActualFrame() % SAMPLING_RATE == 0) {
-			StatsAnalyzer::addDistanceAndSpeed(&(this->distance),p,this->lastPoint,
-				&(this->avgSpeed),&(this->nSpeed),&(this->maxSpeed));
-			this->lastPoint = p;
+		if(VideoManager::getActualFrame() % (int)SAMPLING_RATE == 0) {
+			StatsAnalyzer::addDistanceAndSpeed(&(this->distance),p,&(this->lastPoint),
+				&(this->avgSpeed),&(this->nSpeed),&(this->maxSpeed),&(this->retries));
 		}
 	}
 }
 
 /* ACTUALIZA ESTADÍSTICAS SI SE RECUPERA EL JUGADOR */
 void Player::updateStats(Point pos) {
-	StatsAnalyzer::updateStats(&(this->distance),pos,this->lastPoint,
-		&(this->avgSpeed),&(this->nSpeed),&(this->maxSpeed));
-	this->lastPoint = pos;
+	StatsAnalyzer::updateStats(&(this->distance),pos,&(this->lastPoint),&(this->avgSpeed),
+		&(this->nSpeed),&(this->maxSpeed),&(this->retries),this->deletionCounter);
 }
 
 /* CALCULA LAS ESTADÍSTICAS */

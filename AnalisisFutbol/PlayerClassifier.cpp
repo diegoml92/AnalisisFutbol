@@ -21,14 +21,6 @@ void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 		// No se ha asociado a ningún jugador perdido anteriormente
 		if(!GlobalStats::recoverPlayer(position,hist)) {
 			GlobalStats::playerV.push_back(Player(position, hist));
-		} else {
-			// DEBUG!!!
-			for(int i=0; i<N_VIDEOS; i++) {
-				Point realPos = From3DTo2D::getRealPosition(position,i);
-				Rect playerBox = GlobalStats::getPlayerRect(realPos);
-				rectangle(GlobalStats::frame[i],playerBox,Scalar(0,255,0),-1);
-				GlobalStats::evento = true;
-			}
 		}
 	}
 }

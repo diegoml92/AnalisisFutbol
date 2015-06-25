@@ -44,8 +44,6 @@ int main(int argc, char* argv[]) {
 		// Cargamos el campo 2D en field
 		Mat field;
 		From3DTo2D::field2D.copyTo(field);
-
-		GlobalStats::checkPlayersToDelete();
 		
 		a = getTickCount();
 
@@ -68,6 +66,8 @@ int main(int argc, char* argv[]) {
 		b = getTickCount();
 
 		std::cout<<"Tracking  : "<<(b-a)/getTickFrequency()<<std::endl;
+
+		GlobalStats::checkPlayersToDelete();
 		
 		a = getTickCount();
 		// Eliminamos del filtro los jugadores ya trackeados para que no sean detectados de nuevo
@@ -212,11 +212,6 @@ int main(int argc, char* argv[]) {
 		std::cout<<"TO DELETE : "<<GlobalStats::playersToDelete.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;
 
-		// DEBUG!!!
-		if(GlobalStats::evento) {
-			waitKey();
-			GlobalStats::evento = false;
-		}
 	}
 
 	destroyAllWindows();

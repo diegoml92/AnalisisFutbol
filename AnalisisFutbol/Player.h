@@ -25,6 +25,7 @@ private:
 	Point camPos[N_VIDEOS];
 	vector<Mat> histogram;
 	int deletionCounter;
+	int retries;
 
 public:
 
