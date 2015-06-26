@@ -166,16 +166,6 @@ int main(int argc, char* argv[]) {
 				circle(field,p,3,colour,2);
 			}
 		}
-
-		//DEBUG!!!
-		for(std::list<Player>::iterator it = GlobalStats::playersToDelete.begin(); it!=GlobalStats::playersToDelete.end(); it++) {
-			Point p = it->getPosition();
-			for(int k=0; k<N_VIDEOS; k++) {
-				Point realP = From3DTo2D::getRealPosition(p,k);
-				Rect paintR = GlobalStats::getPlayerRect(realP);
-				rectangle(GlobalStats::frame[k],paintR,Scalar(0,0,255),-1);
-			}
-		}
 		
 		b = getTickCount();
 
