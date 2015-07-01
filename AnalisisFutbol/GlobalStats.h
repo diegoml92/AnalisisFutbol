@@ -10,14 +10,15 @@ class GlobalStats {
 
 public:
 
-	// Variables globales
-	static vector<Player> playerV;
-	static std::list<Player> playersToDelete;
-
 	// Irá almacenando cada fotograma del vídeo de entrada
 	static Mat frame[N_VIDEOS];
 	// Almacenará el umbral actualizado según los valores del filtro
 	static Mat filter[N_VIDEOS];
+
+	// Representacion del terreno de juego 2D
+	static Mat field2D;
+	// Terreno de juego para visualizar las estadísticas
+	static Mat soccer_field;
 
 	/*
 	* Vector que almacenará los elementos detectados
@@ -25,23 +26,9 @@ public:
 	*/	
 	static vector<Rect> locations [];
 
-	/*
-	* AÑADE UN JUGADOR A LA LISTA DE BORRADO 
-	* Y LO BORRA DE LA LISTA DE JUGADORES ACTUALES
-	*/
-	static void addPlayerToDelete(vector<Player>::iterator* itP);
-
-	/* COMPRUEBA LOS JUGADORES A BORRAR */
-	static void checkPlayersToDelete();
-
-	/* INTENTA ASOCIAR UNA NUEVA DETECCIÓN A ALGÚN JUGADOR PERDIDO */
-	static bool recoverPlayer(Point pos, vector<Mat> hist);
 
 	/* VACÍA LOS VECTORES DE POSICIONES */
 	static void clearLocations();
-
-	/* DETERMINA SI UN ELEMENTO YA HA SIDO DETECTADO */
-	static bool alreadyDetected(Point p);
 
 	/* CALCULA EL CENTRO DE UN RECTÁNGULO */
 	static Point getCenter(Rect r);

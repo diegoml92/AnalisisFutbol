@@ -38,11 +38,11 @@ void FieldFilter::initFilterMask(int nCam) {
 		FieldFilter::mask[nCam] = Mat::zeros(Size(VIDEO_WIDTH,VIDEO_HEIGHT+4),CV_8UC1);
 	}
 	Point points [1][4];
-	points [0][0] = From3DTo2D::getRealPosition(Point(0-FIELD_MARGIN,0-FIELD_MARGIN),nCam);
-	points [0][1] = From3DTo2D::getRealPosition(Point(SOCCER_FIELD_WIDTH+FIELD_MARGIN,0-FIELD_MARGIN),nCam);
-	points [0][2] = From3DTo2D::getRealPosition(Point(SOCCER_FIELD_WIDTH+FIELD_MARGIN,
+	points [0][0] = From3DTo2D::getCameraPosition(Point(0-FIELD_MARGIN,0-FIELD_MARGIN),nCam);
+	points [0][1] = From3DTo2D::getCameraPosition(Point(SOCCER_FIELD_WIDTH+FIELD_MARGIN,0-FIELD_MARGIN),nCam);
+	points [0][2] = From3DTo2D::getCameraPosition(Point(SOCCER_FIELD_WIDTH+FIELD_MARGIN,
 		                                         SOCCER_FIELD_HEIGHT+FIELD_MARGIN),nCam);
-	points [0][3] = From3DTo2D::getRealPosition(Point(0-FIELD_MARGIN,SOCCER_FIELD_HEIGHT+FIELD_MARGIN),nCam);
+	points [0][3] = From3DTo2D::getCameraPosition(Point(0-FIELD_MARGIN,SOCCER_FIELD_HEIGHT+FIELD_MARGIN),nCam);
 	const Point* ppt[1] = { points[0] };
 	int npt[] = { 4 };
 	fillPoly(mask[nCam],ppt,npt,1,Scalar(255));

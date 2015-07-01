@@ -13,6 +13,10 @@ private:
 
 public:
 
+	// Variables globales
+	static vector<Player> playerV;
+	static std::list<Player> playersToDelete;
+
 	/* AÑADE UN JUGADOR */
 	static void addPlayer(Mat partido, Mat filtro, Point player);
 
@@ -27,6 +31,24 @@ public:
 
 	/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
 	static bool PlayerClassifier::canBePlayer(Mat roi, float val = 0.35);
+
+	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
+	static void objectDetection();
+
+	/* DETERMINA SI UN ELEMENTO YA HA SIDO DETECTADO */
+	static bool alreadyDetected(Point p);
+
+	/*
+	* AÑADE UN JUGADOR A LA LISTA DE BORRADO 
+	* Y LO BORRA DE LA LISTA DE JUGADORES ACTUALES
+	*/
+	static void addPlayerToDelete(vector<Player>::iterator* itP);
+
+	/* COMPRUEBA LOS JUGADORES A BORRAR */
+	static void checkPlayersToDelete();
+
+	/* INTENTA ASOCIAR UNA NUEVA DETECCIÓN A ALGÚN JUGADOR PERDIDO */
+	static bool recoverPlayer(Point pos, vector<Mat> hist);
 
 };
 

@@ -1,5 +1,6 @@
 #include "GUI.h"
 #include "GlobalStats.h"
+#include "PlayerClassifier.h"
 
 int GUI::nPlayer = 0;
 
@@ -10,24 +11,24 @@ void GUI::showStatsWindow() {
 	stats.setTo(Scalar(GUI_COLOR));
 	line(stats,Point(0,25),Point(STATS_W_WIDTH,25),Scalar(GUI_AUX_COLOR),2);
 
-	if(GlobalStats::playerV.size()>GUI::nPlayer) {
+	if(PlayerClassifier::playerV.size()>GUI::nPlayer) {
 
 		int player = GUI::nPlayer;
 
 		std::stringstream ssplayer;
-		ssplayer << "Jugador " << GlobalStats::playerV[player].getPlayerId();
+		ssplayer << "Jugador " << PlayerClassifier::playerV[player].getPlayerId();
 
 		putText(stats,"Nombre:",Point(10,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 		putText(stats,ssplayer.str(),Point(100,20),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 
 		std::stringstream ssdistance;
-		ssdistance << GlobalStats::playerV[player].getDistance() << " m";
+		ssdistance << PlayerClassifier::playerV[player].getDistance() << " m";
 
 		std::stringstream ssavgspeed;
-		ssavgspeed << GlobalStats::playerV[player].getAvgSpeed() << " km/h";
+		ssavgspeed << PlayerClassifier::playerV[player].getAvgSpeed() << " km/h";
 
 		std::stringstream ssmaxspeed;
-		ssmaxspeed << GlobalStats::playerV[player].getMaxSpeed() << " km/h";
+		ssmaxspeed << PlayerClassifier::playerV[player].getMaxSpeed() << " km/h";
 
 		putText(stats,"Distancia :",Point(10,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 		putText(stats,ssdistance.str(),Point(100,75),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
@@ -40,7 +41,7 @@ void GUI::showStatsWindow() {
 
 		Mat aux = stats(Rect(5,160,
 			SOCCER_FIELD_WIDTH/ANALYZER_VIDEO_SIZE_RELATION,SOCCER_FIELD_HEIGHT/ANALYZER_VIDEO_SIZE_RELATION));
-		GlobalStats::playerV[player].getAreaStats().copyTo(aux);
+		PlayerClassifier::playerV[player].getAreaStats().copyTo(aux);
 	} else {
 		putText(stats,"NO HAY NINGÚN JUGADOR",Point(10+STATS_W_WIDTH,100),CV_FONT_HERSHEY_PLAIN,1,Scalar(COLOR_WHITE),1);
 	}

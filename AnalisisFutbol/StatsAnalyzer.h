@@ -4,9 +4,6 @@ class StatsAnalyzer
 {
 private:
 
-	// Terreno de juego para visualizar las estadísticas
-	static Mat soccer_field;
-
 	/* NORMALIZA LOS VALORES DE LA MATRIZ ENTRE 0 Y 1 */
 	static Mat normalizeAreaStats(Mat m);
 

@@ -11,9 +11,6 @@ private :
 
 public :
 
-	
-	static Mat field2D;		// Representacion 2D del campo
-
 	/* DETERMINA SI EL PUNTO PERTENECE A UNA POSICIÓN VÁLIDA */
 	static bool isInRange(Point p);
 
@@ -26,8 +23,8 @@ public :
 	/* CONVERTIMOS COORDENADAS DE LA CÁMARA A POSICIONES 2D */
 	static vector<Point2f> get2DPositionVector(vector<Point2f> p, int nVideo);
 
-	/* CONVERTIMOS COORDENADAS DEL MODELO AL COORDENADAS DE LA CÁMARA */
-	static Point getRealPosition(Point modelPos, int nVideo);
+	/* CONVERTIMOS COORDENADAS 2D A COORDENADAS DE LA CÁMARA */
+	static Point getCameraPosition(Point modelPos, int nVideo);
 
 };
 

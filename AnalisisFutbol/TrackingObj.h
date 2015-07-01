@@ -31,7 +31,4 @@ public:
 	/* TRACKING DE LOS JUGADORES */
 	static void trackPlayers(vector<Player>::iterator* player);
 
-	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
-	static void objectDetection();
-
 };

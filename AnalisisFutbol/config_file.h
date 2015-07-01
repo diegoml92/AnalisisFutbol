@@ -51,7 +51,7 @@ using namespace cv;
 #define MIN_WIDTH 10
 #define MAX_WIDTH 35
 #define MIN_HEIGH 32
-#define MAX_HEIGH 65
+#define MAX_HEIGH 70
 
 /* OTRAS */
 #define RGB 256

@@ -15,6 +15,8 @@ int main(int argc, char* argv[]) {
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 	FieldFilter::initFilter();				// Inicializamos imágenes de bg y máscaras
 
+	Mat field;                              // Utilizada para el pintado de los resultados
+
 	// DEBUG!!!
 	// Guardamos los resultados de la ejecución
 	VideoWriter outputVideo2D,outputVideoCams;
@@ -42,8 +44,7 @@ int main(int argc, char* argv[]) {
 		init_time = getTickCount();
 
 		// Cargamos el campo 2D en field
-		Mat field;
-		From3DTo2D::field2D.copyTo(field);
+		GlobalStats::field2D.copyTo(field);
 		
 		a = getTickCount();
 
@@ -57,21 +58,21 @@ int main(int argc, char* argv[]) {
 		a = getTickCount();
 
 		// Hacemos tracking de cada jugador
-		vector<Player>::iterator itP = GlobalStats::playerV.begin();
-		while(itP != GlobalStats::playerV.end()) {
+		vector<Player>::iterator itP = PlayerClassifier::playerV.begin();
+		while(itP != PlayerClassifier::playerV.end()) {
 			TrackingObj::trackPlayers(&itP);
-			// El iterador itP++ se controla dentro de trackPlayers
+			// El iterador itP se controla dentro de trackPlayers
 		}
 
 		b = getTickCount();
 
 		std::cout<<"Tracking  : "<<(b-a)/getTickFrequency()<<std::endl;
 
-		GlobalStats::checkPlayersToDelete();
+		PlayerClassifier::checkPlayersToDelete();
 		
 		a = getTickCount();
 		// Eliminamos del filtro los jugadores ya trackeados para que no sean detectados de nuevo
-		for(vector<Player>::iterator itP = GlobalStats::playerV.begin(); itP!=GlobalStats::playerV.end(); itP++) {
+		for(vector<Player>::iterator itP = PlayerClassifier::playerV.begin(); itP!=PlayerClassifier::playerV.end(); itP++) {
 			for(int i=0; i<N_VIDEOS; i++) {
 				if(itP->getBPos(i)) {
 					Rect rectP = GlobalStats::getPlayerRect(itP->getCamPos(i));
@@ -90,7 +91,7 @@ int main(int argc, char* argv[]) {
 
         if(!GlobalStats::allPlayersDetected()) {
 			// Se lleva a cabo la detección de los elementos del campo
-			TrackingObj::objectDetection();
+			PlayerClassifier::objectDetection();
 
 			b = getTickCount();
 
@@ -127,7 +128,7 @@ int main(int argc, char* argv[]) {
 							}
 						}
 					}
-					if(!found && From3DTo2D::isInRange(*it1) && !GlobalStats::alreadyDetected(*it1) && !GlobalStats::allPlayersDetected()) {
+					if(!found && From3DTo2D::isInRange(*it1) && !PlayerClassifier::alreadyDetected(*it1) && !GlobalStats::allPlayersDetected()) {
 						PlayerClassifier::addPlayer(GlobalStats::frame[i],GlobalStats::filter[i],*it1);
 					}
 				}
@@ -141,7 +142,7 @@ int main(int argc, char* argv[]) {
 		a = getTickCount();
 
 		//Pintar jugadores
-		for(vector<Player>::iterator it = GlobalStats::playerV.begin(); it!=GlobalStats::playerV.end(); it++) {
+		for(vector<Player>::iterator it = PlayerClassifier::playerV.begin(); it!=PlayerClassifier::playerV.end(); it++) {
 			Point p = it->getPosition();
 			Scalar colour = GlobalStats::calculateColor(it->getHistogram());
 			bool exists = false;
@@ -150,7 +151,7 @@ int main(int argc, char* argv[]) {
 				if(it->getBPos(k)) {
 					realP = it->getCamPos(k);
 				} else {
-					realP = From3DTo2D::getRealPosition(p,k);
+					realP = From3DTo2D::getCameraPosition(p,k);
 				}
 				if (TrackingObj::isInFocus(realP)) {
 					Rect paintR = GlobalStats::getPlayerRect(realP);
@@ -199,7 +200,7 @@ int main(int argc, char* argv[]) {
 			" ("<<0.04*FPS/((end_time-init_time)/getTickFrequency())<<")"<<std::endl;
 		std::cout<<"PLAYERS   : "<<GlobalStats::totalPlayers()<<std::endl;
 		std::cout<<"LAST ID   : "<<Player::id<<std::endl;
-		std::cout<<"TO DELETE : "<<GlobalStats::playersToDelete.size()<<std::endl;
+		std::cout<<"TO DELETE : "<<PlayerClassifier::playersToDelete.size()<<std::endl;
 		std::cout<<"--------------------------------------"<<std::endl;
 
 	}

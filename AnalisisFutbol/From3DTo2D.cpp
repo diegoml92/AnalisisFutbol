@@ -2,7 +2,6 @@
 
 Mat From3DTo2D::projectionMatrix [N_VIDEOS];
 Mat From3DTo2D::inverseProjectionMatrix [N_VIDEOS];
-Mat From3DTo2D::field2D = imread(FIELD2D_PATH);
 
 /* DETERMINA SI EL PUNTO PERTENECE A UNA POSICIÓN VÁLIDA */
 bool From3DTo2D::isInRange(Point p) {
@@ -110,8 +109,8 @@ vector<Point2f> From3DTo2D::get2DPositionVector(vector<Point2f> p, int nVideo) {
 	return p;
 }
 
-/* CONVERTIMOS COORDENADAS DEL MODELO AL COORDENADAS DE LA CÁMARA */
-Point From3DTo2D::getRealPosition(Point modelPos, int nVideo) {
+/* CONVERTIMOS COORDENADAS DEL 2D A COORDENADAS DE LA CÁMARA */
+Point From3DTo2D::getCameraPosition(Point modelPos, int nVideo) {
 	vector<Point2f> pv;
         pv.push_back(modelPos);
         perspectiveTransform(pv,pv,inverseProjectionMatrix[nVideo]);

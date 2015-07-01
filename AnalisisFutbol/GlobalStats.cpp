@@ -5,78 +5,17 @@
 // Iniciamos las variables
 Mat GlobalStats::frame[N_VIDEOS];
 Mat GlobalStats::filter[N_VIDEOS];
+Mat GlobalStats::field2D = imread(FIELD2D_PATH);
+Mat GlobalStats::soccer_field = imread(FIELD2DSMALL_PATH);
 
-vector<Player> GlobalStats::playerV;
-std::list<Player> GlobalStats::playersToDelete;
 vector<Rect> GlobalStats::locations [N_VIDEOS];
 
-/*
-* AÑADE UN JUGADOR A LA LISTA DE BORRADO 
-* Y LO BORRA DE LA LISTA DE JUGADORES ACTUALES
-*/
-void GlobalStats::addPlayerToDelete(vector<Player>::iterator* it) {
-	Player player(**it);
-	player.startDeletionCounter();
-	GlobalStats::playersToDelete.push_back(player);
-	*it = GlobalStats::playerV.erase(*it);
-}
-
-/* COMPRUEBA LOS JUGADORES A BORRAR */
-void GlobalStats::checkPlayersToDelete() {
-	std::list<Player>::iterator it = playersToDelete.begin();
-	while (it!=playersToDelete.end()) {
-		it->increaseDeletionCounter();
-		if(it->getDeletionCounter() > TIME_TO_DELETE * FPS) {
-			it = GlobalStats::playersToDelete.erase(it);
-		} else {
-			it++;
-		}
-	}
-}
-
-/* INTENTA ASOCIAR UNA NUEVA DETECCIÓN A ALGÚN JUGADOR PERDIDO */
-bool GlobalStats::recoverPlayer(Point pos, vector<Mat> hist) {
-	float min_dist = 5+2.5*TIME_TO_DELETE;
-	Player* found = NULL;
-	for(std::list<Player>::iterator it = GlobalStats::playersToDelete.begin();
-			it != GlobalStats::playersToDelete.end(); it++) {
-		float dist;
-		if(StatsAnalyzer::isInRecoverRange(pos,it->getPosition(),it->getDeletionCounter(),&dist) &&
-				dist < min_dist &&
-				PlayerClassifier::compareHistogram(hist,it->getHistogram()) <= 0.4*N_CHANNELS) {
-			found = &(*it);
-			min_dist = dist;
-		}
-	}
-	if(found!=NULL) {
-		found->updateStats(pos);
-		GlobalStats::playerV.push_back(*found);
-		std::list<Player>::iterator it =
-			std::find(GlobalStats::playersToDelete.begin(),GlobalStats::playersToDelete.end(),*found);
-		if(it != GlobalStats::playersToDelete.end()) {
-			GlobalStats::playersToDelete.erase(it);
-		}
-	}
-	return found != NULL;
-}
 
 /* VACÍA LOS VECTORES DE POSICIONES */
 void GlobalStats::clearLocations() {
 	for(int i=0; i<N_VIDEOS; i++) {
 		GlobalStats::locations[i].clear();
 	}
-}
-
-/* DETERMINA SI UN ELEMENTO YA HA SIDO DETECTADO */
-bool GlobalStats::alreadyDetected(Point p) {
-	bool found = false;
-	int i=0;
-	vector<Player>::iterator it = playerV.begin();
-	while(!found && it!=playerV.end()) {
-		found = StatsAnalyzer::isSamePoint(p,it->getPosition());
-		it++;
-	}
-	return found;
 }
 
 /* CALCULA EL CENTRO DE UN RECTÁNGULO */
@@ -96,7 +35,7 @@ bool GlobalStats::allPlayersDetected() {
 
 /* DEVUELVE EL NÚMERO DE JUGADORES DETECTADOS */
 int GlobalStats::totalPlayers() {
-	return playerV.size();
+	return PlayerClassifier::playerV.size();
 }
 
 /* DETERMINA EL "COLOR" DE UN JUGADOR A PARTIR DE SU HISTOGRAMA */

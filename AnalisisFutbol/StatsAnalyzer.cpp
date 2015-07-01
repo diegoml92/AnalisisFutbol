@@ -1,7 +1,6 @@
 #include "StatsAnalyzer.h"
 #include "GlobalStats.h"
-
-Mat StatsAnalyzer::soccer_field = imread(FIELD2DSMALL_PATH);
+#include "PlayerClassifier.h"
 
 /* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 void StatsAnalyzer::addPosition(Mat m, Point p) {
@@ -65,7 +64,7 @@ void StatsAnalyzer::updateStats(float* dist, Point actualPoint, Point* lastPoint
 Mat StatsAnalyzer::getAreaStats(Mat m) {
 	Mat normalized = normalizeAreaStats(m);
 	Mat stats;
-	soccer_field.copyTo(stats);
+	GlobalStats::soccer_field.copyTo(stats);
 	for(int i=0;i<normalized.rows;i++) {
 		for(int j=0;j<normalized.cols;j++) {
 			float val = normalized.at<float>(i,j);
@@ -118,8 +117,8 @@ Mat StatsAnalyzer::normalizeAreaStats(Mat m) {
 
 /* CALCULA TODAS LAS ESTADÍSTICAS */
 void StatsAnalyzer::calculateAllStats() {
-	for(int i=0; i<GlobalStats::playerV.size(); i++) {
-		GlobalStats::playerV[i].calculateStats();
+	for(int i=0; i<PlayerClassifier::playerV.size(); i++) {
+		PlayerClassifier::playerV[i].calculateStats();
 	}
 }
 
