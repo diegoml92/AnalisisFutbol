@@ -57,8 +57,9 @@ using namespace cv;
 #define RGB 256
 #define N_BINS 16
 #define N_CHANNELS 3
+#define MAX_DIST 0.45
 #define MS_TO_KMH 3.6
-#define MAX_PLAYERS 25
+#define MAX_PLAYERS 100
 #define FIELD_MARGIN 10	
 #define TIME_TO_DELETE 3
 #define SAMPLING_RATE 5.0

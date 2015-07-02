@@ -8,23 +8,31 @@
 vector<Player> PlayerClassifier::playerV;
 std::list<Player> PlayerClassifier::playersToDelete;
 
+/* DETERMINA SI EL PUNTO ESTÁ CERCA DEL BORDE DEL CAMPO */
+bool PlayerClassifier::isFieldEdge(Point p) {
+	return p.x < 20  || p.x > SOCCER_FIELD_WIDTH - 20;
+}
+
 /* AÑADE UN JUGADOR */
 void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 	vector<Rect> rects;
-	for(int i=0; i<N_VIDEOS; i++) {
-		Point realPos = From3DTo2D::getCameraPosition(position,i);
-		if(TrackingObj::isInFocus(realPos)) {
-			Rect playerBox = Rect((realPos).x-PLAYER_WIDTH/2,(realPos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
-			if(TrackingObj::isInRange(&playerBox) && isPlayerSize(playerBox) && canBePlayer(filter(playerBox))) {
-				rects.push_back(playerBox);
+	// Descartamos si está demasiado cerca del borde del campo para evitar ruido
+	if(!PlayerClassifier::isFieldEdge(position)) {
+		for(int i=0; i<N_VIDEOS; i++) {
+			Point realPos = From3DTo2D::getCameraPosition(position,i);
+			if(TrackingObj::isInFocus(realPos)) {
+				Rect playerBox = Rect((realPos).x-PLAYER_WIDTH/2,(realPos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+				if(TrackingObj::isInRange(&playerBox) && isPlayerSize(playerBox) && canBePlayer(filter(playerBox))) {
+					rects.push_back(playerBox);
+				}
 			}
 		}
-	}
-	if(rects.size()>0) {
-		vector<Mat> hist = calculateHistogram(frame, filter, rects);
-		// No se ha asociado a ningún jugador perdido anteriormente
-		if(!PlayerClassifier::recoverPlayer(position,hist)) {
-			PlayerClassifier::playerV.push_back(Player(position, hist));
+		if(rects.size()>0) {
+			vector<Mat> hist = calculateHistogram(frame, filter, rects);
+			// No se ha asociado a ningún jugador perdido anteriormente
+			if(!PlayerClassifier::recoverPlayer(position,hist)) {
+				PlayerClassifier::playerV.push_back(Player(position, hist));
+			}
 		}
 	}
 }

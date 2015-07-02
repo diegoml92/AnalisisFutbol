@@ -11,6 +11,9 @@ private:
 	/* CALCULA EL HISTOGRAMA DEL JUGADOR */
 	static vector<Mat> calculateHistogram(Point pos, int nCam);
 
+	/* DETERMINA SI EL PUNTO ESTÁ CERCA DEL BORDE DEL CAMPO */
+	static bool isFieldEdge(Point p);
+
 public:
 
 	// Variables globales

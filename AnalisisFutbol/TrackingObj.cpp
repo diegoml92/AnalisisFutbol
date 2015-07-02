@@ -119,7 +119,7 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 float TrackingObj::distance(Point p1, Point p2) {
 	float dist = 0;
 	if(p2.x >= 0) {
-		dist = norm(p1-p2)/10;
+		dist = norm(p1-p2)/10.0;
 	}
 	return dist;
 }
@@ -138,6 +138,20 @@ bool TrackingObj::isDifferentPosition(vector<Point> positions) {
 	return different;
 }
 
+/* VERIFICA QUE LA NUEVA POSICIÓN ESTE DENTRO DEL RANGO DE DISTANCIA */
+void TrackingObj::validatePosition(Point lastPoint, Point* actualPoint, int nCam) {
+	Point ori = From3DTo2D::get2DPosition(lastPoint, nCam);
+	Point des = From3DTo2D::get2DPosition(*actualPoint, nCam);
+	float dist = TrackingObj::distance(ori,des);
+	if (dist > MAX_DIST) {
+		float rel = MAX_DIST / dist;
+		Vec2i v = *actualPoint - lastPoint;
+		v *= rel;
+		actualPoint->x = lastPoint.x + v[0];
+		actualPoint->y = lastPoint.y + v[1];
+	}
+}
+
 /* TRACKING DE LOS JUGADORES */
 void TrackingObj::trackPlayers(vector<Player>::iterator* itP) {
 	Player* player = &(**itP);
@@ -152,6 +166,9 @@ void TrackingObj::trackPlayers(vector<Player>::iterator* itP) {
 		}
 		if(player->getBPos(i) || isInFocus(*realPos)) {
 			if(tracking(realPos,*player,i)) {
+				if(player->getBPos(i)) {
+					TrackingObj::validatePosition(player->getCamPos(i),realPos,i);
+				}
 				player->setCamPos(i,*realPos);
 				positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
 				detected = true;

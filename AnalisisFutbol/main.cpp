@@ -223,7 +223,6 @@ int main(int argc, char* argv[]) {
 			} else {
 				GUI::nPlayer = 0;
 			}
-			std::cout<<"Player: "<<GUI::nPlayer<<std::endl;
 		}
 		command = waitKey(1);
 	}

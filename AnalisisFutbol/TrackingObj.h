@@ -19,6 +19,9 @@ private:
 	*/
 	static bool isDifferentPosition(vector<Point> positions);
 
+	/* VERIFICA QUE LA NUEVA POSICIÓN ESTE DENTRO DEL RANGO DE DISTANCIA */
+	static void validatePosition(Point lastPoint, Point* actualPoint, int nCam);
+
 
 public:
 
