@@ -24,7 +24,9 @@ public:
 	* Vector que almacenará los elementos detectados
 	* en cada iteración por cada una de las cámaras
 	*/	
-	static vector<Rect> locations [];
+	static vector<Rect> locations [N_VIDEOS];
+	/* Equivalente al anterior, pero en posiciones 2D*/
+	static vector<Point2f> locations2D [N_VIDEOS];
 
 
 	/* VACÍA LOS VECTORES DE POSICIONES */

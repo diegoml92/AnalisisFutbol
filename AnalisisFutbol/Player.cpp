@@ -63,6 +63,25 @@ void Player::calculateStats() {
 	this->avgSpeed /= this->nSpeed;
 }
 
+/* DEVUELVE LA ÚLTIMA POSICIÓN TRACKEADA (SI LA HAY) */
+Point Player::getPosition() {
+	Point position = this->lastPoint;
+	vector<Point> positions;
+	for(int i=0; i<N_VIDEOS; i++) {
+		if(this->getBPos(i)) {
+			positions.push_back(From3DTo2D::get2DPosition(this->getCamPos(i),i));
+		}
+	}
+	if(!positions.empty()) {
+		position = Point(0,0);
+		for(int i=0; i<positions.size(); i++) {
+			position += positions[i];
+		}
+		position = Point(position.x/positions.size(), position.y/positions.size());
+	}
+	return position;
+}
+
 /* DEVUELVE LAS ESTADÍSITCAS DEL ÁREA RECORRIDA */
 Mat Player::getAreaStats() {
 	return this->area_stats;
@@ -84,7 +103,7 @@ float Player::getAvgSpeed() {
 }
 
 /* DEVUELVE EL PUNTO ACUTAL */
-Point Player::getPosition() {
+Point Player::getLastPosition() {
 	return this->lastPoint;
 }
 
@@ -117,6 +136,16 @@ void Player::setCamPos(int i, Point p) {
 /* DESACTIVA LA CÁMARA i */
 void Player::unSetCamPos(int i) {
 	this->bPos[i] = false;
+}
+
+/* DEVUELVE EL ÚLTIMO DESPLAZAMIENTO EN LA CÁMARA i */
+Vec2i Player::getShift(int i) {
+	return this->shift[i];
+}
+
+/* ESTABLECE EL DESPLAZAMIENTO */
+void Player::setShift(Point shift, int i) {
+	this->shift[i] = Vec2i(shift);
 }
 
 /* INICIA EL CONTADOR DE BORRADO A 0 */

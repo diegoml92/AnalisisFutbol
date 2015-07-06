@@ -26,5 +26,7 @@ public :
 	/* CONVERTIMOS COORDENADAS 2D A COORDENADAS DE LA CÁMARA */
 	static Point getCameraPosition(Point modelPos, int nVideo);
 
-};
+	/* CONVIERTE LA LOCALIZACIONES DE EN LA CÁMARA A SUS EQUIVALENTES 2D*/
+	static void calculateLocations2D();
 
+};

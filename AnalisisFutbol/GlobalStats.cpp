@@ -9,12 +9,13 @@ Mat GlobalStats::field2D = imread(FIELD2D_PATH);
 Mat GlobalStats::soccer_field = imread(FIELD2DSMALL_PATH);
 
 vector<Rect> GlobalStats::locations [N_VIDEOS];
-
+vector<Point2f> GlobalStats::locations2D [N_VIDEOS];
 
 /* VACÍA LOS VECTORES DE POSICIONES */
 void GlobalStats::clearLocations() {
 	for(int i=0; i<N_VIDEOS; i++) {
 		GlobalStats::locations[i].clear();
+		GlobalStats::locations2D[i].clear();
 	}
 }
 

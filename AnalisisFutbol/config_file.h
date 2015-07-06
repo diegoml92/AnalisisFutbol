@@ -56,15 +56,17 @@ using namespace cv;
 /* OTRAS */
 #define RGB 256
 #define N_BINS 16
+#define MAX_DIST 0.4
+#define MAX_SPEED 35
 #define N_CHANNELS 3
-#define MAX_DIST 0.45
 #define MS_TO_KMH 3.6
-#define MAX_PLAYERS 100
-#define FIELD_MARGIN 10	
+#define MAX_PLAYERS 25
+#define FIELD_MARGIN 10
 #define TIME_TO_DELETE 3
 #define SAMPLING_RATE 5.0
 #define DIFF_POINTS_DIST 5
 #define SEARCH_WINDOW 15,10
+#define BHATTACHARYYA_DISTANCE 0.35
 #define ANALYZER_VIDEO_SIZE_RELATION 4
 
 // DEBUG!!!

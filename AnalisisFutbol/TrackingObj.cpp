@@ -6,20 +6,25 @@
 /* COMPRUEBA SI EL JUGADOR ESTÁN EN EL RANGO DENTRO DE LA IMAGEN */
 bool TrackingObj::isInRange(Rect* r) {
 	Rect rect = *r;
-	bool inRange = false;
-	inRange = rect.tl().x >= 0 && rect.tl().y >= 0 && rect.br().x < VIDEO_WIDTH && rect.br().y < VIDEO_HEIGHT;
+	bool inRange = rect.tl().x >= 0 && rect.tl().y >= 0 &&
+		rect.br().x < VIDEO_WIDTH && rect.br().y < VIDEO_HEIGHT;
+	// Si no está en rango intentamos reajustarlo
 	if(!inRange) {
-		int tl_x = rect.tl().x,tl_y = rect.tl().y,br_x = rect.br().x,br_y = rect.br().y;
-		if(rect.tl().x < 0) {
+		int tl_x = rect.tl().x;
+		int tl_y = rect.tl().y;
+		int br_x = rect.br().x;
+		int br_y = rect.br().y;
+
+		if(tl_x < 0) {
 			tl_x = 0;
 		}
-		if(rect.tl().y < 0) {
+		if(tl_y < 0) {
 			tl_y = 0;
 		}
-		if(rect.br().x >= VIDEO_WIDTH) {
+		if(br_x >= VIDEO_WIDTH) {
 			br_x = VIDEO_WIDTH-1;
 		}
-		if(rect.br().y >= VIDEO_HEIGHT) {
+		if(br_y >= VIDEO_HEIGHT) {
 			br_y = VIDEO_HEIGHT-1;
 		}
 
@@ -34,7 +39,7 @@ bool TrackingObj::isInRange(Rect* r) {
 
 /* COMPRUEBA SI EL PUNTO ESTÁ EN EL FOCO DE LA CÁMARA */
 bool TrackingObj::isInFocus(Point p) {
-	return p.x >= 0 && p.y >= 0 && p.x <= VIDEO_WIDTH && p.y <= VIDEO_HEIGHT;
+	return p.x >= 0 && p.y >= 0 && p.x < VIDEO_WIDTH && p.y < VIDEO_HEIGHT;
 }
 
 /* VENTANA DE BÚSQUEDA DEL JUGADOR */
@@ -44,25 +49,30 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 	*relative = Rect(windowP, playerBox.size());
 	bool inRange = searchWindow->tl().x >= 0 && searchWindow->tl().y >= 0 &&
 		searchWindow->br().x < VIDEO_WIDTH && searchWindow->br().y < VIDEO_HEIGHT;
+	// Si la ventana no está en rango la reajustamos
 	if(!inRange) {
-		int tl_x = searchWindow->tl().x,tl_y = searchWindow->tl().y;
-		int br_x = searchWindow->br().x,br_y = searchWindow->br().y;
+		int tl_x = searchWindow->tl().x;
+		int tl_y = searchWindow->tl().y;
+		int br_x = searchWindow->br().x;
+		int br_y = searchWindow->br().y;
+
 		bool relativeChanged = false;
 		Point relP = windowP;
-		if(searchWindow->tl().x < 0) {
+
+		if(tl_x < 0) {
 			relativeChanged = true;
 			relP.x = playerBox.x;
 			tl_x = 0;
 		}
-		if(searchWindow->tl().y < 0) {
+		if(tl_y < 0) {
 			relativeChanged = true;
 			relP.y = playerBox.y;
 			tl_y = 0;
 		}
-		if(searchWindow->br().x >= VIDEO_WIDTH) {
+		if(br_x >= VIDEO_WIDTH) {
 			br_x = VIDEO_WIDTH-1;
 		}
-		if(searchWindow->br().y >= VIDEO_HEIGHT) {
+		if(br_y >= VIDEO_HEIGHT) {
 			br_y = VIDEO_HEIGHT-1;
 		}
 
@@ -76,43 +86,50 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
 bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 	
-	float range[] = {0,RGB};
-	const float* ranges[] = {range};
-    int channel [] = {0};
+	int channel [] = {0};
+	float range [] = {0,RGB};
+	const float* ranges [] = {range};
 
-    Rect playerBox = GlobalStats::getPlayerRect(*pos);
-
+	Rect playerBox = GlobalStats::getPlayerRect(*pos);
 	bool inRange = isInRange(&playerBox);
 
 	if(inRange) {
-
+		// Obtenemos la ventana de búsqueda
 		Rect searchWindowRect, relativePlayerBox;
-		searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
+		TrackingObj::searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
 		Mat window = GlobalStats::frame[nCam](searchWindowRect);
 		Mat windowMask = GlobalStats::filter[nCam](searchWindowRect);
-
+		// Calculamos las matrices de back projection
 		Mat dst[N_CHANNELS];
 		vector<Mat> hist = player.getHistogram();
 		calcBackProject(&window,1,channel,hist[0],dst[0],ranges);
 		calcBackProject(&window,1,channel,hist[1],dst[1],ranges);
 		calcBackProject(&window,1,channel,hist[2],dst[2],ranges);
-
+		// Aplicamos la máscara a lo obtenido para filtrar
 		dst[0]&=windowMask;
 		dst[1]&=windowMask;
 		dst[2]&=windowMask;
 
 		Mat backProj = dst[0]|dst[1]|dst[2];
 		Rect tmp = relativePlayerBox;
-
+		Rect aux = relativePlayerBox + (Point)player.getShift(nCam);
 		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 3, 1);
-		meanShift(backProj,relativePlayerBox,term_crit);
-
-		Point desp = relativePlayerBox.tl() - tmp.tl();
+		Point desp;
+		// Aplicamos meanshift para obtener la nueva localización
+		if(isInRange(&aux)) {
+			meanShift(backProj,aux,term_crit);
+			desp = aux.tl() - tmp.tl();
+		} else {
+			meanShift(backProj,relativePlayerBox,term_crit);
+			desp = relativePlayerBox.tl() - tmp.tl();
+		}
 		*pos = Point(playerBox.tl().x + desp.x + playerBox.width/2,playerBox.br().y + desp.y);
+		// Comprobamos si la nueva posición cumple las restricciones
+		playerBox = GlobalStats::getPlayerRect(*pos);
+		inRange = isInRange(&playerBox);
 	}
-	playerBox = GlobalStats::getPlayerRect(*pos);
-	return inRange && isInRange(&playerBox) &&
-		PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2);
+
+	return inRange && PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2);
 }
 
 /* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
@@ -130,8 +147,8 @@ float TrackingObj::distance(Point p1, Point p2) {
 */
 bool TrackingObj::isDifferentPosition(vector<Point> positions) {
 	bool different = false;
-	for(int i=0; i<positions.size(); i++) {
-		for(int j=i+1; j<positions.size(); j++) {
+	for(int i=0; i<positions.size() && !different; i++) {
+		for(int j=i+1; j<positions.size() && !different; j++) {
 			different = TrackingObj::distance(positions[i],positions[j]) > DIFF_POINTS_DIST;
 		}
 	}
@@ -153,45 +170,56 @@ void TrackingObj::validatePosition(Point lastPoint, Point* actualPoint, int nCam
 }
 
 /* TRACKING DE LOS JUGADORES */
-void TrackingObj::trackPlayers(vector<Player>::iterator* itP) {
-	Player* player = &(**itP);
-	bool detected = false;
-	vector<Point> positions;
-	for(int i=0; i<N_VIDEOS; i++) {
-		Point* realPos;
-		if (player->getBPos(i)) {
-			realPos = &player->getCamPos(i);
-		} else {
-			realPos = &From3DTo2D::getCameraPosition(player->getPosition(),i);
-		}
-		if(player->getBPos(i) || isInFocus(*realPos)) {
-			if(tracking(realPos,*player,i)) {
-				if(player->getBPos(i)) {
-					TrackingObj::validatePosition(player->getCamPos(i),realPos,i);
-				}
-				player->setCamPos(i,*realPos);
-				positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
-				detected = true;
+void TrackingObj::trackPlayers() {
+	vector<Player>::iterator itP = PlayerClassifier::playerV.begin();
+	while(itP != PlayerClassifier::playerV.end()) {
+		Player* player = &(*itP);
+		bool detected = false;
+		vector<Point> positions;
+		for(int i=0; i<N_VIDEOS; i++) {
+			Point* realPos;
+			if (player->getBPos(i)) {
+				// Ya estaba detectado en la secuencia i
+				realPos = &(player->getCamPos(i));
 			} else {
-				player->unSetCamPos(i);
+				realPos = &From3DTo2D::getCameraPosition(player->getPosition(),i);
+			}
+			if(player->getBPos(i) || isInFocus(*realPos)) {
+				// Se aplica el tracking
+				if(tracking(realPos,*player,i)) {
+					if(player->getBPos(i)) {
+						Point camPos = player->getCamPos(i);
+						TrackingObj::validatePosition(camPos,realPos,i);
+						Point shift = *(realPos) - camPos;
+						player->setShift(shift,i);
+					}
+					player->setCamPos(i,*realPos);
+					positions.push_back(From3DTo2D::get2DPosition(*realPos,i));
+					detected = true;
+				} else {
+					player->unSetCamPos(i);
+				}
 			}
 		}
-	}
-	if(detected) {
-		Point newPos;
-		if(!TrackingObj::isDifferentPosition(positions)) {
-			for(int i=0; i<positions.size(); i++) {
-				newPos+=positions.at(i);
+		if(detected) {
+			Point newPos;
+			if(!TrackingObj::isDifferentPosition(positions)) {
+				// Jugador trackeado correctamente
+				for(int i=0; i<positions.size(); i++) {
+					newPos+=positions.at(i);
+				}
+				newPos = Point(newPos.x/positions.size(), newPos.y/positions.size());
+				player->addPosition(newPos);
+			} else {
+				// El jugador ha sido detectado en posiciones muy distantes
+				newPos = PlayerClassifier::findBestMatch(player);
+				player->addPosition(newPos);
 			}
-			newPos = Point(newPos.x/positions.size(), newPos.y/positions.size());
-			player->addPosition(newPos);
+			// Incrementamos el iterador del bucle de tracking
+			itP++;
 		} else {
-			newPos = PlayerClassifier::findBestMatch(player);
-			player->addPosition(newPos);
+			// Añadimos el jugador a la lista de borrado
+			PlayerClassifier::addPlayerToDelete(&itP);
 		}
-		// Se gestiona aquí el iterador del bucle de tracking
-		(*itP)++;
-	} else {
-		PlayerClassifier::addPlayerToDelete(itP);
 	}
 }

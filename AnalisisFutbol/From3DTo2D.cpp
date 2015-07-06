@@ -1,4 +1,5 @@
 #include "From3DTo2D.h"
+#include "GlobalStats.h"
 
 Mat From3DTo2D::projectionMatrix [N_VIDEOS];
 Mat From3DTo2D::inverseProjectionMatrix [N_VIDEOS];
@@ -117,3 +118,16 @@ Point From3DTo2D::getCameraPosition(Point modelPos, int nVideo) {
         return pv.at(0);
 }
 
+/* CONVIERTE LA LOCALIZACIONES DE EN LA CÁMARA A SUS EQUIVALENTES 2D*/
+void From3DTo2D::calculateLocations2D() {
+	for(int i=0; i<N_VIDEOS; i++) {
+		// Obtiene la posición del bounding box en la cámara
+		for(int j=0; j<GlobalStats::locations[i].size(); j++) {
+			GlobalStats::locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
+		}
+		// Transformamos a posición 2D
+		if(GlobalStats::locations[i].size()) {
+			GlobalStats::locations2D[i] = From3DTo2D::get2DPositionVector(GlobalStats::locations2D[i],i);
+		}
+	}
+}

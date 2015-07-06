@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 	From3DTo2D::initProjectionMatrices();	// Inicializamos las matrices de proyección
 	FieldFilter::initFilter();				// Inicializamos imágenes de bg y máscaras
 
-	Mat field;                              // Utilizada para el pintado de los resultados
+	Mat paint;                              // Utilizada para el pintado de los resultados
 
 	// DEBUG!!!
 	// Guardamos los resultados de la ejecución
@@ -23,8 +23,8 @@ int main(int argc, char* argv[]) {
 	if(SAVE_RESULT_SEQ) {
 		Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
 		Size size2 = Size(VIDEO_WIDTH*3/2,(VIDEO_HEIGHT*2+4)/2);
-		outputVideo2D.open("video/field2D_out_2.avi", -1, 25, size1, true);
-		outputVideoCams.open("video/sequences_out_2.avi", -1, 25, size2, true);
+		outputVideo2D.open("video/field2D_out.avi", -1, 25, size1, true);
+		outputVideoCams.open("video/sequences_out.avi", -1, 25, size2, true);
 
 		if (!outputVideo2D.isOpened() && !outputVideoCams.isOpened())
 		{
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 		init_time = getTickCount();
 
 		// Cargamos el campo 2D en field
-		GlobalStats::field2D.copyTo(field);
+		GlobalStats::field2D.copyTo(paint);
 		
 		a = getTickCount();
 
@@ -58,16 +58,13 @@ int main(int argc, char* argv[]) {
 		a = getTickCount();
 
 		// Hacemos tracking de cada jugador
-		vector<Player>::iterator itP = PlayerClassifier::playerV.begin();
-		while(itP != PlayerClassifier::playerV.end()) {
-			TrackingObj::trackPlayers(&itP);
-			// El iterador itP se controla dentro de trackPlayers
-		}
+		TrackingObj::trackPlayers();
 
 		b = getTickCount();
 
 		std::cout<<"Tracking  : "<<(b-a)/getTickFrequency()<<std::endl;
 
+		// Comprobamos el estado de la lista de los jugadores a borrar
 		PlayerClassifier::checkPlayersToDelete();
 		
 		a = getTickCount();
@@ -99,16 +96,8 @@ int main(int argc, char* argv[]) {
 
 			a = getTickCount();
 
-			vector<Point2f> locations2D [N_VIDEOS];
-			// Obtención de posiciones 2D de jugadores detectados
-			for(int i=0; i<N_VIDEOS; i++) {
-				for(int j=0; j<GlobalStats::locations[i].size(); j++) {
-					locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
-				}
-				if(GlobalStats::locations[i].size()) {
-					locations2D[i] = From3DTo2D::get2DPositionVector(locations2D[i],i);
-				}
-			}
+			// Obtención de posiciones 2D de localizaciones obtenidas
+			From3DTo2D::calculateLocations2D();
 
 			b = getTickCount();
 
@@ -117,22 +106,7 @@ int main(int argc, char* argv[]) {
 			a = getTickCount();
 
 			// Eliminación de duplicidades (elementos localizados en varias cámaras)
-			for(int i=0; i<N_VIDEOS; i++) {
-				for(vector<Point2f>::iterator it1=locations2D[i].begin(); it1!=locations2D[i].end(); ++it1) {
-					bool found = false;
-					for(int j=i+1; j<N_VIDEOS;j++) {
-						for(vector<Point2f>::iterator it2=locations2D[j].begin(); it2!=locations2D[j].end(); ++it2) {
-							if(StatsAnalyzer::isSamePoint(*it1, *it2)) {
-								found = true;
-								break;
-							}
-						}
-					}
-					if(!found && From3DTo2D::isInRange(*it1) && !PlayerClassifier::alreadyDetected(*it1) && !GlobalStats::allPlayersDetected()) {
-						PlayerClassifier::addPlayer(GlobalStats::frame[i],GlobalStats::filter[i],*it1);
-					}
-				}
-			}
+			PlayerClassifier::removeDuplications();
 		}
 
 		b = getTickCount();
@@ -143,7 +117,7 @@ int main(int argc, char* argv[]) {
 
 		//Pintar jugadores
 		for(vector<Player>::iterator it = PlayerClassifier::playerV.begin(); it!=PlayerClassifier::playerV.end(); it++) {
-			Point p = it->getPosition();
+			Point p = it->getLastPosition();
 			Scalar colour = GlobalStats::calculateColor(it->getHistogram());
 			bool exists = false;
 			for(int k=0; k<N_VIDEOS; k++) {
@@ -158,13 +132,11 @@ int main(int argc, char* argv[]) {
 					if(TrackingObj::isInRange(&paintR)) {
 						exists = true;
 						rectangle(GlobalStats::frame[k],paintR,colour,2);
-						putText(GlobalStats::frame[k],std::to_string((long double)it->getPlayerId()),
-							Point(realP.x-15,realP.y+15),0,0.5,Scalar(0,0,255),2);
 					}
 				}
 			}
 			if(exists) {
-				circle(field,p,3,colour,2);
+				circle(paint,p,3,colour,2);
 			}
 		}
 		
@@ -176,16 +148,16 @@ int main(int argc, char* argv[]) {
 
 		// Limpiamos el vector de posiciones
 		GlobalStats::clearLocations();
-		// Unimos las secuencias en una sola para mostrarla
+		// Unimos las secuencias en una sola para mostrarlas
 		Mat join = VideoManager::joinSequences(GlobalStats::frame);
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
 		// DEBUG!!!
 		if(SAVE_RESULT_SEQ) {
-			outputVideo2D<<field;
+			outputVideo2D<<paint;
 			outputVideoCams<<join;
 		} else {
-			imshow(FIELD_W,field);
+			imshow(FIELD_W,paint);
 			imshow(VIDEO_W, join);
 		}
 
@@ -209,12 +181,12 @@ int main(int argc, char* argv[]) {
 	// Hacemos el cálculo de las estadísticas a partir de los datos recopilados
 	StatsAnalyzer::calculateAllStats();
 
-	int command = 0;
 	/*
 	* Interfaz de usuario en la que se tiene acceso a las estadísticas calculadas
 	* anteriormente. Si se pulsa ENTER se mostrará el siguiente jugador, si se pulsa
 	* ESC, se finalizará la ejecución.
 	*/
+	int command = 0;
 	while(command != 27) {
 		GUI::showStatsWindow();
 		if(command == 13) {

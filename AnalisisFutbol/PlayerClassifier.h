@@ -38,6 +38,9 @@ public:
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
 	static void objectDetection();
 
+	/* ELIMINA LAS DUPLICIDADES EN LAS DETECCIONES */
+	static void removeDuplications();
+
 	/* DETERMINA SI UN ELEMENTO YA HA SIDO DETECTADO */
 	static bool alreadyDetected(Point p);
 

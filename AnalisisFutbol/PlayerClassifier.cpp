@@ -43,7 +43,7 @@ bool PlayerClassifier::alreadyDetected(Point p) {
 	int i=0;
 	vector<Player>::iterator it = playerV.begin();
 	while(!found && it!=playerV.end()) {
-		found = StatsAnalyzer::isSamePoint(p,it->getPosition());
+		found = StatsAnalyzer::isSamePoint(p,it->getLastPosition());
 		it++;
 	}
 	return found;
@@ -137,8 +137,28 @@ void PlayerClassifier::objectDetection() {
 				Rect elem = boundingRect(Mat(contours[j]));			// Creamos el boundingBox
 				if(PlayerClassifier::isPlayerSize(elem) &&
 					PlayerClassifier::canBePlayer(GlobalStats::filter[i](elem))) {
-					GlobalStats::locations[i].push_back(elem);		// Añadimos al vector de elementos encontrados
+					GlobalStats::locations[i].push_back(elem);		// Añadimos al vector de localizaciones
 				}
+			}
+		}
+	}
+}
+
+/* ELIMINA LAS DUPLICIDADES EN LAS DETECCIONES */
+void PlayerClassifier::removeDuplications() {
+	for(int i=0; i<N_VIDEOS; i++) {
+		for(vector<Point2f>::iterator it1=GlobalStats::locations2D[i].begin(); it1!=GlobalStats::locations2D[i].end(); ++it1) {
+			bool found = false;
+			for(int j=i+1; j<N_VIDEOS;j++) {
+				for(vector<Point2f>::iterator it2=GlobalStats::locations2D[j].begin(); it2!=GlobalStats::locations2D[j].end(); ++it2) {
+					if(StatsAnalyzer::isSamePoint(*it1, *it2)) {
+						found = true;
+						break;
+					}
+				}
+			}
+			if(!found && From3DTo2D::isInRange(*it1) && !PlayerClassifier::alreadyDetected(*it1) && !GlobalStats::allPlayersDetected()) {
+				PlayerClassifier::addPlayer(GlobalStats::frame[i],GlobalStats::filter[i],*it1);
 			}
 		}
 	}
@@ -175,9 +195,10 @@ bool PlayerClassifier::recoverPlayer(Point pos, vector<Mat> hist) {
 	for(std::list<Player>::iterator it = PlayerClassifier::playersToDelete.begin();
 			it != PlayerClassifier::playersToDelete.end(); it++) {
 		float dist;
-		if(StatsAnalyzer::isInRecoverRange(pos,it->getPosition(),it->getDeletionCounter(),&dist) &&
+		if(StatsAnalyzer::isInRecoverRange(pos,it->getLastPosition(),it->getDeletionCounter(),&dist) &&
 				dist < min_dist &&
-				PlayerClassifier::compareHistogram(hist,it->getHistogram()) <= 0.4*N_CHANNELS) {
+				PlayerClassifier::compareHistogram(hist,it->getHistogram()) <=
+					BHATTACHARYYA_DISTANCE*N_CHANNELS) {
 			found = &(*it);
 			min_dist = dist;
 		}

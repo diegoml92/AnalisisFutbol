@@ -23,7 +23,7 @@ void StatsAnalyzer::addDistanceAndSpeed(float* dist, Point actualPoint, Point* l
 
 	if(d>0) {
 		float actualSpeed = d*FPS*MS_TO_KMH / (SAMPLING_RATE * (*retries + 1));
-		if(actualSpeed < 40) {
+		if(actualSpeed < MAX_SPEED) {
 			*retries = 0;
 			*dist += d;
 			*speed += actualSpeed;
@@ -45,7 +45,7 @@ void StatsAnalyzer::updateStats(float* dist, Point actualPoint, Point* lastPoint
 
 	if(d>0) {
 		float actualSpeed = d*FPS*MS_TO_KMH / ( nFrames + SAMPLING_RATE * (*retries));
-		if(actualSpeed < 40) {
+		if(actualSpeed < MAX_SPEED) {
 			*retries = 0;
 			*dist += d;
 			*speed += actualSpeed;

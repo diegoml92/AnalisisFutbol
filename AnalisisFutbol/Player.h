@@ -23,6 +23,7 @@ private:
 	int nSpeed;
 	bool bPos[N_VIDEOS];
 	Point camPos[N_VIDEOS];
+	Vec2i shift[N_VIDEOS];
 	vector<Mat> histogram;
 	int deletionCounter;
 	int retries;
@@ -47,6 +48,9 @@ public:
 	/* CALCULA LAS ESTADÍSTICAS */
 	void calculateStats();
 
+	/* DEVUELVE LA ÚLTIMA POSICIÓN TRACKEADA (SI LA HAY) */
+	Point getPosition();
+
 	/* DEVUELVE LAS ESTADÍSITCAS DEL ÁREA RECORRIDA */
 	Mat getAreaStats();
 
@@ -60,7 +64,7 @@ public:
 	float getAvgSpeed();
 
 	/* DEVUELVE EL PUNTO ACUTAL */
-	Point getPosition();
+	Point getLastPosition();
 
 	/* DEVUELVE EL HISTOGRAMA DEL JUGADOR */
 	vector<Mat> getHistogram();
@@ -76,6 +80,12 @@ public:
 
 	/* DESACTIVA LA CÁMARA i */
 	void unSetCamPos(int i);
+
+	/* DEVUELVE EL ÚLTIMO DESPLAZAMIENTO EN LA CÁMARA i */
+	Vec2i getShift(int i);
+
+	/* ESTABLECE EL DESPLAZAMIENTO */
+	void setShift(Point shift, int i);
 
 	/* DEVUELVE EL PLAYER ID */
 	int getPlayerId();
