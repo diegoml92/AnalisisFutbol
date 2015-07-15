@@ -76,7 +76,9 @@ vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<R
 /* CALCULA EL HISTOGRAMA DEL JUGADOR */
 vector<Mat> PlayerClassifier::calculateHistogram(Point pos, int nCam) {
 	vector<Rect> v;
-	v.push_back(GlobalStats::getPlayerRect(pos));
+	Rect* rect = &(GlobalStats::getPlayerRect(pos));
+	TrackingObj::isInRange(rect);
+	v.push_back(*rect);
 	return PlayerClassifier::calculateHistogram(GlobalStats::frame[nCam],GlobalStats::filter[nCam],v);
 }
 
@@ -103,7 +105,7 @@ Point PlayerClassifier::findBestMatch(Player* player) {
 	for(int i=0; i<N_VIDEOS; i++) {
 		if (player->getBPos(i)) {
 			float res = PlayerClassifier::compareHistogram(player->getHistogram(),
-				calculateHistogram(player->getCamPos(i), i));
+				PlayerClassifier::calculateHistogram(player->getCamPos(i), i));
 			if(res < min) {
 				min = res;
 				cam = i;

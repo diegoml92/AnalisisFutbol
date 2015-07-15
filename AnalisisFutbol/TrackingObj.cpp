@@ -86,7 +86,9 @@ void TrackingObj::searchWindow(Rect playerBox, Rect* searchWindow, Rect* relativ
 /* LLEVA A CABO EL SEGUIMIENTO DE LOS JUGADORES  */
 bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 	
-	int channel [] = {0};
+	int channelB [] = {0};
+	int channelG [] = {1};
+	int channelR [] = {2};
 	float range [] = {0,RGB};
 	const float* ranges [] = {range};
 
@@ -102,18 +104,22 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 		// Calculamos las matrices de back projection
 		Mat dst[N_CHANNELS];
 		vector<Mat> hist = player.getHistogram();
-		calcBackProject(&window,1,channel,hist[0],dst[0],ranges);
-		calcBackProject(&window,1,channel,hist[1],dst[1],ranges);
-		calcBackProject(&window,1,channel,hist[2],dst[2],ranges);
+		calcBackProject(&window,1,channelB,hist[0],dst[0],ranges);
+		calcBackProject(&window,1,channelG,hist[1],dst[1],ranges);
+		calcBackProject(&window,1,channelR,hist[2],dst[2],ranges);
 		// Aplicamos la máscara a lo obtenido para filtrar
 		dst[0]&=windowMask;
 		dst[1]&=windowMask;
 		dst[2]&=windowMask;
 
-		Mat backProj = dst[0]|dst[1]|dst[2];
+		Mat backProj = (dst[0]+dst[1]+dst[2])/N_CHANNELS;
+
+		threshold(backProj,backProj,20,RGB,THRESH_TOZERO);
+
+		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 1);
+
 		Rect tmp = relativePlayerBox;
 		Rect aux = relativePlayerBox + (Point)player.getShift(nCam);
-		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 3, 1);
 		Point desp;
 		// Aplicamos meanshift para obtener la nueva localización
 		if(isInRange(&aux)) {
