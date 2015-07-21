@@ -6,13 +6,20 @@ class PlayerClassifier {
 private:
 
 	/* CALCULA EL HISTOGRAMA DEL JUGADOR */
-	static vector<Mat> calculateHistogram(Mat frame, Mat filter, vector<Rect> rects);
+	static void calculateHistogram(Mat frame, Mat filter, vector<Rect> rects, vector<Mat>* hist_v);
 
 	/* CALCULA EL HISTOGRAMA DEL JUGADOR */
 	static vector<Mat> calculateHistogram(Point pos, int nCam);
 
 	/* DETERMINA SI EL PUNTO ESTÁ CERCA DEL BORDE DEL CAMPO */
 	static bool isFieldEdge(Point p);
+
+	/* ELIMINA LOS ELEMENTOS DUPLICADOS */
+	static void PlayerClassifier::deleteDuplicatedPlayer
+		(string key, Point position, Player p1, Player p2, vector<Player>* toDelete);
+
+	// Jugadores duplicados
+	static std::unordered_map<string,int> PlayerClassifier::duplicatedPlayers;
 
 public:
 
@@ -33,7 +40,7 @@ public:
 	static double compareHistogram(vector<Mat> playerHist, vector<Mat> newHist);
 
 	/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
-	static bool PlayerClassifier::canBePlayer(Mat roi, float val = 0.35);
+	static bool canBePlayer(Mat roi, float val = 0.35);
 
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
 	static void objectDetection();
@@ -49,6 +56,9 @@ public:
 	* Y LO BORRA DE LA LISTA DE JUGADORES ACTUALES
 	*/
 	static void addPlayerToDelete(vector<Player>::iterator* itP);
+
+	/* LOCALIZA LOS JUGADORES DUPLICADOS */
+	static void checkDuplicatedPlayers();
 
 	/* COMPRUEBA LOS JUGADORES A BORRAR */
 	static void checkPlayersToDelete();

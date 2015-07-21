@@ -66,6 +66,7 @@ int main(int argc, char* argv[]) {
 
 		// Comprobamos el estado de la lista de los jugadores a borrar
 		PlayerClassifier::checkPlayersToDelete();
+		PlayerClassifier::checkDuplicatedPlayers();
 		
 		a = getTickCount();
 		// Eliminamos del filtro los jugadores ya trackeados para que no sean detectados de nuevo

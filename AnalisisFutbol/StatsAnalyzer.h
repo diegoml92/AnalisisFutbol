@@ -7,10 +7,10 @@ private:
 	/* NORMALIZA LOS VALORES DE LA MATRIZ ENTRE 0 Y 1 */
 	static Mat normalizeAreaStats(Mat m);
 
+public:
+	
 	/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
 	static float distance(Point actualPoint, Point lastPoint);
-
-public:
 
 	/* INCREMENTA EL VALOR EN LA POSICIÓN INDICADA */
 	static void addPosition(Mat m, Point p);

@@ -7,6 +7,7 @@
 
 vector<Player> PlayerClassifier::playerV;
 std::list<Player> PlayerClassifier::playersToDelete;
+std::unordered_map<string,int> PlayerClassifier::duplicatedPlayers;
 
 /* DETERMINA SI EL PUNTO ESTÁ CERCA DEL BORDE DEL CAMPO */
 bool PlayerClassifier::isFieldEdge(Point p) {
@@ -21,14 +22,15 @@ void PlayerClassifier::addPlayer(Mat frame, Mat filter, Point position) {
 		for(int i=0; i<N_VIDEOS; i++) {
 			Point realPos = From3DTo2D::getCameraPosition(position,i);
 			if(TrackingObj::isInFocus(realPos)) {
-				Rect playerBox = Rect((realPos).x-PLAYER_WIDTH/2,(realPos).y-PLAYER_HEIGHT,PLAYER_WIDTH,PLAYER_HEIGHT);
+				Rect playerBox = GlobalStats::getPlayerRect(realPos);
 				if(TrackingObj::isInRange(&playerBox) && isPlayerSize(playerBox) && canBePlayer(filter(playerBox))) {
 					rects.push_back(playerBox);
 				}
 			}
 		}
 		if(rects.size()>0) {
-			vector<Mat> hist = calculateHistogram(frame, filter, rects);
+			vector<Mat> hist;
+			calculateHistogram(frame, filter, rects, &hist);
 			// No se ha asociado a ningún jugador perdido anteriormente
 			if(!PlayerClassifier::recoverPlayer(position,hist)) {
 				PlayerClassifier::playerV.push_back(Player(position, hist));
@@ -50,7 +52,7 @@ bool PlayerClassifier::alreadyDetected(Point p) {
 }
 
 /* CALCULA EL HISTOGRAMA DEL JUGADOR */
-vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<Rect> rects) {
+void PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<Rect> rects, vector<Mat>* hist_v) {
 
 	int channel_B [] = {0};
 	int channel_G [] = {1};
@@ -58,7 +60,6 @@ vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<R
 	int nBins = N_BINS;
 	float range [] = {0,RGB};
 	const float *ranges = {range};
-	vector<Mat> hist_v;
 	Mat hist[N_CHANNELS];
 	for(int i=0; i<rects.size(); i++) {
 		Mat mask = filter(rects[i]);
@@ -67,10 +68,11 @@ vector<Mat> PlayerClassifier::calculateHistogram(Mat frame, Mat filter, vector<R
 		calcHist(&src,1,channel_G,mask,hist[1],1,&nBins,&ranges,true,true);
 		calcHist(&src,1,channel_R,mask,hist[2],1,&nBins,&ranges,true,true);
 	}
-	for(int i=0 ; i<N_CHANNELS; i++) {
-		hist_v.push_back(hist[i]);
+	if(hist_v->empty()) {
+		for(int i=0 ; i<N_CHANNELS; i++) {
+			hist_v->push_back(hist[i]);
+		}
 	}
-	return hist_v;
 }
 
 /* CALCULA EL HISTOGRAMA DEL JUGADOR */
@@ -79,7 +81,9 @@ vector<Mat> PlayerClassifier::calculateHistogram(Point pos, int nCam) {
 	Rect* rect = &(GlobalStats::getPlayerRect(pos));
 	TrackingObj::isInRange(rect);
 	v.push_back(*rect);
-	return PlayerClassifier::calculateHistogram(GlobalStats::frame[nCam],GlobalStats::filter[nCam],v);
+	vector<Mat> hist;
+	calculateHistogram(GlobalStats::frame[nCam],GlobalStats::filter[nCam],v,&hist);
+	return hist;
 }
 
 /* COMPARA LOS HISTOGRAMAS DE LOS JUGADORES */
@@ -186,6 +190,93 @@ void PlayerClassifier::checkPlayersToDelete() {
 			it = PlayerClassifier::playersToDelete.erase(it);
 		} else {
 			it++;
+		}
+	}
+}
+
+/* ELIMINA LOS ELEMENTOS DUPLICADOS */
+void PlayerClassifier::deleteDuplicatedPlayer(string key, Point position, Player p1, Player p2, vector<Player>* toDelete) {
+	vector<Rect> rects;
+	vector<Mat> hist;
+	for(int i=0; i<N_VIDEOS; i++) {
+		Point realPos = From3DTo2D::getCameraPosition(position,i);
+		if(TrackingObj::isInFocus(realPos)) {
+			Rect playerBox = GlobalStats::getPlayerRect(realPos);
+			if(TrackingObj::isInRange(&playerBox)) {
+				rects.push_back(playerBox);
+			}
+		}
+		if(rects.size()>0) {
+			calculateHistogram(GlobalStats::frame[i], GlobalStats::filter[i], rects, &hist);
+		}
+	}
+	float diff1, diff2;
+	diff1 = compareHistogram(hist,p1.getHistogram());
+	diff2 = compareHistogram(hist,p2.getHistogram());
+	if(diff1 <= BHATTACHARYYA_DISTANCE*N_CHANNELS) {
+		if(diff2 <= BHATTACHARYYA_DISTANCE*N_CHANNELS) {
+			//Ambos válidos, borrar el menos antiguo
+			if(p1.getPlayerId() < p2.getPlayerId()) {
+				(*toDelete).push_back(p2);
+			} else {
+				(*toDelete).push_back(p1);
+			}
+		} else {
+			(*toDelete).push_back(p2);
+		}
+	} else if(diff2 <= BHATTACHARYYA_DISTANCE*N_CHANNELS) {
+		(*toDelete).push_back(p1);
+	} else {
+		//Ninguno válido, borrar el menos antiguo
+		if(p1.getPlayerId() < p2.getPlayerId()) {
+			(*toDelete).push_back(p2);
+		} else {
+			(*toDelete).push_back(p1);
+		}
+	}
+}
+
+/* LOCALIZA LOS JUGADORES DUPLICADOS */
+void PlayerClassifier::checkDuplicatedPlayers() {
+	std::unordered_map<string,int>::iterator entry;
+	vector<Player>toDelete;
+	// Comprobamos si existen duplicidades
+	for (std::vector<Player>::iterator it1 = playerV.begin(); it1!=playerV.end(); it1++) {
+		for(std::vector<Player>::iterator it2 = it1 + 1; it2!=playerV.end(); it2++) {
+			std::stringstream key;
+			key<<it1->getPlayerId()<<"-"<<it2->getPlayerId();
+			entry = duplicatedPlayers.find(key.str());
+			// Si se encuentra un posible duplicado
+			if(StatsAnalyzer::distance(it1->getPosition(), it2->getPosition()) < MIN_DISTANCE) {
+				// Si ya existe, incrementamos el contador
+				if(entry != duplicatedPlayers.end()) {
+					int value = ++duplicatedPlayers.at(key.str());
+					// Si supera en límite lo borramos
+					if(value >= TIME_DUPLICATES*FPS) {
+						Point p1 = it1->getPosition();
+						Point p2 = it2->getPosition();
+						Point p = p1 + p2;
+						p = Point(p.x/2,p.y/2);
+						PlayerClassifier::deleteDuplicatedPlayer(key.str(),p,*it1,*it2,&toDelete);
+						duplicatedPlayers.erase(entry);
+					}
+				// Si no, añadimos una nueva entrada
+				} else {
+					std::pair<string,int> elem (key.str(), 1);
+					duplicatedPlayers.insert(elem);
+				}
+			} else {
+				// Si no es duplicado lo borramos de la lista (si está)
+				if(entry != duplicatedPlayers.end()) {
+					duplicatedPlayers.erase(entry);
+				}
+			}
+		}
+	}
+	for(int i=0; i<toDelete.size(); i++) {
+		vector<Player>::iterator it = std::find(playerV.begin(), playerV.end(), toDelete[i]);
+		if(it!=playerV.end()) {
+			playerV.erase(it);
 		}
 	}
 }

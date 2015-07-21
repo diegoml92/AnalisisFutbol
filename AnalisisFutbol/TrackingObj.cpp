@@ -2,6 +2,7 @@
 #include "PlayerClassifier.h"
 #include "From3DTo2D.h"
 #include "GlobalStats.h"
+#include "StatsAnalyzer.h"
 
 /* COMPRUEBA SI EL JUGADOR ESTÁN EN EL RANGO DENTRO DE LA IMAGEN */
 bool TrackingObj::isInRange(Rect* r) {
@@ -138,15 +139,6 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 	return inRange && PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2);
 }
 
-/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
-float TrackingObj::distance(Point p1, Point p2) {
-	float dist = 0;
-	if(p2.x >= 0) {
-		dist = norm(p1-p2)/10.0;
-	}
-	return dist;
-}
-
 /*
 * DETERMINA SI LOS ELEMENTOS ASOCIADOS POR CADA SECUENCIA
 * EN LA QUE HAYA SIDO DETECTADO UN JUGADOR NO SE CORRESPONDEN
@@ -155,7 +147,7 @@ bool TrackingObj::isDifferentPosition(vector<Point> positions) {
 	bool different = false;
 	for(int i=0; i<positions.size() && !different; i++) {
 		for(int j=i+1; j<positions.size() && !different; j++) {
-			different = TrackingObj::distance(positions[i],positions[j]) > DIFF_POINTS_DIST;
+			different = StatsAnalyzer::distance(positions[i],positions[j]) > DIFF_POINTS_DIST;
 		}
 	}
 	return different;
@@ -165,7 +157,7 @@ bool TrackingObj::isDifferentPosition(vector<Point> positions) {
 void TrackingObj::validatePosition(Point lastPoint, Point* actualPoint, int nCam) {
 	Point ori = From3DTo2D::get2DPosition(lastPoint, nCam);
 	Point des = From3DTo2D::get2DPosition(*actualPoint, nCam);
-	float dist = TrackingObj::distance(ori,des);
+	float dist = StatsAnalyzer::distance(ori,des);
 	if (dist > MAX_DIST) {
 		float rel = MAX_DIST / dist;
 		Vec2i v = *actualPoint - lastPoint;

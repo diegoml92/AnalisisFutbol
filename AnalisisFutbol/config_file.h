@@ -3,6 +3,7 @@
 #include <opencv2\imgproc\imgproc.hpp>
 #include <opencv2\video\tracking.hpp>
 #include <list>
+#include <unordered_map>
 #include <iostream>
 
 // Indicamos el namespace para no tener que escribirlo delante de cada operación que lo requiera
@@ -61,8 +62,10 @@ using namespace cv;
 #define N_CHANNELS 3
 #define MS_TO_KMH 3.6
 #define MAX_PLAYERS 25
+#define MIN_DISTANCE 1
 #define FIELD_MARGIN 10
 #define TIME_TO_DELETE 3
+#define TIME_DUPLICATES 5
 #define SAMPLING_RATE 5.0
 #define DIFF_POINTS_DIST 5
 #define SEARCH_WINDOW 15,10

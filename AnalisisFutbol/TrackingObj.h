@@ -10,9 +10,6 @@ private:
 	/* VENTANA DE BÚSQUEDA DEL JUGADOR */
 	static void searchWindow(Rect playerBox, Rect* searchWindow, Rect* relative);
 
-	/* CALCULA LA DISTANCIA ENTRE DOS PUNTOS */
-	static float distance(Point actualPoint, Point lastPoint);
-
 	/*
 	* DETERMINA SI LOS ELEMENTOS ASOCIADOS POR CADA SECUENCIA
 	* EN LA QUE HAYA SIDO DETECTADO UN JUGADOR NO SE CORRESPONDEN
