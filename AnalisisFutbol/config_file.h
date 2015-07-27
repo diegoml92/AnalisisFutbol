@@ -72,5 +72,5 @@ using namespace cv;
 #define BHATTACHARYYA_DISTANCE 0.35
 #define ANALYZER_VIDEO_SIZE_RELATION 4
 
-// DEBUG!!!
+// GUARDAR RESULTADOS
 #define SAVE_RESULT_SEQ false

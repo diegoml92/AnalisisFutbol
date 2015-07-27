@@ -17,18 +17,31 @@ int main(int argc, char* argv[]) {
 
 	Mat paint;                              // Utilizada para el pintado de los resultados
 
-	// DEBUG!!!
 	// Guardamos los resultados de la ejecución
 	VideoWriter outputVideo2D,outputVideoCams;
+	VideoWriter output[N_VIDEOS];
 	if(SAVE_RESULT_SEQ) {
 		Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
 		Size size2 = Size(VIDEO_WIDTH*3/2,(VIDEO_HEIGHT*2+4)/2);
 		outputVideo2D.open("video/field2D_out.avi", -1, 25, size1, true);
 		outputVideoCams.open("video/sequences_out.avi", -1, 25, size2, true);
+		
 
 		if (!outputVideo2D.isOpened() && !outputVideoCams.isOpened())
 		{
 			return -1;
+		}
+
+		for(int i=0; i<N_VIDEOS ; i++) {
+			Size size;
+			if(i==2 || i==5) {
+				size = Size(VIDEO_WIDTH,VIDEO_HEIGHT+4);
+			} else {
+				size = Size(VIDEO_WIDTH,VIDEO_HEIGHT);
+			}
+			std::stringstream outputPath;
+			outputPath<<"video/seq_"<<i<<"_out.avi";
+			output[i].open(outputPath.str(),-1,FPS,size);
 		}
 	}
 
@@ -39,7 +52,6 @@ int main(int argc, char* argv[]) {
 	*/
 	while(VideoManager::nextFrame(GlobalStats::frame) && waitKey(1)!=27) {
 
-		// DEBUG!!!
 		int64 init_time,end_time,a,b;
 		init_time = getTickCount();
 
@@ -118,8 +130,8 @@ int main(int argc, char* argv[]) {
 
 		//Pintar jugadores
 		for(vector<Player>::iterator it = PlayerClassifier::playerV.begin(); it!=PlayerClassifier::playerV.end(); it++) {
-			Point p = it->getLastPosition();
-			Scalar colour = GlobalStats::calculateColor(it->getHistogram());
+			Point p = it->getPosition();
+			Scalar color = GlobalStats::calculateColor(it->getHistogram());
 			bool exists = false;
 			for(int k=0; k<N_VIDEOS; k++) {
 				Point realP;
@@ -132,12 +144,14 @@ int main(int argc, char* argv[]) {
 					Rect paintR = GlobalStats::getPlayerRect(realP);
 					if(TrackingObj::isInRange(&paintR)) {
 						exists = true;
-						rectangle(GlobalStats::frame[k],paintR,colour,2);
+						rectangle(GlobalStats::frame[k],paintR,color,2);
+						putText(GlobalStats::frame[k],std::to_string((long double)it->getPlayerId()),
+							Point(realP.x-15,realP.y+15),0,0.5,Scalar(0,0,255),2);
 					}
 				}
 			}
 			if(exists) {
-				circle(paint,p,3,colour,2);
+				circle(paint,p,3,color,2);
 			}
 		}
 		
@@ -153,10 +167,12 @@ int main(int argc, char* argv[]) {
 		Mat join = VideoManager::joinSequences(GlobalStats::frame);
 		pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
-		// DEBUG!!!
 		if(SAVE_RESULT_SEQ) {
 			outputVideo2D<<paint;
 			outputVideoCams<<join;
+			for(int i=0; i<N_VIDEOS ;i++) {
+				output[i]<<GlobalStats::frame[i];
+			}
 		} else {
 			imshow(FIELD_W,paint);
 			imshow(VIDEO_W, join);
