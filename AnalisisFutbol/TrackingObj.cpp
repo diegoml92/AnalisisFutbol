@@ -30,7 +30,7 @@ bool TrackingObj::isInRange(Rect* r) {
 		}
 
 		Rect tmp_rect = Rect(Point(tl_x,tl_y),Point(br_x,br_y));
-		if(tmp_rect.width >= MIN_WIDTH && tmp_rect.height >= MIN_HEIGH) {
+		if(tmp_rect.width >= MIN_WIDTH && tmp_rect.height >= MIN_HEIGHT) {
 			inRange = true;
 			*r = tmp_rect;
 		}
@@ -136,7 +136,7 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 		inRange = isInRange(&playerBox);
 	}
 
-	return inRange && PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2);
+	return inRange && PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.1);
 }
 
 /*

@@ -17,20 +17,20 @@ using namespace cv;
 #define STATS_W "ESTADÍSTICAS"
 
 /* PATHS */
-#define VIDEO_PATH "./Sequences/Seq"
+#define VIDEO_PATH "./Sequences_new/Seq"
 #define VIDEO_FORMAT ".avi"
 #define BG_FORMAT "_bg.jpg"
-#define FIELD2D_PATH "./img/soccer_field.jpg"
-#define FIELD2DSMALL_PATH "./img/soccer_field_small.jpg"
+#define FIELD2D_PATH "./img_new/soccer_field.jpg"
+#define FIELD2DSMALL_PATH "./img_new/soccer_field_small.jpg"
 
 /* VIDEO */
-#define N_VIDEOS 6
+#define N_VIDEOS 1
 #define VIDEO_WIDTH 960
 #define VIDEO_HEIGHT 540
-#define FPS 25
+#define FPS 30
 
 /* MEDIDAS DEL TERRENO DE JUEGO */
-#define SOCCER_FIELD_WIDTH 1080
+#define SOCCER_FIELD_WIDTH 1060
 #define SOCCER_FIELD_HEIGHT 680
 #define CIRCLE_RADIUS 91.5
 #define AREA_HEIGHT 403.2
@@ -49,10 +49,10 @@ using namespace cv;
 /* RANGOS DE TAMAÑO */
 #define PLAYER_WIDTH 17
 #define PLAYER_HEIGHT 45
-#define MIN_WIDTH 10
+#define MIN_WIDTH 8
 #define MAX_WIDTH 35
-#define MIN_HEIGH 32
-#define MAX_HEIGH 70
+#define MIN_HEIGHT 15
+#define MAX_HEIGHT 70
 
 /* OTRAS */
 #define RGB 256

@@ -22,9 +22,9 @@ int main(int argc, char* argv[]) {
 	VideoWriter output[N_VIDEOS];
 	if(SAVE_RESULT_SEQ) {
 		Size size1 = Size(SOCCER_FIELD_WIDTH,SOCCER_FIELD_HEIGHT);
-		Size size2 = Size(VIDEO_WIDTH*3/2,(VIDEO_HEIGHT*2+4)/2);
-		outputVideo2D.open("video/field2D_out.avi", -1, 25, size1, true);
-		outputVideoCams.open("video/sequences_out.avi", -1, 25, size2, true);
+		Size size2 = Size(VIDEO_WIDTH,VIDEO_HEIGHT);
+		outputVideo2D.open("video/field2D_out.avi", -1, FPS, size1, true);
+		outputVideoCams.open("video/sequences_out.avi", -1, FPS, size2, true);
 		
 
 		if (!outputVideo2D.isOpened() && !outputVideoCams.isOpened())
@@ -164,18 +164,20 @@ int main(int argc, char* argv[]) {
 		// Limpiamos el vector de posiciones
 		GlobalStats::clearLocations();
 		// Unimos las secuencias en una sola para mostrarlas
-		Mat join = VideoManager::joinSequences(GlobalStats::frame);
-		pyrDown(join, join, Size(join.cols/2, join.rows/2));
+		//Mat join = VideoManager::joinSequences(GlobalStats::frame);
+		Mat seq = GlobalStats::frame[0];
+		Mat filt = GlobalStats::filter[0];
+		//pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
 		if(SAVE_RESULT_SEQ) {
 			outputVideo2D<<paint;
-			outputVideoCams<<join;
+			outputVideoCams<<seq;
 			for(int i=0; i<N_VIDEOS ;i++) {
 				output[i]<<GlobalStats::frame[i];
 			}
 		} else {
 			imshow(FIELD_W,paint);
-			imshow(VIDEO_W, join);
+			imshow(VIDEO_W, seq);
 		}
 
 		b = getTickCount();

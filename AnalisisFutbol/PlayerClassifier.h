@@ -40,7 +40,7 @@ public:
 	static double compareHistogram(vector<Mat> playerHist, vector<Mat> newHist);
 
 	/* DESCARTA FALSOS POSITIVOS (LÍNEAS, ETC) EN FUNCIÓN DE EL NÚMERO DE PÍXELES BLANCOS */
-	static bool canBePlayer(Mat roi, float val = 0.35);
+	static bool canBePlayer(Mat roi, float val = 0.1);
 
 	/* DETECCIÓN DE JUGADORES SOBRE EL CAMPO */
 	static void objectDetection();

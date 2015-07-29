@@ -20,7 +20,8 @@ void FieldFilter::initFilter() {
 void FieldFilter::discardField() {
 	for (int i=0; i<N_VIDEOS; i++) {
 		Mat thres, tmp, final, diff = abs(GlobalStats::frame[i]-bg[i]);
-		threshold(diff,thres,40,255,CV_THRESH_BINARY);
+
+		threshold(diff,thres,70,255,CV_THRESH_BINARY);
 
 		vector<Mat> planes;
 		split(thres,planes);

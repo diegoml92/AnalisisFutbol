@@ -97,7 +97,7 @@ double PlayerClassifier::compareHistogram(vector<Mat> playerHist, vector<Mat> ne
 
 /* DETERMINA SI CUMPLE EL TAMAÑO PROPIO DE UN JUGADOR */
 bool PlayerClassifier::isPlayerSize(Rect player) {
-	return player.height>MIN_HEIGH && player.height<MAX_HEIGH
+	return player.height>MIN_HEIGHT && player.height<MAX_HEIGHT
 			&& player.width>MIN_WIDTH && player.width<MAX_WIDTH;
 }
 
@@ -165,6 +165,7 @@ void PlayerClassifier::removeDuplications() {
 			}
 			if(!found && From3DTo2D::isInRange(*it1) && !PlayerClassifier::alreadyDetected(*it1) && !GlobalStats::allPlayersDetected()) {
 				PlayerClassifier::addPlayer(GlobalStats::frame[i],GlobalStats::filter[i],*it1);
+				circle(GlobalStats::frame[i],From3DTo2D::getCameraPosition(*it1,i),5,Scalar(255,0,0));
 			}
 		}
 	}

@@ -15,11 +15,11 @@ void From3DTo2D::initProjectionMatrices() {
 		switch(i) {
 			case 0: {
 				// SEQ0 POINTS
-				Point2f real [4] = {Point2f(131,260), Point2f(140,53), Point2f(456,101), Point2f(446,349)};
+				Point2f real [4] = {Point2f(16,136), Point2f(280,183), Point2f(203,459), Point2f(24,231)};
 				//A-B-C-D
-				Point2f model [4] = {Point2f(PENALTY_AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-PENALTY_AREA_HEIGHT/2-1),
-					Point2f(0,SOCCER_FIELD_HEIGHT-1), Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+AREA_HEIGHT/2-1),
-					Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-AREA_HEIGHT/2-1)};
+				Point2f model [4] = {Point2f(0,0), Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-AREA_HEIGHT/2-1),
+					Point2f(AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2+AREA_HEIGHT/2-1),
+					Point2f(PENALTY_AREA_WIDTH-1,SOCCER_FIELD_HEIGHT/2-PENALTY_AREA_HEIGHT/2-1)};
 				// Calculamos la matriz de proyeccion 0
 				projectionMatrix[i] = getPerspectiveTransform(real,model);
 				inverseProjectionMatrix[i] = getPerspectiveTransform(model,real);
@@ -125,9 +125,11 @@ void From3DTo2D::calculateLocations2D() {
 		for(int j=0; j<GlobalStats::locations[i].size(); j++) {
 			GlobalStats::locations2D[i].push_back(GlobalStats::getCenter(GlobalStats::locations[i].at(j)));
 		}
+
 		// Transformamos a posición 2D
 		if(GlobalStats::locations[i].size()) {
 			GlobalStats::locations2D[i] = From3DTo2D::get2DPositionVector(GlobalStats::locations2D[i],i);
 		}
+
 	}
 }
