@@ -102,6 +102,10 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 		TrackingObj::searchWindow(playerBox, &searchWindowRect, &relativePlayerBox);
 		Mat window = GlobalStats::frame[nCam](searchWindowRect);
 		Mat windowMask = GlobalStats::filter[nCam](searchWindowRect);
+
+		imshow("ORIGINAL",window);
+		imshow("FOREGROUND",windowMask);
+
 		// Calculamos las matrices de back projection
 		Mat dst[N_CHANNELS];
 		vector<Mat> hist = player.getHistogram();
@@ -116,6 +120,8 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 		Mat backProj = (dst[0]+dst[1]+dst[2])/N_CHANNELS;
 
 		threshold(backProj,backProj,20,RGB,THRESH_TOZERO);
+
+		imshow("BACK_PROJ",backProj);
 
 		TermCriteria term_crit(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 1);
 
@@ -134,6 +140,8 @@ bool TrackingObj::tracking(Point* pos, Player player, int nCam) {
 		// Comprobamos si la nueva posición cumple las restricciones
 		playerBox = GlobalStats::getPlayerRect(*pos);
 		inRange = isInRange(&playerBox);
+		waitKey();
+
 	}
 
 	return inRange && PlayerClassifier::canBePlayer(GlobalStats::filter[nCam](playerBox), 0.2);
