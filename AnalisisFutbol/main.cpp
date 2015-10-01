@@ -32,6 +32,16 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	VideoWriter jugador[8];
+	for (int i=0; i<8; i++) {
+		std::stringstream path;
+		path << "./jugador_" << i;
+		jugador[i].open(path.str(),-1,25,Size(PLAYER_WIDTH, PLAYER_HEIGHT),true);
+		if(!jugador[i].isOpened()) {
+			return -2;
+		}
+	}
+
 	/*	
 	*	Bucle en el que vamos pasando los frames del video con la función nextFrame,
     *   que coge el frame actual del video y lo guarda en la matriz frame. Cuando nextFrame
@@ -70,7 +80,7 @@ int main(int argc, char* argv[]) {
 		
 		a = getTickCount();
 		// Eliminamos del filtro los jugadores ya trackeados para que no sean detectados de nuevo
-		for(vector<Player>::iterator itP = PlayerClassifier::playerV.begin(); itP!=PlayerClassifier::playerV.end(); itP++) {
+		/*for(vector<Player>::iterator itP = PlayerClassifier::playerV.begin(); itP!=PlayerClassifier::playerV.end(); itP++) {
 			for(int i=0; i<N_VIDEOS; i++) {
 				if(itP->getBPos(i)) {
 					Rect rectP = GlobalStats::getPlayerRect(itP->getCamPos(i));
@@ -79,7 +89,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 			}
-		}
+		}*/
 		b = getTickCount();
 
 		std::cout<<"Cleaning:   "<<(b-a)/getTickFrequency()<<std::endl;
@@ -118,6 +128,38 @@ int main(int argc, char* argv[]) {
 
 		//Pintar jugadores
 		for(vector<Player>::iterator it = PlayerClassifier::playerV.begin(); it!=PlayerClassifier::playerV.end(); it++) {
+			bool seguir = true;
+			int id_video;
+			Mat jug_img = Mat::zeros(Size(PLAYER_WIDTH,PLAYER_HEIGHT),CV_8UC3);
+			switch (it-> getPlayerId()) {
+				case 4 :
+					id_video = 0;
+					break;
+				case 10:
+					id_video = 1;
+					break;
+				case 12:
+					id_video = 2;
+					break;
+				case 20:
+					id_video = 3;
+					break;
+				case 24:
+					id_video = 4;
+					break;
+				case 29:
+					id_video = 5;
+					break;
+				case 6:
+					id_video = 6;
+					break;
+				case 2:
+					id_video = 7;
+					break;
+				default:
+					seguir = false;
+			}
+
 			Point p = it->getLastPosition();
 			Scalar colour = GlobalStats::calculateColor(it->getHistogram());
 			bool exists = false;
@@ -132,12 +174,19 @@ int main(int argc, char* argv[]) {
 					Rect paintR = GlobalStats::getPlayerRect(realP);
 					if(TrackingObj::isInRange(&paintR)) {
 						exists = true;
+						jug_img = GlobalStats::frame[k](paintR);
 						rectangle(GlobalStats::frame[k],paintR,colour,2);
+						std::stringstream id;
+						id << it->getPlayerId();
+						putText(GlobalStats::frame[k],id.str(),realP,1,1,Scalar(0,0,255));
 					}
 				}
 			}
 			if(exists) {
 				circle(paint,p,3,colour,2);
+			}
+			if (seguir) {
+				jugador[id_video] << jug_img;
 			}
 		}
 		
@@ -150,17 +199,17 @@ int main(int argc, char* argv[]) {
 		// Limpiamos el vector de posiciones
 		GlobalStats::clearLocations();
 		// Unimos las secuencias en una sola para mostrarlas
-		Mat join = VideoManager::joinSequences(GlobalStats::frame);
-		pyrDown(join, join, Size(join.cols/2, join.rows/2));
+		//Mat join = VideoManager::joinSequences(GlobalStats::frame);
+		//pyrDown(join, join, Size(join.cols/2, join.rows/2));
 
 		// DEBUG!!!
-		if(SAVE_RESULT_SEQ) {
+		/*if(SAVE_RESULT_SEQ) {
 			outputVideo2D<<paint;
 			outputVideoCams<<join;
 		} else {
 			imshow(FIELD_W,paint);
 			imshow(VIDEO_W, join);
-		}
+		}*/
 
 		b = getTickCount();
 

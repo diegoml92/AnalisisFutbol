@@ -141,9 +141,9 @@ void PlayerClassifier::objectDetection() {
 		findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE);
 		if(hierarchy.size() > 0) {									// Si se encuentra algún contorno
 
-			Mat drawing = Mat::zeros( temp.size(), CV_8UC3 );
+			/*Mat drawing = Mat::zeros( temp.size(), CV_8UC3 );
 			Mat drawing2 = Mat::zeros( temp.size(), CV_8UC3 );
-			Mat boundingBox = Mat::zeros( temp.size(), CV_8UC3 );
+			Mat boundingBox = Mat::zeros( temp.size(), CV_8UC3 );*/
 
 			for(int j = 0; j < contours.size(); j++ ) {				// Recorremos los contornos
 				Rect elem = boundingRect(Mat(contours[j]));			// Creamos el boundingBox
@@ -151,23 +151,23 @@ void PlayerClassifier::objectDetection() {
 					PlayerClassifier::canBePlayer(GlobalStats::filter[i](elem))) {
 					GlobalStats::locations[i].push_back(elem);		// Añadimos al vector de localizaciones
 
-					Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+					/*Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 					drawContours (drawing, contours, j, color, 2, 8, hierarchy, 0, Point() );
 					drawContours (drawing2, contours, j, color, 2, 8, hierarchy, 0, Point() );
 					drawContours (boundingBox, contours, j, color, 2, 8, hierarchy, 0, Point() );
-					rectangle(boundingBox, elem, color);
-				} else {
+					rectangle(boundingBox, elem, color);*/
+				} /*else {
 					Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 					drawContours (drawing2, contours, j, color, 2, 8, hierarchy, 0, Point() );
-				}
+				}*/
 			}
 
-			imshow("ORIGINAL",GlobalStats::frame[i]);
+			/*imshow("ORIGINAL",GlobalStats::frame[i]);
 			imshow("FOREGROUND",GlobalStats::filter[i]);
 			imshow("CONTORNOS1",drawing2);
 			imshow("CONTORNOS2",drawing);
 			imshow("BOUNDING_BOX",boundingBox);
-			waitKey();
+			waitKey();*/
 		}
 	}
 }
